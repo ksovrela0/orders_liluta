@@ -176,10 +176,15 @@
 		.ui-widget-content{
 			background-color: #fff!important;
 		}
+		.fieldset input {
+			height: 34.14px !important;
+		}
 		</style>
 			<div id="logout">გასვლა</div>
 			<div id="main_div"></div>
 			<div title="შეკვეთა" id="get_edit_page"></div>
+			<div title="შეკვეთა - პროდუქტი" id="get_product_page"></div>
+			<div title="შეკვეთა - პროდუქტი - მინები" id="get_glass_page"></div>
 			<div title="SMS ყველასთან" id="sms_to_all_div"></div>
 			<div title="SMS მონიშნულებთან" id="sms_to_checked_div"></div>
 			<br>
@@ -292,6 +297,25 @@
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
 				kendo.loadKendoUI(aJaxURL, 'get_list_product', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
+			function LoadKendoTable_glass(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'glasses_div';
+				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 7;
+				var columnsSQL = ["id:string", "name_product:string", "dimm:string", "type:string", "color:string", "proccess:string", "status:string"];
+				var columnGeoNames = ["ID კოდი", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_glasses', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
 			}
             $(document).on('click', '#sms_to_checked', function(){
                 var checked_ids = [];
@@ -435,7 +459,7 @@
 							modal: true,
 							buttons: {
 								"შენახვა": function() {
-									save_writing();
+									//save_writing();
 								},
 								'დახურვა': function() {
 									$(this).dialog("close");
@@ -545,7 +569,7 @@
 							modal: true,
 							buttons: {
 								"შენახვა": function() {
-									save_writing();
+									//save_writing();
 								},
 								'დახურვა': function() {
 									$(this).dialog("close");
@@ -555,7 +579,79 @@
 					}
 				});
 			});
-
+			$(document).on("dblclick", "#glasses_div tr.k-state-selected", function() {
+				var grid = $("#glasses_div").data("kendoGrid");
+				var dItem = grid.dataItem($(this));
+				if(dItem.id == '') {
+					return false;
+				}
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "get_glass_page",
+						id: dItem.id
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#get_glass_page').html(data.page);
+						var kendo = new kendoUI();
+						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status").chosen();
+						$("#get_glass_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 600,
+							height: 500,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									//save_writing();
+								},
+								'დახურვა': function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+					}
+				});
+			});
+			$(document).on("dblclick", "#product_div tr.k-state-selected", function() {
+				var grid = $("#product_div").data("kendoGrid");
+				var dItem = grid.dataItem($(this));
+				if(dItem.id == '') {
+					return false;
+				}
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "get_product_page",
+						id: dItem.id2
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#get_product_page').html(data.page);
+						var kendo = new kendoUI();
+						var pr = "&product_id="+dItem.id2;
+						LoadKendoTable_glass(pr);
+						$("#selected_product_id").chosen();
+						$("#get_product_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 1100,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									//save_writing();
+								},
+								'დახურვა': function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+					}
+				});
+			});
 			function reloadImpulses() {
 				$.ajax({
 					url: "server-side/writes.action.php",

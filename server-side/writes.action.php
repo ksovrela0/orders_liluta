@@ -76,6 +76,16 @@ switch ($act){
         unset($_SESSION['user_id']);
 
     break;
+    case 'get_glass_page':
+        $id = $_REQUEST['id'];
+        
+        $data = array('page' => getGlassPage(getGlass($id)));
+    break;
+    case 'get_product_page':
+        $id = $_REQUEST['id'];
+        
+        $data = array('page' => getProductPage(getProduct($id)));
+    break;
 
     case 'get_edit_page':
 
@@ -773,6 +783,11 @@ switch ($act){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
 
 					}
+                    elseif($columns[$j] == "id"){
+
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
+
+					}
                     else{
 
                     	$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true));
@@ -918,6 +933,39 @@ switch ($act){
 
         $data = $result;
         break;
+    case 'get_list_glasses':
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
+
+        $product_id = $_REQUEST['product_id'];
+
+        $db->setQuery(" SELECT  products_glasses.id,
+                                glass_options.name,
+                                CONCAT(products_glasses.glass_width, 'სმ X ', products_glasses.glass_height,'სმ'),
+                                glass_type.name,
+                                glass_colors.name,
+                                '' AS proccess,
+                                CONCAT('<span style=\"padding:5px;', CASE
+                                    WHEN glass_status.id = 1 THEN 'background-color: red;'
+                                    WHEN glass_status.id = 2 THEN 'background-color: yellow;'
+                                    WHEN glass_status.id = 3 THEN 'background-color: green;'
+                                    WHEN glass_status.id = 4 THEN 'background-color: red;'
+                                    WHEN glass_status.id = 5 THEN 'background-color: red;'
+                                END
+                                ,'\">', glass_status.name,'</span>') AS glasses
+
+                        FROM    products_glasses
+                        JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+                        JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+                        JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                        JOIN    glass_status ON glass_status.id = products_glasses.status_id
+                        WHERE   products_glasses.actived = 1 AND products_glasses.order_product_id = '$product_id'");
+
+
+        $result = $db->getKendoList($columnCount, $cols);
+
+        $data = $result;
+        break;
 
 }
 
@@ -954,8 +1002,209 @@ function getSMSPage($res = ''){
 
     return $data;
 }
+function getGlass($id){
+    GLOBAL $db;
+
+    $db->setQuery(" SELECT  id,
+                            glass_option_id,
+                            glass_type_id,
+                            glass_color_id,
+                            glass_width,
+                            glass_height,
+                            status_id
+                    FROM    products_glasses
+                    WHERE   id = '$id'");
+
+    $result = $db->getResultArray();
 
 
+
+    return $result['result'][0];
+    
+}
+function getGlassPage($res = ''){
+    GLOBAL $db;
+
+    $data = '   <fieldset class="fieldset">
+                    <legend>ინფორმაცია</legend>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>აირჩიეთ შუშა</label>
+                                <select id="selected_glass_cat_id">
+                                    '.getGlassOptions($res['glass_option_id']).'
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>შეიყვანეთ ზომა (სიგრძეXსიგანე)</label>
+                                <div class="row">
+                                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_width" value="'.$res['glass_width'].'"></div>
+                                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_height" value="'.$res['glass_height'].'"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>აირჩიეთ ტიპი</label>
+                                <select id="selected_glass_type_id">
+                                    '.getGlassTypeOptions($res['glass_type_id']).'
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>აირჩიეთ ფერი</label>
+                                <select id="selected_glass_color_id">
+                                    '.getGlassColorOptions($res['glass_color_id']).'
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>აირჩიეთ სტატუსი</label>
+                                <select id="selected_glass_status">
+                                    '.getGlassStatusOptions($res['status_id']).'
+                                </select>
+                            </div>
+                        </div>
+                    </legend>
+                </fieldset>
+
+                <input type="hidden" id="glass_id" value="'.$res[id].'">
+
+                ';
+
+    return $data;
+}
+function getProduct($id){
+    GLOBAL $db;
+
+    $db->setQuery(" SELECT  id,
+                            product_id AS product_cat_id,
+                            picture
+                    FROM    orders_product
+                    WHERE   id = '$id'");
+
+    $result = $db->getResultArray();
+
+
+
+    return $result['result'][0];
+    
+}
+function getProductPage($res = ''){
+    GLOBAL $db;
+
+    $data = '   <fieldset class="fieldset">
+                    <legend>ინფორმაცია</legend>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>აირჩიეთ პროდუქცია</label>
+                                <select id="selected_product_id">
+                                    '.getProductOptions($res['product_cat_id']).'
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>აირჩიეთ სურათი</label>
+                                <input type="file">
+                            </div>
+                            <div style="margin-top: 16px;" class="col-sm-12">
+                                <div id="glasses_div"></div>
+                            </div>
+                        </div>
+                    </legend>
+                </fieldset>
+
+                <input type="hidden" id="product_id" value="'.$res[id].'">
+
+                ';
+
+    return $data;
+}
+
+function getGlassStatusOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_status
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
+function getGlassColorOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_colors
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
+function getGlassTypeOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_type
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
+function getGlassOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_options 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
+function getProductOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    products 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
 function getPage($res = ''){
 
     GLOBAL $db;
