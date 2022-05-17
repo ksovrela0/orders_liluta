@@ -6,7 +6,7 @@ session_set_cookie_params(60*60*24*7,"/");
 session_start();
 //require_once 'config.php';
 
-define("MYSQLHOST", 	"localhost");
+define("MYSQLHOST", 	"185.229.111.112");
 define("MYSQLPORT",     "3306");
 define("MYSQLUSER",     "lilutage_admin");
 define("MYSQLPASS",     "Sud0basH!");

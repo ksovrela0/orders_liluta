@@ -783,6 +783,16 @@ switch ($act){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
 
 					}
+                    elseif($columns[$j] == "sort_n"){
+
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 70);
+
+					}
+                    elseif($columns[$j] == "proccess2"){
+
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 300);
+
+					}
                     elseif($columns[$j] == "id"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
@@ -944,7 +954,15 @@ switch ($act){
                                 CONCAT(products_glasses.glass_width, 'სმ X ', products_glasses.glass_height,'სმ'),
                                 glass_type.name,
                                 glass_colors.name,
-                                '' AS proccess,
+                                GROUP_CONCAT(CONCAT(groups.name, ' - <span style=\"color:#000;',
+                                CASE
+                                    WHEN glasses_paths.status_id = 1 THEN 'background-color: red;'
+                                    WHEN glasses_paths.status_id = 2 THEN 'background-color: yellow;'
+                                    WHEN glasses_paths.status_id = 3 THEN 'background-color: green;'
+                                    WHEN glasses_paths.status_id = 4 THEN 'background-color: red;'
+                                    WHEN glasses_paths.status_id = 5 THEN 'background-color: red;'
+                                END
+                                ,'\">', path_status.name,'</span>') SEPARATOR ',<br>') AS proccess,
                                 CONCAT('<span style=\"padding:5px;', CASE
                                     WHEN glass_status.id = 1 THEN 'background-color: red;'
                                     WHEN glass_status.id = 2 THEN 'background-color: yellow;'
@@ -959,14 +977,47 @@ switch ($act){
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
                         JOIN    glass_status ON glass_status.id = products_glasses.status_id
-                        WHERE   products_glasses.actived = 1 AND products_glasses.order_product_id = '$product_id'");
+                        LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id
+                        LEFT JOIN groups ON groups.id = glasses_paths.path_group_id
+                        LEFT JOIN glass_status AS path_status ON path_status.id = glasses_paths.status_id
+                        WHERE   products_glasses.actived = 1 AND products_glasses.order_product_id = '$product_id'
+                        GROUP BY products_glasses.id
+                        ORDER BY products_glasses.id");
 
 
         $result = $db->getKendoList($columnCount, $cols);
 
         $data = $result;
         break;
+    case 'get_list_glasses_path':
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
 
+        $glass_id = $_REQUEST['glass_id'];
+
+        $db->setQuery(" SELECT  glasses_paths.id,
+                                groups.name,
+                                glasses_paths.sort_n,
+                                CONCAT('<span style=\"padding:5px;', CASE
+                                    WHEN glass_status.id = 1 THEN 'background-color: red;'
+                                    WHEN glass_status.id = 2 THEN 'background-color: yellow;'
+                                    WHEN glass_status.id = 3 THEN 'background-color: green;'
+                                    WHEN glass_status.id = 4 THEN 'background-color: red;'
+                                    WHEN glass_status.id = 5 THEN 'background-color: red;'
+                                END
+                                ,'\">', glass_status.name,'</span>') AS glasses
+
+                        FROM    glasses_paths
+                        JOIN    groups ON groups.id = glasses_paths.path_group_id
+                        JOIN    glass_status ON glass_status.id = glasses_paths.status_id
+                        WHERE   glasses_paths.actived = 1 AND glasses_paths.glass_id = '$glass_id'
+                        ORDER BY glasses_paths.sort_n ASC");
+
+
+        $result = $db->getKendoList($columnCount, $cols);
+
+        $data = $result;
+        break;
 }
 
 
@@ -1024,7 +1075,7 @@ function getGlass($id){
 }
 function getGlassPage($res = ''){
     GLOBAL $db;
-
+    
     $data = '   <fieldset class="fieldset">
                     <legend>ინფორმაცია</legend>
                         <div class="row">
@@ -1058,6 +1109,9 @@ function getGlassPage($res = ''){
                                 <select id="selected_glass_status">
                                     '.getGlassStatusOptions($res['status_id']).'
                                 </select>
+                            </div>
+                            <div style="margin-top: 16px;" class="col-sm-12">
+                                <div id="path_div"></div>
                             </div>
                         </div>
                     </legend>
