@@ -76,22 +76,63 @@ switch ($act){
         unset($_SESSION['user_id']);
 
     break;
+    case 'get_path_page':
+        $id = $_REQUEST['id'];
+        if($id == '' OR !isset($_REQUEST['id'])){
+            $db->setQuery("INSERT INTO glasses_paths SET user_id = 1");
+            $db->execQuery();
+
+            $id = $db->getLastId();
+
+            $db->setQuery("DELETE FROM glasses_paths WHERE id='$id'");
+            $db->execQuery();
+        }
+        
+        $data = array('page' => getPathPage($id, getPath($id)));
+    break;
     case 'get_glass_page':
         $id = $_REQUEST['id'];
+        if($id == '' OR !isset($_REQUEST['id'])){
+            $db->setQuery("INSERT INTO products_glasses SET user_id = 1");
+            $db->execQuery();
+
+            $id = $db->getLastId();
+
+            $db->setQuery("DELETE FROM products_glasses WHERE id='$id'");
+            $db->execQuery();
+        }
         
-        $data = array('page' => getGlassPage(getGlass($id)));
+        $data = array('page' => getGlassPage($id, getGlass($id)));
     break;
     case 'get_product_page':
         $id = $_REQUEST['id'];
+        if($id == '' OR !isset($_REQUEST['id'])){
+            $db->setQuery("INSERT INTO orders_product SET picture = 1");
+            $db->execQuery();
+
+            $id = $db->getLastId();
+
+            $db->setQuery("DELETE FROM orders_product WHERE id='$id'");
+            $db->execQuery();
+        }
         
-        $data = array('page' => getProductPage(getProduct($id)));
+        $data = array('page' => getProductPage($id, getProduct($id)));
     break;
 
     case 'get_edit_page':
 
         $id = $_REQUEST['id'];
+        if($id == '' OR !isset($_REQUEST['id'])){
+            $db->setQuery("INSERT INTO orders SET datetime = NOW()");
+            $db->execQuery();
 
-        $data = array('page' => getPage(getWriting($id)));
+            $id = $db->getLastId();
+
+            $db->setQuery("DELETE FROM orders WHERE id='$id'");
+            $db->execQuery();
+        }
+        
+        $data = array('page' => getPage($id, getWriting($id)));
 
     break;
 
@@ -335,304 +376,176 @@ switch ($act){
 
     break;
 
-    case 'save_writing':
-
-        $id         = $_REQUEST['id'];
-
-        $firstname  = $_REQUEST['firstname'];
-
-        $lastname   = $_REQUEST['lastname'];
-
-        $soc_media  = $_REQUEST['soc_media'];
-
-        $phone      = $_REQUEST['phone'];
-
-        $sex_id     = $_REQUEST['sex_id'];
-
-        $visit_date = $_REQUEST['visit_date'];
-
-        $personal   = $_REQUEST['personal'];
-
-        $impuls_qty = $_REQUEST['impuls_qty'];
-
-        $total_price = $_REQUEST['total_price'];
-
-        $status     = $_REQUEST['status'];
-
-        $zones      = $_REQUEST['zones'];
-        
-        $cab_id     = $_REQUEST['cab_id'];
-
-
-
-        $impulses   = $_REQUEST['impulses'];
-
-
-
-        if($id == ''){
-
-            $db->setQuery(" SELECT 	COUNT(*) AS cc
-
-                            FROM 	writings
-
-                            WHERE 	writings.actived = 1 AND visit_datetime BETWEEN DATE_SUB('$visit_date', INTERVAL 14 MINUTE) AND DATE_ADD('$visit_date', INTERVAL 14 MINUTE) AND cab_id = '$cab_id'");
-
-                            
-
-            $check_cc = $db->getResultArray();
-
-            if($check_cc['result'][0]['cc'] == 0){
-
-                $db->setQuery("INSERT INTO writings SET firstname='$firstname',
-
-                                                    lastname='$lastname',
-
-                                                    sex_id='$sex_id',
-
-                                                    phone='$phone',
-
-                                                    soc_media='$soc_media',
-                                                    cab_id='$cab_id',
-
-                                                    write_datetime=NOW(),
-
-                                                    visit_datetime='$visit_date',
-
-                                                    personal_id='$personal',
-
-                                                    total_price='$total_price',
-
-                                                    status='$status'");
-
-                $db->execQuery();
-
-    
-
-                $db->setQuery("SELECT MAX(id) as id FROM writings WHERE actived = 1");
-
-                $new_id = $db->getResultArray();
-
-                $new_id = $new_id['result'][0]['id'];
-
-    
-
-                
-
-                $db->setQuery("DELETE FROM selected_zones WHERE writing_id = '$new_id'");
-
-                $db->execQuery();
-
-    
-
-                foreach($zones AS $zone){
-
-                    $db->setQuery("INSERT INTO selected_zones SET writing_id = '$new_id', zone_id='$zone'");
-
-                    $db->execQuery();
-
-                }
-
-    
-
-                foreach($impulses AS $imp){
-
-                    $impulse_data = explode(':',$imp);
-
-    
-
-                    $impulse_zone = explode('_',$impulse_data[0]);
-
-    
-
-    
-
-                    $impulse_zone_id = $impulse_zone[1];
-
-                    $impulse_zone_value = $impulse_data[1];
-
-    
-
-                    $db->setQuery("UPDATE selected_zones SET impuls_qty='$impulse_zone_value' WHERE writing_id='$new_id' AND zone_id='$impulse_zone_id'");
-
-                    $db->execQuery();
-
-                }
-
-                $data['error'] = '';
-
-            }
-
-            else{
-
-                $data['error'] = 'time_error';
-
-            }
-
-            
-
+    case 'save_order':
+
+        $id             = $_REQUEST['id'];
+        $client_name    = $_REQUEST['client_name'];
+        $client_phone   = $_REQUEST['client_phone'];
+        $client_pid     = $_REQUEST['client_pid'];
+        $client_addr    = $_REQUEST['client_addr'];
+        $order_date     = $_REQUEST['order_date'];
+        $pay_total      = $_REQUEST['pay_total'] == '' ? 0 : $_REQUEST['pay_total'];
+        $avansi         = $_REQUEST['avansi'] == '' ? 0 : $_REQUEST['avansi'];
+        $avans_plus     = $_REQUEST['avans_plus'] == '' ? 0 : $_REQUEST['avans_plus'];
+
+        $db->setQuery(" SELECT  COUNT(*) AS cc
+                        FROM    orders
+                        WHERE   id = '$id' AND actived = 1");
+        $isset = $db->getResultArray();
+
+        if($isset['result'][0]['cc'] == 0){
+            $db->setQuery("INSERT INTO orders SET
+                                                id = '$id',
+                                                user_id='$user_id',
+                                                datetime='$order_date',
+                                                client_name='$client_name',
+                                                client_addr='$client_addr',
+                                                client_phone='$client_phone',
+                                                client_pid='$client_pid',
+                                                total='$pay_total',
+                                                avansi='$avansi',
+                                                avans_plus='$avans_plus'");
+
+            $db->execQuery();
+            $data['error'] = '';
         }
 
         else{
-
-            $db->setQuery(" SELECT 	COUNT(*) AS cc
-
-                            FROM 	writings
-
-                            WHERE 	writings.actived = 1 AND visit_datetime BETWEEN DATE_SUB('$visit_date', INTERVAL 14 MINUTE) AND DATE_ADD('$visit_date', INTERVAL 14 MINUTE) AND cab_id = '$cab_id'");
-
-                            
-
-            $check_cc = $db->getResultArray();
-
-            if($check_cc['result'][0]['cc'] == 0){
-
-                $db->setQuery("UPDATE writings SET firstname='$firstname',
-
-                                                lastname='$lastname',
-
-                                                sex_id='$sex_id',
-                                                
-                                                cab_id='$cab_id',
-
-                                                phone='$phone',
-
-                                                soc_media='$soc_media',
-
-                                                visit_datetime='$visit_date',
-
-                                                personal_id='$personal',
-
-                                                total_price='$total_price',
-
-                                                status='$status'
-
-                                WHERE id='$id'");
-
-                $db->execQuery();
-
-    
-
-    
-
-                $db->setQuery("DELETE FROM selected_zones WHERE writing_id = '$id'");
-
-                $db->execQuery();
-
-    
-
-                foreach($zones AS $zone){
-
-                    $db->setQuery("INSERT INTO selected_zones SET writing_id = '$id', zone_id='$zone'");
-
-                    $db->execQuery();
-
-                }
-
-    
-
-                foreach($impulses AS $imp){
-
-                    $impulse_data = explode(':',$imp);
-
-    
-
-                    $impulse_zone = explode('_',$impulse_data[0]);
-
-    
-
-    
-
-                    $impulse_zone_id = $impulse_zone[1];
-
-                    $impulse_zone_value = $impulse_data[1];
-
-    
-
-                    $db->setQuery("UPDATE selected_zones SET impuls_qty='$impulse_zone_value' WHERE writing_id='$id' AND zone_id='$impulse_zone_id'");
-
-                    $db->execQuery();
-
-                }
-
-                $data['error'] = '';
-
-            }
-
-            else{
-
-                $db->setQuery("UPDATE writings SET firstname='$firstname',
-
-                                                lastname='$lastname',
-
-                                                sex_id='$sex_id',
-                                                
-                                                cab_id='$cab_id',
-
-                                                phone='$phone',
-
-                                                soc_media='$soc_media',
-
-                                                personal_id='$personal',
-
-                                                total_price='$total_price',
-
-                                                status='$status'
-
-                                WHERE id='$id'");
-
-                $db->execQuery();
-
-    
-
-    
-
-                $db->setQuery("DELETE FROM selected_zones WHERE writing_id = '$id'");
-
-                $db->execQuery();
-
-    
-
-                foreach($zones AS $zone){
-
-                    $db->setQuery("INSERT INTO selected_zones SET writing_id = '$id', zone_id='$zone'");
-
-                    $db->execQuery();
-
-                }
-
-    
-
-                foreach($impulses AS $imp){
-
-                    $impulse_data = explode(':',$imp);
-
-    
-
-                    $impulse_zone = explode('_',$impulse_data[0]);
-
-    
-
-    
-
-                    $impulse_zone_id = $impulse_zone[1];
-
-                    $impulse_zone_value = $impulse_data[1];
-
-    
-
-                    $db->setQuery("UPDATE selected_zones SET impuls_qty='$impulse_zone_value' WHERE writing_id='$id' AND zone_id='$impulse_zone_id'");
-
-                    $db->execQuery();
-
-                }
-                $data['error'] = 'time_error';
-
-            }
-
-            
-
-
-
+            $db->setQuery("UPDATE orders SET user_id='$user_id',
+                                                datetime='$order_date',
+                                                client_name='$client_name',
+                                                client_addr='$client_addr',
+                                                client_pid='$client_pid',
+                                                client_phone='$client_phone',
+                                                total='$pay_total',
+                                                avansi='$avansi',
+                                                avans_plus='$avans_plus'
+                            WHERE id='$id'");
+            $db->execQuery();
+            $data['error'] = '';
+        }
+
+    break;
+
+    case 'save_product':
+
+        $id          = $_REQUEST['id'];
+        $selected_product_id  = $_REQUEST['selected_product_id'];
+        $order_id    = $_REQUEST['order_id'];
+
+        $db->setQuery(" SELECT  COUNT(*) AS cc
+                        FROM    orders_product
+                        WHERE   id = '$id' AND actived = 1");
+        $isset = $db->getResultArray();
+
+        if($isset['result'][0]['cc'] == 0){
+        $db->setQuery("INSERT INTO orders_product SET
+                                        id = '$id',
+                                        user_id='$user_id',
+                                        datetime=NOW(),
+                                        order_id='$order_id',
+                                        product_id='$selected_product_id'");
+
+        $db->execQuery();
+        $data['error'] = '';
+        }
+
+        else{
+        $db->setQuery("UPDATE orders_product SET user_id='$user_id',
+                                        order_id='$order_id',
+                                        product_id='$selected_product_id'
+                    WHERE id='$id'");
+        $db->execQuery();
+        $data['error'] = '';
+        }
+
+    break;
+
+    case 'save_glass':
+
+        $id             = $_REQUEST['id'];
+        $glass_cat    = $_REQUEST['glass_cat'];
+        $product_id    = $_REQUEST['product_id'];
+        $glass_type   = $_REQUEST['glass_type'];
+        $glass_color     = $_REQUEST['glass_color'];
+        $glass_status    = $_REQUEST['glass_status'];
+        $glass_width     = $_REQUEST['glass_width'];
+        $glass_height      = $_REQUEST['glass_height'];
+
+        $db->setQuery(" SELECT  COUNT(*) AS cc
+                        FROM    products_glasses
+                        WHERE   id = '$id' AND actived = 1");
+        $isset = $db->getResultArray();
+
+        if($isset['result'][0]['cc'] == 0){
+            $db->setQuery("INSERT INTO products_glasses SET
+                                                id = '$id',
+                                                user_id='$user_id',
+                                                datetime=NOW(),
+                                                order_product_id='$product_id',
+                                                glass_option_id='$glass_cat',
+                                                glass_type_id='$glass_type',
+                                                glass_color_id='$glass_color',
+                                                glass_width='$glass_width',
+                                                glass_height='$glass_height',
+                                                status_id='$glass_status'");
+
+            $db->execQuery();
+            $data['error'] = '';
+        }
+
+        else{
+            $db->setQuery("UPDATE products_glasses SET user_id='$user_id',
+                                                order_product_id='$product_id',
+                                                glass_option_id='$glass_cat',
+                                                glass_type_id='$glass_type',
+                                                glass_color_id='$glass_color',
+                                                glass_width='$glass_width',
+                                                glass_height='$glass_height',
+                                                status_id='$glass_status'
+                            WHERE id='$id'");
+            $db->execQuery();
+            $data['error'] = '';
+        }
+
+    break;
+
+    case 'save_path':
+
+        $id             = $_REQUEST['id'];
+        $glass_id    = $_REQUEST['glass_id'];
+        $path_group_id    = $_REQUEST['path_group_id'];
+        $path_status     = $_REQUEST['path_status'];
+        $sort_n    = $_REQUEST['sort_n'];
+
+        $db->setQuery(" SELECT  COUNT(*) AS cc
+                        FROM    glasses_paths
+                        WHERE   id = '$id' AND actived = 1");
+        $isset = $db->getResultArray();
+
+        if($isset['result'][0]['cc'] == 0){
+            $db->setQuery("INSERT INTO glasses_paths SET
+                                                id = '$id',
+                                                user_id='$user_id',
+                                                datetime=NOW(),
+                                                glass_id='$glass_id',
+                                                path_group_id='$path_group_id',
+                                                status_id='$path_status',
+                                                sort_n='$sort_n'");
+
+            $db->execQuery();
+            $data['error'] = '';
+        }
+
+        else{
+            $db->setQuery("UPDATE glasses_paths SET user_id='$user_id',
+                                                glass_id='$glass_id',
+                                                path_group_id='$path_group_id',
+                                                status_id='$path_status',
+                                                sort_n='$sort_n'
+                            WHERE id='$id'");
+            $db->execQuery();
+            $data['error'] = '';
         }
 
     break;
@@ -640,18 +553,54 @@ switch ($act){
     case 'disable':
 
         $ids = $_REQUEST['id'];
+        $type = $_REQUEST['type'];
 
-        $ids = explode(',',$ids);
+        if($type == 'order'){
+            $ids = explode(',',$ids);
 
 
 
-        foreach($ids AS $id){
-
-            $db->setQuery("UPDATE writings SET actived = 0 WHERE id = '$id'");
-
-            $db->execQuery();
-
+            foreach($ids AS $id){
+                $db->setQuery("UPDATE orders SET actived = 0 WHERE id = '$id'");
+                $db->execQuery();
+    
+            }
         }
+        else if($type == 'product'){
+            $ids = explode(',',$ids);
+
+
+
+            foreach($ids AS $id){
+                $db->setQuery("UPDATE orders_product SET actived = 0 WHERE id = '$id'");
+                $db->execQuery();
+    
+            }
+        }
+
+        else if($type == 'glass'){
+            $ids = explode(',',$ids);
+
+
+
+            foreach($ids AS $id){
+                $db->setQuery("UPDATE products_glasses SET actived = 0 WHERE id = '$id'");
+                $db->execQuery();
+    
+            }
+        }
+        else if($type == 'path'){
+            $ids = explode(',',$ids);
+
+
+
+            foreach($ids AS $id){
+                $db->setQuery("UPDATE glasses_paths SET actived = 0 WHERE id = '$id'");
+                $db->execQuery();
+    
+            }
+        }
+        
 
     break;
 
@@ -934,10 +883,10 @@ switch ($act){
 
                         FROM    orders_product
                         JOIN    products ON products.id = orders_product.product_id
-                        JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
-                        JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
-                        JOIN	glass_status ON glass_status.id = products_glasses.status_id
-                        WHERE   orders_product.order_id = '$order_id'
+                        LEFT JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
+                        LEFT JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
+                        LEFT JOIN	glass_status ON glass_status.id = products_glasses.status_id
+                        WHERE   orders_product.order_id = '$order_id' AND orders_product.actived = 1
                         GROUP BY orders_product.id");
         $result = $db->getKendoList($columnCount, $cols);
 
@@ -1053,6 +1002,24 @@ function getSMSPage($res = ''){
 
     return $data;
 }
+function getPath($id){
+    GLOBAL $db;
+
+    $db->setQuery(" SELECT  id,
+                            user_id,
+                            glass_id,
+                            path_group_id,
+                            status_id,
+                            sort_n
+                    FROM    glasses_paths
+                    WHERE   id = '$id'");
+
+    $result = $db->getResultArray();
+
+
+
+    return $result['result'][0];
+}
 function getGlass($id){
     GLOBAL $db;
 
@@ -1073,7 +1040,7 @@ function getGlass($id){
     return $result['result'][0];
     
 }
-function getGlassPage($res = ''){
+function getGlassPage($id, $res = ''){
     GLOBAL $db;
     
     $data = '   <fieldset class="fieldset">
@@ -1117,7 +1084,41 @@ function getGlassPage($res = ''){
                     </legend>
                 </fieldset>
 
-                <input type="hidden" id="glass_id" value="'.$res[id].'">
+                <input type="hidden" id="glass_id" value="'.$id.'">
+
+                ';
+
+    return $data;
+}
+
+function getPathPage($id, $res = ''){
+    GLOBAL $db;
+    
+    $data = '   <fieldset class="fieldset">
+                    <legend>ინფორმაცია</legend>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label>აირჩიეთ პროცესი</label>
+                                <select id="path_group_id">
+                                    '.getPathOptions($res['path_group_id']).'
+                                </select>
+                            </div>
+                            
+                            <div class="col-sm-4">
+                                <label>აირჩიეთ სტატუსი</label>
+                                <select id="path_status">
+                                    '.getGlassStatusOptions($res['status_id']).'
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>თანმიმდევრობა</label>
+                                <input style="width:99%;" type="text" id="sort_n" value="'.$res['sort_n'].'">
+                            </div>
+                        </div>
+                    </legend>
+                </fieldset>
+
+                <input type="hidden" id="path_id" value="'.$id.'">
 
                 ';
 
@@ -1139,7 +1140,7 @@ function getProduct($id){
     return $result['result'][0];
     
 }
-function getProductPage($res = ''){
+function getProductPage($id, $res = ''){
     GLOBAL $db;
 
     $data = '   <fieldset class="fieldset">
@@ -1162,7 +1163,7 @@ function getProductPage($res = ''){
                     </legend>
                 </fieldset>
 
-                <input type="hidden" id="product_id" value="'.$res[id].'">
+                <input type="hidden" id="product_id" value="'.$id.'">
 
                 ';
 
@@ -1241,6 +1242,24 @@ function getGlassOptions($id){
     }
     return $data;
 }
+function getPathOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    groups 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
 function getProductOptions($id){
     GLOBAL $db;
     $data = '';
@@ -1259,7 +1278,7 @@ function getProductOptions($id){
     }
     return $data;
 }
-function getPage($res = ''){
+function getPage($id, $res = ''){
 
     GLOBAL $db;
 
@@ -1296,6 +1315,11 @@ function getPage($res = ''){
             </div>
 
             <div class="col-sm-3">
+                <label>პირადი ნომერი</label>
+                <input value="'.$res['client_pid'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_pid" class="idle" autocomplete="off">
+            </div>
+
+            <div class="col-sm-3">
                 <label>ტელეფონი</label>
                 <input value="'.$res['client_phone'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_phone" class="idle" autocomplete="off">
             </div>
@@ -1304,22 +1328,23 @@ function getPage($res = ''){
                 <label>მისამართი</label>
                 <input value="'.$res['client_addr'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_addr" class="idle" autocomplete="off">
             </div>
+            
+            <div class="col-sm-12">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div class="col-sm-3">
                 <label>შეკვეთის თარიღი</label>
                 <input value="'.$res['datetime'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="order_date" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-12">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label>სულ გადასახდელი</label>
-                <input value="'.$res['total'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="pay_total" class="idle" autocomplete="off">
+                <input value="'.$res['total'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" step=".01" id="pay_total" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label>ავანსი</label>
-                <input value="'.$res['avansi'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="avansi" class="idle" autocomplete="off">
+                <input value="'.$res['avansi'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" step=".01" id="avansi" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label>დამატებული თანხა</label>
-                <input value="'.$res['avans_plus'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="avans_plus" class="idle" autocomplete="off">
+                <input value="'.$res['avans_plus'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" step=".01" id="avans_plus" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-12">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div class="col-sm-12">
@@ -1340,7 +1365,7 @@ function getPage($res = ''){
 
     
 
-    <input type="hidden" id="writing_id" value="'.$res[id].'">
+    <input type="hidden" id="writing_id" value="'.$id.'">
 
     ';
 

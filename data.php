@@ -60,7 +60,7 @@
 			display: flex;
 		}
 		
-		#new_writing, #new_product {
+		#new_writing, #new_product, #new_glass, #new_path {
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
@@ -70,7 +70,7 @@
 			cursor: pointer;
 		}
 		
-		#copy_writing, #copy_product {
+		#copy_writing, #copy_product, #copy_glass {
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
@@ -81,7 +81,7 @@
 			margin-left: 20px;
 		}
 		
-		#del_writing, #del_product {
+		#del_writing, #del_product, #del_glass, #del_path {
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
@@ -187,6 +187,7 @@
 			<div title="შეკვეთა - პროდუქტი - მინები" id="get_glass_page"></div>
 			<div title="SMS ყველასთან" id="sms_to_all_div"></div>
 			<div title="SMS მონიშნულებთან" id="sms_to_checked_div"></div>
+			<div title="შეკვეთა - პროდუქტი - მინები - პროცესი" id="get_path_page"></div>
 			<br>
 
 			<script>
@@ -302,7 +303,7 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'glasses_div';
-				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
+				var actions = '<div id="new_glass">დამატება</div><div id="copy_glass">კოპირება</div><div id="del_glass"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 7;
@@ -321,7 +322,7 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'path_div';
-				var actions = '<div id="new_product">დამატება</div><div id="del_product"> წაშლა</div>';
+				var actions = '<div id="new_path">დამატება</div><div id="del_path"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 4;
@@ -446,7 +447,7 @@
 					url: "server-side/writes.action.php",
 					type: "POST",
 					data: {
-						act: "get_add_page"
+						act: "get_edit_page"
 					},
 					dataType: "json",
 					success: function(data) {
@@ -470,7 +471,8 @@
 							var multiselect = $("#zones").data("kendoMultiSelect");
 							multiselect.bind("change", reloadImpulses);
 						}); */
-						LoadKendoTable_product();
+						var pr = "&order_id="+$("#writing_id").val();
+						LoadKendoTable_product(pr);
 						$("#get_edit_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -478,7 +480,7 @@
 							modal: true,
 							buttons: {
 								"შენახვა": function() {
-									//save_writing();
+									save_order();
 								},
 								'დახურვა': function() {
 									$(this).dialog("close");
@@ -488,6 +490,98 @@
 					}
 				});
 			});
+			$(document).on('click', '#new_product', function(){
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "get_product_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#get_product_page').html(data.page);
+						var kendo = new kendoUI();
+						var pr = "&product_id="+$("#product_id").val();
+						LoadKendoTable_glass(pr);
+						$("#selected_product_id").chosen();
+						$("#get_product_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 1100,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									save_product();
+								},
+								'დახურვა': function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+					}
+				});
+			});
+			$(document).on('click', '#new_glass', function(){
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "get_glass_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#get_glass_page').html(data.page);
+						var kendo = new kendoUI();
+						var pr = "&glass_id="+$("#glass_id").val();
+
+						LoadKendoTable_path(pr);
+						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status").chosen();
+						$("#get_glass_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 600,
+							height: 650,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									save_glass();
+								},
+								'დახურვა': function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+					}
+				});
+			});
+			$(document).on('click','#new_path', function(){
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "get_path_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#get_path_page').html(data.page);
+						$("#path_group_id,#path_status").chosen();
+						$("#get_path_page").dialog({
+							resizable: false,
+							height: 400,
+							width: 900,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									save_path();
+								},
+								'დახურვა': function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+					}
+				});
+			})
 			$(document).on('click', '#copy_writing', function() {
 				var grid = $("#main_div").data("kendoGrid");
 				var selectedRows = grid.select();
@@ -522,22 +616,119 @@
 					writing_id = selectedItem.id;
 				});
 				if(typeof writing_id == 'undefined') {
-					alert('ჩაწერა აირჩიეთ ცხრილიდან');
+					alert('აირჩიეთ შეკვეთა!!!');
 				} else {
-					$.ajax({
-						url: "server-side/writes.action.php",
-						type: "POST",
-						data: {
-							act: "disable",
-							id: writing_id
-						},
-						dataType: "json",
-						success: function(data) {
-							$("#main_div").data("kendoGrid").dataSource.read();
-						}
-					});
+					var ask = confirm("ნამდვილად გსურთ შეკვეთის წაშლა?");
+					if(ask){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "disable",
+								type: "order",
+								id: writing_id
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#main_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
 				}
 			});
+			$(document).on('click', '#del_product', function() {
+				var grid = $("#product_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id;
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id = selectedItem.id2;
+				});
+				if(typeof writing_id == 'undefined') {
+					alert('აირჩიეთ პროდუქტი!!!');
+				} else {
+					var ask = confirm("ნამდვილად გსურთ პროდუქტის წაშლა?");
+					if(ask){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "disable",
+								type: "product",
+								id: writing_id
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#product_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
+				}
+			});
+			$(document).on('click', '#del_glass', function() {
+				var grid = $("#glasses_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id;
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id = selectedItem.id;
+				});
+				if(typeof writing_id == 'undefined') {
+					alert('აირჩიეთ მინა!!!');
+				} else {
+					var ask = confirm("ნამდვილად გსურთ მინის წაშლა?");
+					if(ask){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "disable",
+								type: "glass",
+								id: writing_id
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#glasses_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
+				}
+			});
+
+			$(document).on('click', '#del_path', function() {
+				var grid = $("#path_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id;
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id = selectedItem.id2;
+				});
+				if(typeof writing_id == 'undefined') {
+					alert('აირჩიეთ პროცესი!!!');
+				} else {
+					var ask = confirm("ნამდვილად გსურთ პროცესის წაშლა?");
+					if(ask){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "disable",
+								type: "path",
+								id: writing_id
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#path_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
+				}
+			});
+			
 			$(document).on("dblclick", "#main_div tr.k-state-selected", function() {
 				var grid = $("#main_div").data("kendoGrid");
 				var dItem = grid.dataItem($(this));
@@ -588,7 +779,7 @@
 							modal: true,
 							buttons: {
 								"შენახვა": function() {
-									//save_writing();
+									save_order();
 								},
 								'დახურვა': function() {
 									$(this).dialog("close");
@@ -626,7 +817,7 @@
 							modal: true,
 							buttons: {
 								"შენახვა": function() {
-									//save_writing();
+									save_glass();
 								},
 								'დახურვა': function() {
 									$(this).dialog("close");
@@ -663,7 +854,7 @@
 							modal: true,
 							buttons: {
 								"შენახვა": function() {
-									//save_writing();
+									save_product();
 								},
 								'დახურვა': function() {
 									$(this).dialog("close");
@@ -673,6 +864,41 @@
 					}
 				});
 			});
+			$(document).on("dblclick", "#path_div tr.k-state-selected", function() {
+				var grid = $("#path_div").data("kendoGrid");
+				var dItem = grid.dataItem($(this));
+				if(dItem.id == '') {
+					return false;
+				}
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "get_path_page",
+						id: dItem.id2
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#get_path_page').html(data.page);
+						$("#path_group_id,#path_status").chosen();
+						$("#get_path_page").dialog({
+							resizable: false,
+							height: 400,
+							width: 900,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									save_path();
+								},
+								'დახურვა': function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+					}
+				});
+			});
+			
 			function reloadImpulses() {
 				$.ajax({
 					url: "server-side/writes.action.php",
@@ -690,58 +916,38 @@
 				});
 			}
 
-			function save_writing() {
+			function save_order() {
 				let params = new Object;
-				var zones = [];
-				$('#zones option:selected').toArray().map(c => zones.push(c.value));
-				params.act = 'save_writing';
+
+				params.act = 'save_order';
 				params.id = $("#writing_id").val();
-				params.firstname = $("#firstname").val();
-				params.lastname = $("#lastname").val();
-				params.phone = $("#phone").val();
-				params.soc_media = $("#soc_media").val();
-				params.sex_id = $("input[name='sex_id']:checked").val();
-				params.visit_date = $("#visit_date").val();
-				params.cab_id = $("#cabinet").val();
-				params.personal = $("#personal").val();
-				params.total_price = $("#total_price").val();
-				params.impuls_qty = $("#impuls_qty").val();
-				params.status = $("#statuses").val();
-				params.zones = zones;
+				params.client_name = $("#client_name").val();
+				params.client_pid = $("#client_pid").val();
+				params.client_phone = $("#client_phone").val();
+				params.client_addr = $("#client_addr").val();
+				params.order_date = $("#order_date").val();
+				params.pay_total = $("#pay_total").val();
+				params.avansi = $("#avansi").val();
+				params.avans_plus = $("#avans_plus").val();
+
 				var ready_to_save = 0;
-				if(params.firstname == '') {
+				if(params.client_name == '') {
 					alert('შეიყვანეთ კლიენტის სახელი');
 					ready_to_save++;
 				}
-				if(params.lastname == '') {
-					alert('შეიყვანეთ კლიენტის გვარი');
-					ready_to_save++;
-				}
-				if(params.phone == '') {
+				if(params.client_phone == '') {
 					alert('შეიყვანეთ კლიენტის ნომერი');
 					ready_to_save++;
 				}
-				if($.isNumeric(params.phone)) {} else {
-					alert('ტელეფონის ველში უნდა გამოიყენოთ მხოლოდ ციფრები');
+				if(params.client_addr == '') {
+					alert('შეიყვანეთ კლიენტის მისამართი');
 					ready_to_save++;
 				}
-				if(typeof params.sex_id == 'undefined') {
-					alert('აირჩიეთ სქესი');
+				if(params.client_pid == '') {
+					alert('შეიყვანეთ კლიენტის პირადი ნომერი');
 					ready_to_save++;
 				}
-				if(params.visit_date == '') {
-					alert('აირჩიეთ ვიზიტის თარიღი');
-					ready_to_save++;
-				}
-				if(params.zones == 0) {
-					alert('აირჩიეთ 1 ზონა მაინც');
-					ready_to_save++;
-				}
-				let impulses_array = [];
-				$(".impulses").each(function(index) {
-					impulses_array.push($(this).attr('id') + ':' + $(this).val());
-				});
-				params.impulses = impulses_array;
+
 				if(ready_to_save == 0) {
 					$.ajax({
 						url: "server-side/writes.action.php",
@@ -750,50 +956,93 @@
 						dataType: "json",
 						success: function(data) {
 							$("#main_div").data("kendoGrid").dataSource.read();
-							if(data.error == 'time_error') {
-								alert("ყველა პარამეტრი შენახულია, თუმცა არჩეული ვიზიტის თარიღი და კაბინეტი დაკავებულია");
-								$('#get_edit_page').dialog("close");
-								$.ajax({
-									url: "server-side/writes.action.php",
-									type: "POST",
-									data: {
-										act: "count_total_money",
-										start_date: $('#start_date').val(),
-										end_date: $('#end_date').val()
-									},
-									dataType: "json",
-									success: function(data) {
-										var total = data.total + ' GEL';
-										var personal_total = data.personal;
-										$("#money_total").html(total);
-										$("#personal_total").html('');
-										$.each(personal_total, function(i, item) {
-											$("#personal_total").append('<p><b>' + personal_total[i].name + ':</b> ' + personal_total[i].cc + ' GEL</p>');
-										});
-									}
-								});
-							} else {
-								$('#get_edit_page').dialog("close");
-								$.ajax({
-									url: "server-side/writes.action.php",
-									type: "POST",
-									data: {
-										act: "count_total_money",
-										start_date: $('#start_date').val(),
-										end_date: $('#end_date').val()
-									},
-									dataType: "json",
-									success: function(data) {
-										var total = data.total + ' GEL';
-										var personal_total = data.personal;
-										$("#money_total").html(total);
-										$("#personal_total").html('');
-										$.each(personal_total, function(i, item) {
-											$("#personal_total").append('<p><b>' + personal_total[i].name + ':</b> ' + personal_total[i].cc + ' GEL</p>');
-										});
-									}
-								});
-							}
+							$('#get_edit_page').dialog("close");
+						}
+					});
+				}
+			}
+			function save_product() {
+				let params = new Object;
+
+				params.act = 'save_product';
+				params.id = $("#product_id").val();
+				params.order_id = $("#writing_id").val();
+				params.selected_product_id = $("#selected_product_id").val();
+
+
+				var ready_to_save = 0;
+
+
+				if(ready_to_save == 0) {
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: params,
+						dataType: "json",
+						success: function(data) {
+							$("#product_div").data("kendoGrid").dataSource.read();
+							$('#get_product_page').dialog("close");
+						}
+					});
+				}
+			}
+			function save_glass(){
+				let params = new Object;
+
+				params.act = 'save_glass';
+				params.id = $("#glass_id").val();
+				params.product_id = $("#product_id").val();
+
+				params.glass_cat = $("#selected_glass_cat_id").val();
+				params.glass_type = $("#selected_glass_type_id").val();
+				params.glass_color = $("#selected_glass_color_id").val();
+				params.glass_status = $("#selected_glass_status").val();
+
+				params.glass_width = $("#glass_width").val();
+				params.glass_height = $("#glass_height").val();
+
+
+				var ready_to_save = 0;
+
+
+				if(ready_to_save == 0) {
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: params,
+						dataType: "json",
+						success: function(data) {
+							$("#glasses_div").data("kendoGrid").dataSource.read();
+							$('#get_glass_page').dialog("close");
+						}
+					});
+				}
+			}
+			function save_path(){
+				let params = new Object;
+
+				params.act = 'save_path';
+				params.id = $("#path_id").val();
+				params.glass_id = $("#glass_id").val();
+
+				params.path_group_id = $("#path_group_id").val();
+				params.path_status = $("#path_status").val();
+				params.sort_n = $("#sort_n").val();
+				
+
+
+				var ready_to_save = 0;
+
+
+				if(ready_to_save == 0) {
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: params,
+						dataType: "json",
+						success: function(data) {
+							$("#path_div").data("kendoGrid").dataSource.read();
+							$('#get_path_page').dialog("close");
 						}
 					});
 				}
