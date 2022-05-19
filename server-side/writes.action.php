@@ -12,7 +12,7 @@ $db = new dbClass();
 
 $act = $_REQUEST['act'];
 
-$user_id = $_SESSION['USERID'];
+$user_id = $_SESSION['user_id'];
 
 
 
