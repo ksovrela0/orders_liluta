@@ -860,7 +860,44 @@ switch ($act){
         $data = $result;
 
     break;
+    case 'get_list_proccess':
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
 
+        $order_id = $_REQUEST['order_id'];
+
+        $db->setQuery(" SELECT	products_glasses.id,
+                                glass_options.name AS option,
+                                glass_type.name AS type,
+                                glass_colors.name AS color,
+                                products_glasses.glass_width,
+                                products_glasses.glass_height,
+                                glasses_paths.pyramid,
+                                CONCAT('<span style=\"padding:5px;', CASE
+                                    WHEN glass_status.id = 1 THEN 'background-color: red;'
+                                    WHEN glass_status.id = 2 THEN 'background-color: yellow;'
+                                    WHEN glass_status.id = 3 THEN 'background-color: green;'
+                                    WHEN glass_status.id = 4 THEN 'background-color: red;'
+                                    WHEN glass_status.id = 5 THEN 'background-color: red;'
+                                END
+                                ,'\">', glass_status.name,'</span>') AS glasses,
+                                '<div id=\"new_glass\">დაწყება</div><div id=\"copy_glass\">დასრულება</div><div id=\"del_glass\"> დახარვეზება</div>' AS act
+                                
+                        FROM 		products_glasses
+                        JOIN		orders_product ON orders_product.id = products_glasses.order_product_id
+                        JOIN		orders ON orders.id = orders_product.order_id
+                        JOIN		glass_options ON glass_options.id = products_glasses.glass_option_id		
+                        JOIN 		glass_type ON glass_type.id = products_glasses.glass_type_id
+                        JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                        JOIN		glasses_paths ON glasses_paths.glass_id = products_glasses.id
+                        JOIN		glass_status ON glass_status.id = products_glasses.status_id
+                        WHERE 	products_glasses.actived = 1
+
+                        GROUP BY products_glasses.id");
+        $result = $db->getKendoList($columnCount, $cols);
+
+        $data = $result;
+        break;
     case 'get_list_product':
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
