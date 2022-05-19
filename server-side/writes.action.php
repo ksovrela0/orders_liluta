@@ -1248,7 +1248,7 @@ function getPathOptions($id){
     $db->setQuery("SELECT   id,
                             name AS 'name'
                     FROM    groups 
-                    WHERE actived = 1");
+                    WHERE actived = 1 AND id != '1'");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
