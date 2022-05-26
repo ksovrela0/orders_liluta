@@ -431,4 +431,9 @@ $(function() {
 			localStorage.setItem("gradient-leftmenu", "false");
 		}
 	});
+
+	$(document).on('click','#withdraw', function(){
+		alert('არასაკმარისი ბალანსი');
+	})
 });
+

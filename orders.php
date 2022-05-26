@@ -1,35 +1,65 @@
-<?php
-   session_start();
-   
-   
-   GLOBAL $db;
-   
-   $db = new dbClass();
-   
-   ?>
-	<!DOCTYPE html>
-	<html>
+<html lang="en">
 
-	<head>
-		<title>შეკვეთები(ოფისი) - liluta</title>
-		<link href="assets/css/kendoUI/kendo.common.min.css" rel="stylesheet" type="text/css" />
-		<link href="assets/css/style.css" rel="stylesheet" type="text/css" />
-		<link href="assets/css/kendoUI/kendo.default.min.css" rel="stylesheet" type="text/css" />
-		<link href="assets/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-		<link href="assets/plugins/jquery-ui/chosen.css" rel="stylesheet" type="text/css" />
-		<script src="assets/plugins/jquery/jquery.min.js"></script>
-		<script type="text/javascript" language="javascript" src="assets/plugins/jquery-ui/chosen.jquery.js"></script>
-		<script type="text/javascript" language="javascript" src="assets/plugins/jquery-ui/jquery-ui.min.js"></script>
-		<script type="text/javascript" language="javascript" src="assets/js/kendoUI/kendo.all.min.js"></script>
-		<script type="text/javascript" language="javascript" src="assets/js/kendoUI/kendo.main.class.js?v=1.2"></script>
-		<script type="text/javascript" language="javascript" src="assets/js/kendoUI/pako_deflate.min.js"></script>
-		<script type="text/javascript" language="javascript" src="assets/js/timepicker.js"></script>
-		<script src="assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-	</head>
+<head>
+	<style data-styles="">
+	ion-icon {
+		visibility: hidden
+	}
+	
+	.hydrated {
+		visibility: inherit
+	}
+	</style>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+	<meta name="description" content="Dashlead -  Admin Panel HTML Dashboard Template">
+	<meta name="author" content="Spruko Technologies Private Limited">
+	<meta name="keywords" content="sales dashboard, admin dashboard, bootstrap 4 admin template, html admin template, admin panel design, admin panel design, bootstrap 4 dashboard, admin panel template, html dashboard template, bootstrap admin panel, sales dashboard design, best sales dashboards, sales performance dashboard, html5 template, dashboard template">
+	<!-- Favicon -->
+	<link rel="icon" href="assets/img/brand/favicon.ico" type="image/x-icon">
+	<!-- Title -->
+	<title>Dashlead - Admin Panel HTML Dashboard Template</title>
+	<!---Fontawesome css-->
+	<?php include('includes/functions.php'); ?>
+	
+	<meta http-equiv="imagetoolbar" content="no">
+	<style type="text/css">
 
-	<body>
-		<style>
-		#ui-datepicker-div {
+	<style type="text/css" media="print">
+	< !-- body {
+		display: none
+	}
+	.k-grid-header th .k-grid-filter {
+		top: 7px!important;
+		right: 0!important;
+	}
+	.k-grid-header .k-header {
+		position: relative!important;
+		vertical-align: middle !important;
+		cursor: default!important;
+		padding: 0!important;
+	}
+	.chosen-container {
+		width: 95% !important;
+	}
+	.badge{
+		width: 100%!important;
+	}
+	.courier_start_order{
+		border: 1px solid black;
+		width: 155px;
+		margin: 0 auto;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		background-color: #74a8f7;
+		color: #fff;
+		border-radius: 10px;
+		font-size: 16px;
+		font-weight: 900;
+		padding: 8px;
+		cursor: pointer;
+	}
+	#ui-datepicker-div {
 			z-index: 999!important;
 		}
 		
@@ -178,18 +208,168 @@
 		.fieldset input {
 			height: 34.14px !important;
 		}
-		</style>
-			<div id="logout">გასვლა</div>
-			<div id="main_div"></div>
-			<div title="შეკვეთა" id="get_edit_page"></div>
-			<div title="შეკვეთა - პროდუქტი" id="get_product_page"></div>
-			<div title="შეკვეთა - პროდუქტი - მინები" id="get_glass_page"></div>
-			<div title="SMS ყველასთან" id="sms_to_all_div"></div>
-			<div title="SMS მონიშნულებთან" id="sms_to_checked_div"></div>
-			<div title="შეკვეთა - პროდუქტი - მინები - პროცესი" id="get_path_page"></div>
-			<br>
+	</style>
+	<!--[if gte IE 5]><frame></frame><![endif]-->
+	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
+</head>
 
-			<script>
+<body class="main-body">
+	
+	<!-- Start Switcher -->
+	<?php include('includes/switcher.php'); ?>
+	<!-- End Switcher -->
+	<!-- Loader -->
+	<div id="global-loader" style="display: none;"> <img src="assets/img/loader.svg" class="loader-img" alt="Loader"> </div>
+	<!-- End Loader -->
+	<!-- Page -->
+	<div class="page">
+		<!-- Sidemenu -->
+		<?php include('includes/menu.php'); ?>
+		<!-- End Sidemenu -->
+		<!-- Main Content-->
+		<div class="main-content side-content pt-0">
+			<!-- Main Header-->
+			<?php include('includes/header.php'); ?>
+			<!-- End Main Header-->
+			<div class="container-fluid">
+				<!-- Page Header -->
+				<div class="page-header">
+					<div>
+						<h2 class="main-content-title tx-24 mg-b-5">შეკვეთბი</h2>
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="#">შეკვეთები</a></li>
+							<li class="breadcrumb-item active" aria-current="page">მიმდინარე შეკვეთები</li>
+						</ol>
+					</div>
+				</div>
+				<!-- End Page Header -->
+				<!-- Row -->
+				<div class="row">
+					<?php
+						
+						/* if(isMobile()){
+							
+							if($_SESSION['GRPID'] == 3){
+								echo '
+									<div id="mobile_courier_orders">
+										
+									</div>';
+							}
+							else{
+								echo '<div id="orders"></div>';
+							}
+						}
+						else{
+							if($_SESSION['GRPID'] == 3){
+								echo '<div id="orders_couriers"></div>';
+							}
+							else{
+								echo '<div id="orders"></div>';
+							}
+							
+						} */
+					?>
+					<div id="main_div"></div>
+				</div>
+				<!-- End Row -->
+			</div>
+		</div>
+		<!-- End Main Content-->
+		<!-- Sidebar -->
+		<div class="sidebar sidebar-right sidebar-animate">
+			<div class="sidebar-icon"> <a href="#" class="text-right float-right text-dark fs-20" data-toggle="sidebar-right" data-target=".sidebar-right"><i class="fe fe-x"></i></a> </div>
+			<div class="sidebar-body">
+				<h5>Todo</h5>
+				<div class="d-flex p-2">
+					<label class="ckbox">
+						<input checked="" type="checkbox"><span>Hangout With friends</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<div class="d-flex p-2 border-top">
+					<label class="ckbox">
+						<input type="checkbox"><span>Prepare for presentation</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<div class="d-flex p-2 border-top">
+					<label class="ckbox">
+						<input type="checkbox"><span>Prepare for presentation</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<div class="d-flex p-2 border-top">
+					<label class="ckbox">
+						<input checked="" type="checkbox"><span>System Updated</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<div class="d-flex p-2 border-top">
+					<label class="ckbox">
+						<input type="checkbox"><span>Do something more</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<div class="d-flex p-2 border-top">
+					<label class="ckbox">
+						<input type="checkbox"><span>System Updated</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<div class="d-flex p-2 border-top">
+					<label class="ckbox">
+						<input type="checkbox"><span>Find an Idea</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<div class="d-flex p-2 border-top mb-4 border-bottom">
+					<label class="ckbox">
+						<input type="checkbox"><span>Project review</span></label> <span class="ml-auto"> <i class="fe fe-edit-2 text-primary mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Edit"></i> <i class="fe fe-trash-2 text-danger mr-2" data-toggle="tooltip" title="" data-placement="top" data-original-title="Delete"></i> </span> </div>
+				<h5>Overview</h5>
+				<div class="p-2">
+					<div class="main-traffic-detail-item">
+						<div> <span>Founder &amp; CEO</span> <span>24</span> </div>
+						<div class="progress">
+							<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" class="progress-bar progress-bar-xs wd-20p" role="progressbar"></div>
+						</div>
+						<!-- progress -->
+					</div>
+					<div class="main-traffic-detail-item">
+						<div> <span>UX Designer</span> <span>1</span> </div>
+						<div class="progress">
+							<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="15" class="progress-bar progress-bar-xs bg-secondary wd-15p" role="progressbar"></div>
+						</div>
+						<!-- progress -->
+					</div>
+					<div class="main-traffic-detail-item">
+						<div> <span>Recruitment</span> <span>87</span> </div>
+						<div class="progress">
+							<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="45" class="progress-bar progress-bar-xs bg-success wd-45p" role="progressbar"></div>
+						</div>
+						<!-- progress -->
+					</div>
+					<div class="main-traffic-detail-item">
+						<div> <span>Software Engineer</span> <span>32</span> </div>
+						<div class="progress">
+							<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="25" class="progress-bar progress-bar-xs bg-info wd-25p" role="progressbar"></div>
+						</div>
+						<!-- progress -->
+					</div>
+					<div class="main-traffic-detail-item">
+						<div> <span>Project Manager</span> <span>32</span> </div>
+						<div class="progress">
+							<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="25" class="progress-bar progress-bar-xs bg-danger wd-25p" role="progressbar"></div>
+						</div>
+						<!-- progress -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Sidebar -->
+		<!-- Main Footer-->
+		<div class="main-footer text-center">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12"> <span>Copyright © 2019 <a href="#">Dashlead</a>. Designed by <a href="https://www.spruko.com/">Spruko</a> All rights reserved.</span> </div>
+				</div>
+			</div>
+		</div>
+		<!--End Footer-->
+	</div>
+	<!-- End Page -->
+	<!-- Back-to-top --><a href="#top" id="back-to-top" style="display: none;"><i class="fe fe-arrow-up"></i></a>
+	<!-- Jquery js-->
+	
+	<div class="main-navbar-backdrop"></div>
+	
+	<div title="შეკვეთა" id="get_edit_page"></div>
+	<div title="შეკვეთა - პროდუქტი" id="get_product_page"></div>
+	<div title="შეკვეთა - პროდუქტი - მინები" id="get_glass_page"></div>
+	<div title="SMS ყველასთან" id="sms_to_all_div"></div>
+	<div title="SMS მონიშნულებთან" id="sms_to_checked_div"></div>
+	<div title="შეკვეთა - პროდუქტი - მინები - პროცესი" id="get_path_page"></div>
+		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
+	</div>
+	<script>
 			function GetDate(iname) {
 				$("#" + iname).datepicker({
 					changeMonth: true,
@@ -1047,6 +1227,6 @@
 				}
 			}
 			</script>
-	</body>
+</body>
 
-	</html>
+</html>

@@ -167,7 +167,7 @@ class kendoUI{
 					scale: 0.8
 				},
 				dataSource: this.dataSource,
-				selectable: "single",
+				selectable: "multiple",
 				allowCopy: true,
 				persistSelection: true,
 				//height: 350,
@@ -176,9 +176,7 @@ class kendoUI{
 				pageable: {
 					refresh: true,
 					pageSizes: true,
-					pageSize: 100,
-					buttonCount: 10,
-					pageSizes: [30, 50, 100, 150, 200, 500]
+					buttonCount: 5
 				},
 				// toolbar: this.actButtons,
 				columns: kendoData.columnss,
@@ -200,7 +198,7 @@ class kendoUI{
 					scale: 0.8
 				},
 				dataSource: this.dataSource,
-				selectable: "single",
+				selectable: "multiple",
 				allowCopy: true,
 				persistSelection: true,
 				height: 400,
@@ -209,9 +207,7 @@ class kendoUI{
 				pageable: {
 					refresh: true,
 					pageSizes: true,
-					pageSize: 100,
-					buttonCount: 10,
-					pageSizes: [30, 50, 100, 150, 200, 500]
+					buttonCount: 5
 				},
 				columns: kendoData.columnss,
 				editable: this.editType,
@@ -320,30 +316,24 @@ class kendoUI{
 		});
 	}
 
-	kendoMultiSelector(selectorName, url, action, title, value = 0) {
-		var preSelected = [];
-		if(value != 0){
-			preSelected = value.split(',');
-
-			console.log(preSelected);
-		}
-		$("#" + selectorName).kendoMultiSelect({
-
+	kendoMultiSelector(selectorName, url, action, title){
+		$("#"+selectorName).kendoMultiSelect({
+			
 			placeholder: title,
 			dataTextField: "name",
 			dataValueField: "id",
 			headerTemplate: '<div class="dropdown-header k-widget k-header">' +
-				'<span></span>' +
-				'<span></span>' +
+					'<span></span>' +
+					'<span></span>' +
 				'</div>',
 			footerTemplate: '',
 			itemTemplate: '<span class="k-state-default" style="font-size: 13px">#: data.name #</span>',
-			tagTemplate: '<span>#:data.name#</span>',
+			tagTemplate:  '<span>#:data.name#</span>',
 			dataSource: new kendo.data.DataSource({
 				transport: {
 					read: {
 						dataType: "json",
-						url: url + "?act=" + action,
+						url: url +"?act=" + action,
 					}
 				},
 				schema: {
@@ -354,7 +344,6 @@ class kendoUI{
 					}
 				}
 			}),
-			value: preSelected,
 			height: 300
 		});
 	}

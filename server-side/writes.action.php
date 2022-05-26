@@ -2,7 +2,7 @@
 
 session_start();
 
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 
 include('../db.php');
 
@@ -12,7 +12,7 @@ $db = new dbClass();
 
 $act = $_REQUEST['act'];
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['USERID'];
 
 
 
@@ -60,7 +60,7 @@ switch ($act){
         $user_data = $db->getResultArray();
 
         if($user_data['count'] > 0){
-            $_SESSION['user_id'] = $user_data['result'][0]['id'];
+            $_SESSION['USERID'] = $user_data['result'][0]['id'];
             $data['status'] = 'OK';
         }
         else{
@@ -73,7 +73,7 @@ switch ($act){
 
         session_destroy();
 
-        unset($_SESSION['user_id']);
+        unset($_SESSION['USERID']);
 
     break;
     case 'get_path_page':
