@@ -189,10 +189,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">ობიექტები</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">საწყობი</h2>
 						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="#">ობიექტები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">ობიექტები</li>
+							<li class="breadcrumb-item"><a href="#">საწყობის მართვგა</a></li>
+							<li class="breadcrumb-item active" aria-current="page">საწყობი</li>
 						</ol>
 					</div>
 				</div>
@@ -290,7 +290,7 @@
 	<!-- Jquery js-->
 	
 	<div class="main-navbar-backdrop"></div>
-	<div title="ობიექტი" id="get_edit_page">
+	<div title="საწყობი - მიღება" id="get_edit_page">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
@@ -391,28 +391,21 @@
 		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	9;
+		var columnsCount    =	5;
 		var columnsSQL      = 	[
 									"id:string",
 									"name_geo:string",
-									"name_rus:string",
-									"name_eng:string",
+
 									"work_h:string",
 									"phone:string",
-                                    "address:string",
-                                    "size:string",
-                                    "free_delivery:string"
+                                    "address:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
-									"დასახელება GEO",
-									"დასახელება RUS",
-									"დასახელება ENG",
-									"სამუშაო სთ-ები",
-									"ტელეფონი",
-                                    "მისამართი",
-                                    "ზომა",
-                                    "უფასო მიტანა?"
+									"დასახელება",
+									"მარაგში",
+									"კვ. საერთო",
+                                    "კვ. ფასი"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
@@ -436,28 +429,21 @@
 		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	9;
+		var columnsCount    =	5;
 		var columnsSQL      = 	[
 									"id:string",
-									"logo:string",
 									"name_geo:string",
-									"name_rus:string",
-									"name_eng:string",
-									"obj_cat:string",
+
+									"work_h:string",
 									"phone:string",
-                                    "address:string",
-                                    "branch_count:string"
+                                    "address:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
-									"სურათი",
-									"დასახელება GEO",
-									"დასახელება RUS",
-									"დასახელება ENG",
-									"ობიექტის კატეგორია",
-									"ტელეფონი",
-                                    "მისამართი",
-                                    "ფილიალების რ-ბა"
+									"დასახელება",
+									"მარაგში",
+									"კვ. საერთო",
+                                    "კვ. ფასი"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 

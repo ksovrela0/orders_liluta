@@ -237,47 +237,33 @@ function getPage($res = ''){
         <legend>ინფორმაცია</legend>
         <div class="row">
             <div class="col-sm-4">
-                <label>დასახელება GEO</label>
+                <label>დასახელება</label>
                 <input value="'.$res[name_geo].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="title_geo" class="idle" autocomplete="off">
-            </div>
-            <div class="col-sm-4">
-                <label>დასახელება RUS</label>
-                <input value="'.$res[name_rus].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="title_rus" class="idle" autocomplete="off">
-            </div>
-            <div class="col-sm-4">
-                <label>დასახელება ENG</label>
-                <input value="'.$res[name_eng].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="title_eng" class="idle" autocomplete="off">
-            </div>
-            <div class="col-sm-4">
-                <label>კატეგორია</label>
-                <select id="poduct_category">'.get_cat_1($res[category]).'</select>
-            </div>
-            <div class="col-sm-4">
-                <label>ტელეფონი</label>
-                <input value="'.$res[phone].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="phone" class="idle" autocomplete="off">
-            </div>
-            <div class="col-sm-4">
-                <label>მისამართი</label>
-                <input value="'.$res[address].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="address" class="idle" autocomplete="off">
             </div>
 
             <div class="col-sm-4">
-                <label>username</label>
-                <input value="'.$res[username].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="username" class="idle" autocomplete="off">
+                <label>რაოდენობა</label>
+                <input value="'.$res[phone].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="phone" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4">
-                <label>პაროლი</label>
-                <input value="'.$res[password].'" data-nec="0" style="height: 18px; width: 95%;" type="password" id="password" class="idle" autocomplete="off">
+                <label>თითო კვადრატული</label>
+                <input value="'.$res[address].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="address" class="idle" autocomplete="off">
             </div>
+            <div class="col-sm-4">
+                <label>ფასი კვადრატული</label>
+                <input value="'.$res[address].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="address" class="idle" autocomplete="off">
+            </div>
+
+            
         </div>
     </fieldset>
-    <fieldset class="fieldset">
+    <fieldset class="fieldset" style="display: none">
         <legend>ფილიალები</legend>
         <div class="col-sm-12">
             <div id="object_branches"></div>
         </div>
     </fieldset>
-    <fieldset class="fieldset" style="display: inline-flex;">
+    <fieldset class="fieldset" style="display: none">
         <legend>სურათი</legend>
         <div class="dialog_image" id="dialog_image_1">
             <img src="http://admin.iten.ge/'.$res[logo].'">
