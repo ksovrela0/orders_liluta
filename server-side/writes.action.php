@@ -23,6 +23,11 @@ switch ($act){
         $all_getters = $db->getResultArray();
         $data = array('page' => getSMSPage($all_getters));
         break;
+    case 'calc_proc_price':
+        $proc_id = $_REQUEST['proc_id'];
+
+        $data = array('page' => getPricePage($proc_id));
+        break;
     case 'start_sms_checked':
         $message = $_REQUEST['sms_text'];
         $checked_ids = $_REQUEST['checked_ids'];
@@ -30,6 +35,22 @@ switch ($act){
                         SELECT DISTINCT CONCAT('995',phone), '$message', 'queue'FROM writings WHERE actived = 1 AND id IN ($checked_ids)");
         $db->execQuery();
 
+        break;
+    case 'get_lameks_data':
+        $glass_id = $_REQUEST['glass_id'];
+        $db->setQuery(" SELECT MAX(glass_height * glass_width) AS m_kv
+                        FROM `products_glasses`
+                        
+                        WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$glass_id')");
+        $max_kv = $db->getResultArray()['result'][0]['m_kv']/10000;
+
+
+        $db->setQuery(" SELECT COUNT(*) AS cc
+                        FROM `products_glasses`
+                        
+                        WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$glass_id')");
+        $cc = $db->getResultArray()['result'][0]['cc'];
+        $data = array("max_kv" => $max_kv, "glass_count" => $cc);
         break;
     case 'get_sms_page_all':
         $db->setQuery("SELECT DISTINCT phone FROM writings WHERE actived = 1");
@@ -517,6 +538,7 @@ switch ($act){
         $path_group_id    = $_REQUEST['path_group_id'];
         $path_status     = $_REQUEST['path_status'];
         $sort_n    = $_REQUEST['sort_n'];
+        $price      = $_REQUEST['price'];
 
         $db->setQuery(" SELECT  COUNT(*) AS cc
                         FROM    glasses_paths
@@ -525,13 +547,12 @@ switch ($act){
 
         if($isset['result'][0]['cc'] == 0){
             $db->setQuery("INSERT INTO glasses_paths SET
-                                                id = '$id',
                                                 user_id='$user_id',
                                                 datetime=NOW(),
                                                 glass_id='$glass_id',
                                                 path_group_id='$path_group_id',
                                                 status_id='$path_status',
-                                                sort_n='$sort_n'");
+                                                price = '$price'");
 
             $db->execQuery();
             $data['error'] = '';
@@ -963,7 +984,7 @@ switch ($act){
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
                         JOIN    glass_status ON glass_status.id = products_glasses.status_id
-                        LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id
+                        LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1
                         LEFT JOIN groups ON groups.id = glasses_paths.path_group_id
                         LEFT JOIN glass_status AS path_status ON path_status.id = glasses_paths.status_id
                         WHERE   products_glasses.actived = 1 AND products_glasses.order_product_id = '$product_id'
@@ -983,7 +1004,8 @@ switch ($act){
 
         $db->setQuery(" SELECT  glasses_paths.id,
                                 groups.name,
-                                glasses_paths.sort_n,
+                                ROW_NUMBER() OVER () AS sort_n,
+                                glasses_paths.price,
                                 CONCAT('<span style=\"padding:5px;', CASE
                                     WHEN glass_status.id = 1 THEN 'background-color: red;'
                                     WHEN glass_status.id = 2 THEN 'background-color: yellow;'
@@ -997,7 +1019,7 @@ switch ($act){
                         JOIN    groups ON groups.id = glasses_paths.path_group_id
                         JOIN    glass_status ON glass_status.id = glasses_paths.status_id
                         WHERE   glasses_paths.actived = 1 AND glasses_paths.glass_id = '$glass_id'
-                        ORDER BY glasses_paths.sort_n ASC");
+                        ORDER BY glasses_paths.id ASC");
 
 
         $result = $db->getKendoList($columnCount, $cols);
@@ -1114,11 +1136,31 @@ function getGlassPage($id, $res = ''){
                                     '.getGlassStatusOptions($res['status_id']).'
                                 </select>
                             </div>
-                            <div style="margin-top: 16px;" class="col-sm-12">
-                                <div id="path_div"></div>
-                            </div>
+                           
                         </div>
                     </legend>
+                </fieldset>
+                <fieldset class="fieldset">
+                    <legend>პროცესი</legend>
+                    <div class="row" style="    flex-direction: row;
+                    justify-content: space-around;">';
+                        $db->setQuery("SELECT   id,name
+                                        FROM groups
+                                        WHERE actived = 1 AND id NOT IN (1)");
+                        $rows = $db->getResultArray()['result'];
+
+                        foreach($rows AS $row){
+                            $data .= '<div class="proccess" data-id="'.$row[id].'">
+                                        <span>'.$row[name].'</span>
+                                    </div>';
+                        }
+                        
+                        
+                    $data .= '
+                    <div style="margin-top: 16px;" class="col-sm-12">
+                        <div id="path_div"></div>
+                    </div>
+                    </div>
                 </fieldset>
 
                 <input type="hidden" id="glass_id" value="'.$id.'">
@@ -1176,6 +1218,52 @@ function getProduct($id){
 
     return $result['result'][0];
     
+}
+function getPricePage($proc_id){
+    GLOBAL $db;
+
+    $data = '   <fieldset class="fieldset">
+                    <legend>ინფორმაცია</legend>
+                        <div class="row">';
+                            if($proc_id == 4){
+                                $data .= '  <div class="col-sm-6">
+                                                <label>ნახვრეტების რაოდენობა</label>
+                                                <input type="tel" min="1" id="holes">
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>1 ნახვრეტის ფასი</label>
+                                                <input type="number" step=".01" value="5" id="hole_price">
+                                            </div>';
+                            }
+                            if($proc_id == 3){
+                                $data .= '  <div class="col-sm-12">
+                                                <label>ფასი მეტრობით</label>
+                                                <input type="number" step=".01" value="20" id="kv_price">
+                                            </div>';
+                            }
+                            if($proc_id == 5){
+                                $data .= '  <div class="col-sm-12">
+                                                <label>კვადრატულის ფასი</label>
+                                                <input type="number" step=".01" value="20" id="kv_price">
+                                            </div>';
+                            }
+                            if($proc_id == 6 or $proc_id == 7){
+                                $data .= '  <div class="col-sm-12">
+                                                <label>კვადრატულის ფასი</label>
+                                                <input type="number" step=".01" value="20" id="kv_price">
+                                            </div>';
+                            }
+                            
+
+                        $data .= '</div>
+                    </legend>
+                </fieldset>
+
+                <input type="hidden" id="proc_id" value="'.$proc_id.'">
+
+                ';
+
+    return $data;
 }
 function getProductPage($id, $res = ''){
     GLOBAL $db;

@@ -208,6 +208,15 @@
 		.fieldset input {
 			height: 34.14px !important;
 		}
+		.proccess{
+			border: 1px solid;
+			padding: 4px;
+			cursor: pointer;
+			transition: 0.5s;
+		}
+		.proccess:hover{
+			background-color: grey;
+		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -367,6 +376,7 @@
 	<div title="SMS ყველასთან" id="sms_to_all_div"></div>
 	<div title="SMS მონიშნულებთან" id="sms_to_checked_div"></div>
 	<div title="შეკვეთა - პროდუქტი - მინები - პროცესი" id="get_path_page"></div>
+	<div title="პროცესის ფასი" id="get_price_page"></div>
 		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
 	</div>
 	<script>
@@ -501,12 +511,12 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'path_div';
-				var actions = '<div id="new_path">დამატება</div><div id="del_path"> წაშლა</div>';
+				var actions = '<div id="del_path"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 4;
-				var columnsSQL = ["id2:string", "proccess:string", "sort_n:string", "stat:string"];
-				var columnGeoNames = ["ID","პროცესი", "თანმიმდევრობა", "სტატუსი"];
+				var columnsCount = 5;
+				var columnsSQL = ["id2:string", "proccess:string", "sort_n:string", "price:string", "stat:string"];
+				var columnGeoNames = ["ID","პროცესი", "თანმიმდევრობა","ფასი", "სტატუსი"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1226,6 +1236,116 @@
 					});
 				}
 			}
+
+			$(document).on('click', '.proccess', function(){
+				var proc_id = $(this).attr('data-id');
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "calc_proc_price",
+						proc_id: proc_id
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#get_price_page').html(data.page);
+						$("#get_price_page").dialog({
+							resizable: false,
+							height: 300,
+							width: 500,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									let params = new Object;
+										var price_total = 0;
+										params.act = 'save_path';
+										params.id = $("#path_id").val();
+										params.glass_id = $("#glass_id").val();
+
+										params.path_group_id = proc_id;
+										params.path_status = 1;
+										//params.sort_n = $("#sort_n").val();
+										if(proc_id == 4){
+											price_total = $("#holes").val() * $("#hole_price").val()
+										}
+										if(proc_id == 3){
+											price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
+										}
+										if(proc_id == 5){
+											price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
+										}
+										if(proc_id == 6 || proc_id == 7){
+											$.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												async: false,
+												data: {
+													act: "get_lameks_data",
+													glass_id: $("#glass_id").val()
+												},
+												dataType: "json",
+												success: function(data) {
+													price_total = data.max_kv * $("#kv_price").val() * data.glass_count;
+												}
+											});
+										}
+
+										params.price = price_total;
+										var ready_to_save = 0;
+
+
+										if(ready_to_save == 0) {
+											$.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												data: params,
+												dataType: "json",
+												
+												success: function(data) {
+													$("#path_div").data("kendoGrid").dataSource.read();
+													$('#get_price_page').dialog("close");
+												}
+											});
+										}
+								},
+								'დახურვა': function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+					}
+				});
+				
+
+				/* let params = new Object;
+
+				params.act = 'save_path';
+				params.id = $("#path_id").val();
+				params.glass_id = $("#glass_id").val();
+
+				params.path_group_id = proc_id;
+				params.path_status = 1;
+				//params.sort_n = $("#sort_n").val();
+				
+
+
+				var ready_to_save = 0;
+
+
+				if(ready_to_save == 0) {
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: params,
+						dataType: "json",
+						success: function(data) {
+							$("#path_div").data("kendoGrid").dataSource.read();
+							$('#get_path_page').dialog("close");
+						}
+					});
+				} */
+
+			});
 			</script>
 </body>
 
