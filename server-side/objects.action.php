@@ -15,68 +15,54 @@ switch ($act){
         $id = $_REQUEST['id'];
         $data = array('page' => getPage(getObject($id)));
     break;
-    case 'save_object':
-        $id = $_REQUEST['id'];
-        $title_geo = $_REQUEST['title_geo'];
-        $title_rus = $_REQUEST['title_rus'];
-        $title_eng = $_REQUEST['title_eng'];
+    case 'save_warehouse':
+        $id             = $_REQUEST['id'];
+        $glass_cat      = $_REQUEST['glass_cat'];
+        $glass_type     = $_REQUEST['glass_type'];
+        $glass_color    = $_REQUEST['glass_color'];
 
-        $obj_cat = $_REQUEST['obj_cat'];
-        $phone = $_REQUEST['phone'];
-        $address = $_REQUEST['address'];
-        $username = $_REQUEST['username'];
-        $password = $_REQUEST['password'];
+        $glass_qty      = $_REQUEST['glass_qty'];
+        $glass_width    = $_REQUEST['glass_width'];
+        $glass_height   = $_REQUEST['glass_height'];
+        $sqr_price      = $_REQUEST['sqr_price'];
+        $pyramid        = $_REQUEST['pyramid'];
         
         if($id == ''){
-            $db->setQuery(" INSERT INTO  objects 
-                            SET     `name_geo` = \"$title_geo\",
-                                    `name_rus` = \"$title_rus\",
-                                    `name_eng` = \"$title_eng\",
-                                    `object_cat_Id` = '$obj_cat',
-                                    `phone` = '$phone',
-                                    `address` = '$address'");
-            $db->execQuery();
-
-            $db->setQuery("SELECT MAX(id) AS 'id' FROM objects");
-            $inserted_id = $db->getResultArray();
-            $inserted_id = $inserted_id['result'][0]['id'];
-            $password = md5($password);
-            $db->setQuery("INSERT INTO users SET username='$username', password = '$password', datetime=NOW(),group_id = 4,object_id = '$inserted_id'");
+            $db->setQuery(" INSERT INTO  warehouse 
+                            SET     `glass_option_id` = '$glass_cat',
+                                    `glass_type_id` = '$glass_type',
+                                    `glass_color_id` = '$glass_color',
+                                    `qty` = '$glass_qty',
+                                    `glass_width` = '$glass_width',
+                                    `glass_height` = '$glass_height',
+                                    `sqr_price` = '$sqr_price',
+                                    
+                                    `pyramid` = '$pyramid'");
             $db->execQuery();
         }
         else{
-            $db->setQuery(" UPDATE  objects 
-                            SET     `name_geo` = \"$title_geo\",
-                                    `name_rus` = \"$title_rus\",
-                                    `name_eng` = \"$title_eng\",
-                                    `object_cat_Id` = '$obj_cat',
-                                    `phone` = '$phone',
-                                    `address` = '$address'
+            $db->setQuery(" UPDATE  warehouse 
+                            SET     `glass_option_id` = '$glass_cat',
+                                    `glass_type_id` = '$glass_type',
+                                    `glass_color_id` = '$glass_color',
+                                    `qty` = '$glass_qty',
+                                    `glass_width` = '$glass_width',
+                                    `glass_height` = '$glass_height',
+                                    `sqr_price` = '$sqr_price',
+                                    
+                                    `pyramid` = '$pyramid'
                             WHERE   id = '$id'");
             $db->execQuery();
-
-            $db->setQuery(" SELECT  password
-                            FROM    users
-                            WHERE   object_id = '$id'");
-            $pass = $db->getResultArray();
-
-            if($pass['result'][0]['password'] != $password){
-                $password = md5($password);
-                $db->setQuery("UPDATE users SET username = '$username', password = '$password' WHERE object_id = '$id'");
-                $db->execQuery();
-            }
-            else{
-                $db->setQuery("UPDATE users SET username = '$username' WHERE object_id = '$id'");
-                $db->execQuery();
-            }
         }
+
+        $data = array("status" => 1);
     break;
     case 'disable':
         $ids = $_REQUEST['id'];
         $ids = explode(',',$ids);
 
         foreach($ids AS $id){
-            $db->setQuery("UPDATE object_category SET actived = 0 WHERE id = '$id'");
+            $db->setQuery("UPDATE warehouse SET actived = 0 WHERE id = '$id'");
             $db->execQuery();
         }
     break;
@@ -179,20 +165,19 @@ switch ($act){
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
 
-            $db->setQuery(" SELECT  objects.id,
-                                    CONCAT('<img src=\"http://admin.iten.ge/',objects.logo,'\" style=\"height:150px;\">'),
-                                    objects.name_geo,
-                                    objects.name_rus,
-                                    objects.name_eng,
-                                    object_category.name_geo AS 'cat_name',
-                                    objects.phone,
-                                    objects.address,
-                                    COUNT(object_branches.id)
-                        FROM        objects
-                        LEFT JOIN   object_category ON object_category.id = objects.object_cat_id
-                        LEFT JOIN   object_branches ON object_branches.object_id = objects.id
-                        GROUP BY 	objects.id
-                        ORDER BY    objects.id DESC");
+            $db->setQuery(" SELECT warehouse.id,
+                                        glass_options.name,
+                                        glass_type.name AS type,
+                                        glass_colors.name AS color,
+                                        warehouse.qty,
+                                        CONCAT(warehouse.glass_width, 'სმ X ',warehouse.glass_height, 'სმ' ),
+                                        warehouse.sqr_price,
+                                        warehouse.pyramid
+                            FROM warehouse
+                            JOIN glass_options ON glass_options.id = warehouse.glass_option_id
+                            JOIN glass_type ON glass_type.id = warehouse.glass_type_id
+                            JOIN glass_colors ON glass_colors.id = warehouse.glass_color_id
+                            WHERE warehouse.actived = 1");
 
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
@@ -237,55 +222,105 @@ function getPage($res = ''){
         <legend>ინფორმაცია</legend>
         <div class="row">
             <div class="col-sm-4">
-                <label>დასახელება</label>
-                <input value="'.$res[name_geo].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="title_geo" class="idle" autocomplete="off">
+                <label>აირჩიეთ შუშა</label>
+                <select id="selected_glass_cat_id">
+                    '.getGlassOptions($res['glass_option_id']).'
+                </select>
+            </div>
+
+            <div class="col-sm-4">
+                <label>აირჩიეთ ტიპი</label>
+                <select id="selected_glass_type_id">
+                    '.getGlassTypeOptions($res['glass_type_id']).'
+                </select>
+            </div>
+            <div class="col-sm-4">
+                <label>აირჩიეთ ფერი</label>
+                <select id="selected_glass_color_id">
+                    '.getGlassColorOptions($res['glass_color_id']).'
+                </select>
             </div>
 
             <div class="col-sm-4">
                 <label>რაოდენობა</label>
-                <input value="'.$res[phone].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="phone" class="idle" autocomplete="off">
+                <input value="'.$res['qty'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="glass_qty" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4">
-                <label>თითო კვადრატული</label>
-                <input value="'.$res[address].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="address" class="idle" autocomplete="off">
+                <label>თითოს ზომა (სიგრძეXსიგანე)</label>
+                <div class="row">
+                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_width" value="'.$res['glass_width'].'"></div>
+                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_height" value="'.$res['glass_height'].'"></div>
+                </div>
             </div>
             <div class="col-sm-4">
                 <label>ფასი კვადრატული</label>
-                <input value="'.$res[address].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="address" class="idle" autocomplete="off">
+                <input value="'.$res['sqr_price'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="sqr_price" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4">
+                <label>პირამიდის ნომერი</label>
+                <input value="'.$res['pyramid'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="pyramid" class="idle" autocomplete="off">
             </div>
 
             
         </div>
     </fieldset>
-    <fieldset class="fieldset" style="display: none">
-        <legend>ფილიალები</legend>
-        <div class="col-sm-12">
-            <div id="object_branches"></div>
-        </div>
-    </fieldset>
-    <fieldset class="fieldset" style="display: none">
-        <legend>სურათი</legend>
-        <div class="dialog_image" id="dialog_image_1">
-            <img src="http://admin.iten.ge/'.$res[logo].'">
-        </div>
-        <p id="upload_img" style="color:blue;text-decoration: underline;cursor: pointer; margin-left:40px;">სურათის შეცვლა</p>
-        <input style="opacity: 0;display:none;" type="file" id="upload_back_img" name="image_upload" autocomplete="off">
-
-        <div class="dialog_image" id="dialog_image_2">
-            <img src="http://admin.iten.ge/'.$res[default_cat_image].'">
-        </div>
-        <p id="upload_img_cat" style="color:blue;text-decoration: underline;cursor: pointer; margin-left:10px;">DEFAULT კატეგორიის შეცვლა</p>
-        <input style="opacity: 0;display:none;" type="file" id="upload_default_cat_img" name="default_cat_upload" autocomplete="off">
-
-        <div class="dialog_image" id="dialog_image_3">
-            <img src="http://admin.iten.ge/'.$res[default_product_image].'">
-        </div>
-        <p id="upload_img_product" style="color:blue;text-decoration: underline;cursor: pointer; margin-left:10px;">DEFAULT პროდუქციის შეცვლა</p>
-        <input style="opacity: 0;display:none;" type="file" id="upload_default_product_img" name="default_product_upload" autocomplete="off">
-    </fieldset>
-    <input type="hidden" id="object_id" value="'.$res[id].'">
+    <input type="hidden" id="warehouse_id" value="'.$res[id].'">
     ';
 
+    return $data;
+}
+function getGlassColorOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_colors
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
+function getGlassTypeOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_type
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
+function getGlassOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_options 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
     return $data;
 }
 function get_cat_1($id){
@@ -311,22 +346,18 @@ function get_cat_1($id){
 function getObject($id){
     GLOBAL $db;
 
-    $db->setQuery(" SELECT      objects.id,
-                                objects.logo,
-                                objects.default_cat_image,
-                                objects.default_product_image,
-                                objects.name_geo,
-                                objects.name_rus,
-                                objects.name_eng,
-                                objects.object_cat_id AS 'category',
-                                objects.phone,
-                                objects.address,
-                                users.username,
-                                users.password
+    $db->setQuery(" SELECT      warehouse.id,
+                                warehouse.glass_option_id,
+                                warehouse.glass_type_id,
+                                warehouse.glass_color_id,
+                                warehouse.qty,
+                                warehouse.sqr_price,
+                                warehouse.pyramid,
+                                warehouse.glass_width,
+                                warehouse.glass_height
 
-                    FROM        objects
-                    LEFT JOIN   users ON users.object_id = objects.id
-                    WHERE       objects.id = '$id'");
+                    FROM        warehouse
+                    WHERE       warehouse.id = '$id'");
     $result = $db->getResultArray();
 
     return $result['result'][0];

@@ -191,7 +191,7 @@
 					<div>
 						<h2 class="main-content-title tx-24 mg-b-5">საწყობი</h2>
 						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="#">საწყობის მართვგა</a></li>
+							<li class="breadcrumb-item"><a href="#">საწყობის მართვა</a></li>
 							<li class="breadcrumb-item active" aria-current="page">საწყობი</li>
 						</ol>
 					</div>
@@ -313,13 +313,11 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-                $("#poduct_category").chosen();
-                var obj_id = "&obj_id="+dItem.id;
-                LoadKendoTable_branches(obj_id);
+                $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id").chosen();
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: "auto",
-					width: 1200,
+					height: 400,
+					width: 900,
 					modal: true,
 					buttons: {
 						"შენახვა": function() {
@@ -343,10 +341,10 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-				$("#poduct_category").chosen();
+				$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id").chosen();
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: "auto",
+					height: 400,
 					width: 900,
 					modal: true,
 					buttons: {
@@ -429,21 +427,27 @@
 		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	5;
+		var columnsCount    =	8;
 		var columnsSQL      = 	[
 									"id:string",
-									"name_geo:string",
+									"glass:string",
 
-									"work_h:string",
-									"phone:string",
-                                    "address:string"
+									"type_glass:string",
+									"glass_color:string",
+                                    "qty:string",
+									"size:string",
+									"price:string",
+									"pyramid:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
-									"დასახელება",
-									"მარაგში",
-									"კვ. საერთო",
-                                    "კვ. ფასი"
+									"შუშა",
+									"ტიპი",
+									"ფერი",
+                                    "დარ.რაოდ",
+									"ზომა",
+									"ფასი კვ.",
+									"პირამიდის #"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
@@ -619,16 +623,16 @@
 	});
 	function save_category(){
 		let params 			= new Object;
-		params.act 			= 'save_object';
-		params.id 			= $("#object_id").val();
-		params.title_geo 	= $("#title_geo").val();
-		params.title_rus 	= $("#title_rus").val();
-		params.title_eng	= $("#title_eng").val();
-		params.obj_cat 		= $("#poduct_category").val();
-		params.phone 		= $("#phone").val();
-		params.address 		= $("#address").val();
-		params.username 	= $("#username").val();
-		params.password 	= $("#password").val();
+		params.act 			= 'save_warehouse';
+		params.id 			= $("#warehouse_id").val();
+		params.glass_cat 	= $("#selected_glass_cat_id").val();
+		params.glass_type 	= $("#selected_glass_type_id").val();
+		params.glass_color	= $("#selected_glass_color_id").val();
+		params.glass_qty 		= $("#glass_qty").val();
+		params.glass_width 		= $("#glass_width").val();
+		params.glass_height 		= $("#glass_height").val();
+		params.sqr_price 	= $("#sqr_price").val();
+		params.pyramid 	= $("#pyramid").val();
 		$.ajax({
 			url: aJaxURL,
 			type: "POST",

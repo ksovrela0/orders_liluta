@@ -1225,6 +1225,12 @@ function getPricePage($proc_id){
     $data = '   <fieldset class="fieldset">
                     <legend>ინფორმაცია</legend>
                         <div class="row">';
+                            if($proc_id == 3){
+                                $data .= '  <div class="col-sm-12">
+                                                <label>ფასი მეტრობით</label>
+                                                <input type="number" step=".01" value="20" id="kv_price">
+                                            </div>';
+                            }
                             if($proc_id == 4){
                                 $data .= '  <div class="col-sm-6">
                                                 <label>ნახვრეტების რაოდენობა</label>
@@ -1235,19 +1241,7 @@ function getPricePage($proc_id){
                                                 <input type="number" step=".01" value="5" id="hole_price">
                                             </div>';
                             }
-                            if($proc_id == 3){
-                                $data .= '  <div class="col-sm-12">
-                                                <label>ფასი მეტრობით</label>
-                                                <input type="number" step=".01" value="20" id="kv_price">
-                                            </div>';
-                            }
-                            if($proc_id == 5){
-                                $data .= '  <div class="col-sm-12">
-                                                <label>კვადრატულის ფასი</label>
-                                                <input type="number" step=".01" value="20" id="kv_price">
-                                            </div>';
-                            }
-                            if($proc_id == 6 or $proc_id == 7){
+                            if($proc_id == 6 or $proc_id == 7 or $proc_id == 5 or $proc_id == 2){
                                 $data .= '  <div class="col-sm-12">
                                                 <label>კვადრატულის ფასი</label>
                                                 <input type="number" step=".01" value="20" id="kv_price">

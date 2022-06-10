@@ -21,7 +21,130 @@
 	<title>Dashlead - Admin Panel HTML Dashboard Template</title>
 	<!---Fontawesome css-->
 	<?php include('includes/functions.php'); ?>
-	
+	<script type="text/javascript">
+	<!--
+	eraf = document.all;
+	dc5b = eraf && !document.getElementById;
+	kics = eraf && document.getElementById;
+	vvw6 = !eraf && document.getElementById;
+	k3zr = document.layers;
+
+	function ka10(aqer) {
+		try {
+			if(dc5b) alert("");
+		} catch(e) {}
+		if(aqer && aqer.stopPropagation) aqer.stopPropagation();
+		return false;
+	}
+
+	function eyav() {
+		if(event.button == 2 || event.button == 3) ka10();
+	}
+
+	function g0fy(e) {
+		return(e.which == 3) ? ka10() : true;
+	}
+
+	function hr0x(bta0) {
+		for(cx54 = 0; cx54 < bta0.images.length; cx54++) {
+			bta0.images[cx54].onmousedown = g0fy;
+		}
+		for(cx54 = 0; cx54 < bta0.layers.length; cx54++) {
+			hr0x(bta0.layers[cx54].document);
+		}
+	}
+
+	function pzuk() {
+		if(dc5b) {
+			for(cx54 = 0; cx54 < document.images.length; cx54++) {
+				document.images[cx54].onmousedown = eyav;
+			}
+		} else if(k3zr) {
+			hr0x(document);
+		}
+	}
+
+	function rqaz(e) {
+		if((kics && event && event.srcElement && event.srcElement.tagName == "IMG") || (vvw6 && e && e.target && e.target.tagName == "IMG")) {
+			return ka10();
+		}
+	}
+	if(kics || vvw6) {
+		document.oncontextmenu = rqaz;
+	} else if(dc5b || k3zr) {
+		window.onload = pzuk;
+	}
+
+	function kzji(e) {
+		artx = e && e.srcElement && e.srcElement != null ? e.srcElement.tagName : "";
+		if(artx != "INPUT" && artx != "TEXTAREA" && artx != "BUTTON") {
+			return false;
+		}
+	}
+
+	function mys2() {
+		return false
+	}
+	if(eraf) {
+		document.onselectstart = kzji;
+		document.ondragstart = mys2;
+	}
+	if(document.addEventListener) {
+		document.addEventListener('copy', function(e) {
+			artx = e.target.tagName;
+			if(artx != "INPUT" && artx != "TEXTAREA") {
+				e.preventDefault();
+			}
+		}, false);
+		document.addEventListener('dragstart', function(e) {
+			e.preventDefault();
+		}, false);
+	}
+
+	function ta6m(evt) {
+		if(evt.preventDefault) {
+			evt.preventDefault();
+		} else {
+			evt.keyCode = 37;
+			evt.returnValue = false;
+		}
+	}
+	var q9vo = 1;
+	var n7zy = 2;
+	var w0mu = 4;
+	var u3jz = new Array();
+	u3jz.push(new Array(n7zy, 65));
+	u3jz.push(new Array(n7zy, 67));
+	u3jz.push(new Array(n7zy, 80));
+	u3jz.push(new Array(n7zy, 83));
+	u3jz.push(new Array(n7zy, 85));
+	u3jz.push(new Array(q9vo | n7zy, 73));
+	u3jz.push(new Array(q9vo | n7zy, 74));
+	u3jz.push(new Array(q9vo, 121));
+	u3jz.push(new Array(0, 123));
+
+	function s8fj(evt) {
+		evt = (evt) ? evt : ((event) ? event : null);
+		if(evt) {
+			var jn0n = evt.keyCode;
+			if(!jn0n && evt.charCode) {
+				jn0n = String.fromCharCode(evt.charCode).toUpperCase().charCodeAt(0);
+			}
+			for(var u2ym = 0; u2ym < u3jz.length; u2ym++) {
+				if((evt.shiftKey == ((u3jz[u2ym][0] & q9vo) == q9vo)) && ((evt.ctrlKey | evt.metaKey) == ((u3jz[u2ym][0] & n7zy) == n7zy)) && (evt.altKey == ((u3jz[u2ym][0] & w0mu) == w0mu)) && (jn0n == u3jz[u2ym][1] || u3jz[u2ym][1] == 0)) {
+					ta6m(evt);
+					break;
+				}
+			}
+		}
+	}
+	if(document.addEventListener) {
+		document.addEventListener("keydown", s8fj, true);
+		document.addEventListener("keypress", s8fj, true);
+	} else if(document.attachEvent) {
+		document.attachEvent("onkeydown", s8fj);
+	}
+	</script>
 	<meta http-equiv="imagetoolbar" content="no">
 	<style type="text/css">
 
@@ -39,189 +162,49 @@
 		cursor: default!important;
 		padding: 0!important;
 	}
-	.chosen-container {
-		width: 95% !important;
-	}
-	.badge{
-		width: 100%!important;
-	}
-	.courier_start_order{
-		border: 1px solid black;
-		width: 155px;
-		margin: 0 auto;
-		margin-top: 10px;
-		margin-bottom: 10px;
-		background-color: #74a8f7;
-		color: #fff;
-		border-radius: 10px;
-		font-size: 16px;
-		font-weight: 900;
-		padding: 8px;
-		cursor: pointer;
-	}
-	#ui-datepicker-div {
-			z-index: 999!important;
-		}
-		
-		.ui-state-active {
-			background-color: #e00c33!important;
-			color: #fff!important;
-		}
-		
-		.ui-state-highlight {
-			background-color: #ffffff!important;
-			color: #000!important;
-		}
-		
-		.k-grid-header th .k-grid-filter {
-			top: 7px!important;
-			right: 0!important;
-		}
-		
-		.k-grid-header .k-header {
-			position: relative!important;
-			vertical-align: middle !important;
-			cursor: default!important;
-			padding: 0!important;
-		}
-		
-		.k-grid-toolbar {
-			display: flex;
-		}
-		
-		#new_writing, #new_product, #new_glass, #new_path {
+    #new_writing, #new_product, #new_glass, #new_path {
 			border: 1px solid black;
-			width: fit-content;
+			
 			padding: 7px;
-			font-size: 18px;
+			font-size: 14px;
 			color: #fff;
 			background-color: #2aad2e;
 			cursor: pointer;
+            margin: 5px;
 		}
-		
-		#copy_writing, #copy_product, #copy_glass {
+        #copy_writing, #copy_product, #copy_glass {
 			border: 1px solid black;
-			width: fit-content;
+			
 			padding: 7px;
-			font-size: 18px;
+			font-size: 14px;
 			color: #fff;
-			background-color: purple;
+			background-color: #020080;
 			cursor: pointer;
-			margin-left: 20px;
+            margin: 5px;
 		}
 		
 		#del_writing, #del_product, #del_glass, #del_path {
 			border: 1px solid black;
-			width: fit-content;
+			
 			padding: 7px;
-			font-size: 18px;
+			font-size: 14px;
 			color: #fff;
 			background-color: red;
 			cursor: pointer;
-			margin-left: 20px;
-		}
-		
-		.red_dot {
-			width: 100%;
-			height: 20px;
-			background-color: red;
-		}
-		
-		.yellow_dot {
-			width: 100%;
-			height: 20px;
-			background-color: yellow;
-		}
-		
-		.blue_dot {
-			width: 100%;
-			height: 20px;
-			background-color: blue;
-		}
-		
-		.green_dot {
-			width: 100%;
-			height: 20px;
-			background-color: green;
-		}
-		.mid_yellow_dot{
-			width: 100%;
-			height: 20px;
-			background-color: #b2c73f;
-		}
-		.purple_dot {
-			width: 100%;
-			height: 20px;
-			background-color: purple;
-		}
-		
-		#logout {
-			background-color: red;
-			width: fit-content;
-			padding: 5px;
-			font-size: 18px;
-			font-weight: bold;
-			color: #fff;
-			margin: 10px;
-			cursor: pointer;
-		}
-		
-		#leftSMS {
-			background-color: green;
-			width: fit-content;
-			padding: 5px;
-			font-size: 18px;
-			font-weight: bold;
-			color: #fff;
-			margin: 10px;
-		}
-		
-		.k-grid td {
-			word-break: break-word;
-			font-size: 15px;
-		}
-		
-		#sms_to_all {
-			border: 1px solid black;
-			width: fit-content;
-			padding: 7px;
-			font-size: 18px;
-			color: #fff;
-			background-color: #2aad2e;
-			cursor: pointer;
-			margin-left: 320px;
-		}
-		
-		#sms_to_checked {
-			border: 1px solid black;
-			width: fit-content;
-			padding: 7px;
-			font-size: 18px;
-			color: #fff;
-			background-color: #2aad2e;
-			cursor: pointer;
-			margin-left: 20px;
-		}
-		.ui-widget-content{
-			background-color: #fff!important;
-		}
-		.fieldset input {
-			height: 34.14px !important;
-		}
-		.proccess{
-			border: 1px solid;
-			padding: 4px;
-			cursor: pointer;
-			transition: 0.5s;
-		}
-		.proccess:hover{
-			background-color: grey;
+            margin: 5px;
 		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
 </head>
+<?php
+$id =$_REQUEST['id'];
 
+GLOBAL $db;
+
+$db->setQuery("SELECT id,name FROM groups WHERE id = '$id'");
+$proc_data = $db->getResultArray()['result'][0];
+?>
 <body class="main-body">
 	
 	<!-- Start Switcher -->
@@ -244,41 +227,17 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">შეკვეთბი</h2>
+                        <h2 class="main-content-title tx-24 mg-b-5"><?php echo $proc_data['name']; ?></h2>
 						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="#">შეკვეთები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">მიმდინარე შეკვეთები</li>
+							<li class="breadcrumb-item"><a href="#">პროცესები</a></li>
+							<li class="breadcrumb-item active" aria-current="page"><?php echo $proc_data['name']; ?></li>
 						</ol>
 					</div>
 				</div>
 				<!-- End Page Header -->
 				<!-- Row -->
 				<div class="row">
-					<?php
-						
-						/* if(isMobile()){
-							
-							if($_SESSION['GRPID'] == 3){
-								echo '
-									<div id="mobile_courier_orders">
-										
-									</div>';
-							}
-							else{
-								echo '<div id="orders"></div>';
-							}
-						}
-						else{
-							if($_SESSION['GRPID'] == 3){
-								echo '<div id="orders_couriers"></div>';
-							}
-							else{
-								echo '<div id="orders"></div>';
-							}
-							
-						} */
-					?>
-					<div id="main_div"></div>
+                <div id="main_div"></div>
 				</div>
 				<!-- End Row -->
 			</div>
@@ -369,18 +328,11 @@
 	<!-- Jquery js-->
 	
 	<div class="main-navbar-backdrop"></div>
-	
-	<div title="შეკვეთა" id="get_edit_page"></div>
-	<div title="შეკვეთა - პროდუქტი" id="get_product_page"></div>
-	<div title="შეკვეთა - პროდუქტი - მინები" id="get_glass_page"></div>
-	<div title="SMS ყველასთან" id="sms_to_all_div"></div>
-	<div title="SMS მონიშნულებთან" id="sms_to_checked_div"></div>
-	<div title="შეკვეთა - პროდუქტი - მინები - პროცესი" id="get_path_page"></div>
-	<div title="პროცესის ფასი" id="get_price_page"></div>
-		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
+	<div title="საწყობი - მიღება" id="get_edit_page">
+		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
-			function GetDate(iname) {
+	function GetDate(iname) {
 				$("#" + iname).datepicker({
 					changeMonth: true,
 					changeYear: true
@@ -453,12 +405,12 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_div';
-				var actions = '<div id="new_writing">ახალი შეკვეთა</div><div id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';
+				var actions = '';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 11;
+				var columnsCount = 9;
 				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
-				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დასახელება", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი"];
+				var columnGeoNames = ["ID", "მინა", "ტიპი", "ფერი", "სიგრძე", "სიგანე", "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -466,66 +418,10 @@
 				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
-				kendo.loadKendoUI(aJaxURL, 'get_list', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+				kendo.loadKendoUI(aJaxURL, 'get_list_proccess', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
 			}
 
-			function LoadKendoTable_product(hidden) {
-				//KendoUI CLASS CONFIGS BEGIN
-				var aJaxURL = "server-side/writes.action.php";
-				var gridName = 'product_div';
-				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
-				var editType = "popup"; // Two types "popup" and "inline"
-				var itemPerPage = 100;
-				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture:string", "action:string"];
-				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სურათი", "ქმედება"];
-				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
-				//KendoUI CLASS CONFIGS END
-				const kendo = new kendoUI();
-				kendo.loadKendoUI(aJaxURL, 'get_list_product', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
-			}
-			function LoadKendoTable_glass(hidden) {
-				//KendoUI CLASS CONFIGS BEGIN
-				var aJaxURL = "server-side/writes.action.php";
-				var gridName = 'glasses_div';
-				var actions = '<div id="new_glass">დამატება</div><div id="copy_glass">კოპირება</div><div id="del_glass"> წაშლა</div>';
-				var editType = "popup"; // Two types "popup" and "inline"
-				var itemPerPage = 100;
-				var columnsCount = 7;
-				var columnsSQL = ["id:string", "name_product:string", "dimm:string", "type:string", "color:string", "proccess2:string", "status:string"];
-				var columnGeoNames = ["ID კოდი", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი"];
-				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
-				//KendoUI CLASS CONFIGS END
-				const kendo = new kendoUI();
-				kendo.loadKendoUI(aJaxURL, 'get_list_glasses', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
-			}
-			function LoadKendoTable_path(hidden) {
-				//KendoUI CLASS CONFIGS BEGIN
-				var aJaxURL = "server-side/writes.action.php";
-				var gridName = 'path_div';
-				var actions = '<div id="del_path"> წაშლა</div>';
-				var editType = "popup"; // Two types "popup" and "inline"
-				var itemPerPage = 100;
-				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "proccess:string", "sort_n:string", "price:string", "stat:string"];
-				var columnGeoNames = ["ID","პროცესი", "თანმიმდევრობა","ფასი", "სტატუსი"];
-				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
-				//KendoUI CLASS CONFIGS END
-				const kendo = new kendoUI();
-				kendo.loadKendoUI(aJaxURL, 'get_list_glasses_path', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
-			}
+			
             $(document).on('click', '#sms_to_checked', function(){
                 var checked_ids = [];
                 $(".checked_phones:checked").each(function(index, elem){
@@ -918,175 +814,7 @@
 				}
 			});
 			
-			$(document).on("dblclick", "#main_div tr.k-state-selected", function() {
-				var grid = $("#main_div").data("kendoGrid");
-				var dItem = grid.dataItem($(this));
-				if(dItem.id == '') {
-					return false;
-				}
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "get_edit_page",
-						id: dItem.id
-					},
-					dataType: "json",
-					success: function(data) {
-						$('#get_edit_page').html(data.page);
-						$("#personal,#statuses,#cabinet").chosen();
-						$("#order_date").datetimepicker({
-							dateFormat: "yy-mm-dd",
-							timeFormat: "HH:mm:ss"
-						});
-						var kendo = new kendoUI();
-						/* var sex_id = $("input[name='sex_id']:checked").val();
-						$.ajax({
-							url: "server-side/writes.action.php",
-							type: "POST",
-							data: {
-								act: "get_selected_zones",
-								id: dItem.id
-							},
-							dataType: "json",
-							success: function(data) {
-								if(sex_id == 1) {
-									kendo.kendoMultiSelector('zones', 'server-side/writes.action.php', 'get_selected_zones_female', "აირჩით ზონები", data.selectedZones);
-								} else if(sex_id == 2) {
-									kendo.kendoMultiSelector('zones', 'server-side/writes.action.php', 'get_selected_zones_male', "აირჩით ზონები", data.selectedZones);
-								}
-								var multiselect = $("#zones").data("kendoMultiSelect");
-								multiselect.bind("change", reloadImpulses);
-							}
-						}); */
-						var pr = "&order_id="+dItem.id;
-						LoadKendoTable_product(pr);
-						$("#get_edit_page").dialog({
-							resizable: false,
-							height: "auto",
-							width: 1200,
-							modal: true,
-							buttons: {
-								"შენახვა": function() {
-									save_order();
-								},
-								'დახურვა': function() {
-									$(this).dialog("close");
-								}
-							}
-						});
-					}
-				});
-			});
-			$(document).on("dblclick", "#glasses_div tr.k-state-selected", function() {
-				var grid = $("#glasses_div").data("kendoGrid");
-				var dItem = grid.dataItem($(this));
-				if(dItem.id == '') {
-					return false;
-				}
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "get_glass_page",
-						id: dItem.id
-					},
-					dataType: "json",
-					success: function(data) {
-						$('#get_glass_page').html(data.page);
-						var kendo = new kendoUI();
-						var hid = "&glass_id="+dItem.id;
-						LoadKendoTable_path(hid);
-						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status").chosen();
-						$("#get_glass_page").dialog({
-							resizable: false,
-							height: "auto",
-							width: 600,
-							height: 650,
-							modal: true,
-							buttons: {
-								"შენახვა": function() {
-									save_glass();
-								},
-								'დახურვა': function() {
-									$(this).dialog("close");
-								}
-							}
-						});
-					}
-				});
-			});
-			$(document).on("dblclick", "#product_div tr.k-state-selected", function() {
-				var grid = $("#product_div").data("kendoGrid");
-				var dItem = grid.dataItem($(this));
-				if(dItem.id == '') {
-					return false;
-				}
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "get_product_page",
-						id: dItem.id2
-					},
-					dataType: "json",
-					success: function(data) {
-						$('#get_product_page').html(data.page);
-						var kendo = new kendoUI();
-						var pr = "&product_id="+dItem.id2;
-						LoadKendoTable_glass(pr);
-						$("#selected_product_id").chosen();
-						$("#get_product_page").dialog({
-							resizable: false,
-							height: "auto",
-							width: 1100,
-							modal: true,
-							buttons: {
-								"შენახვა": function() {
-									save_product();
-								},
-								'დახურვა': function() {
-									$(this).dialog("close");
-								}
-							}
-						});
-					}
-				});
-			});
-			$(document).on("dblclick", "#path_div tr.k-state-selected", function() {
-				var grid = $("#path_div").data("kendoGrid");
-				var dItem = grid.dataItem($(this));
-				if(dItem.id == '') {
-					return false;
-				}
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "get_path_page",
-						id: dItem.id2
-					},
-					dataType: "json",
-					success: function(data) {
-						$('#get_path_page').html(data.page);
-						$("#path_group_id,#path_status").chosen();
-						$("#get_path_page").dialog({
-							resizable: false,
-							height: 400,
-							width: 900,
-							modal: true,
-							buttons: {
-								"შენახვა": function() {
-									save_path();
-								},
-								'დახურვა': function() {
-									$(this).dialog("close");
-								}
-							}
-						});
-					}
-				});
-			});
+			
 			
 			function reloadImpulses() {
 				$.ajax({
@@ -1236,120 +964,7 @@
 					});
 				}
 			}
-
-			$(document).on('click', '.proccess', function(){
-				var proc_id = $(this).attr('data-id');
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "calc_proc_price",
-						proc_id: proc_id
-					},
-					dataType: "json",
-					success: function(data) {
-						$('#get_price_page').html(data.page);
-						$("#get_price_page").dialog({
-							resizable: false,
-							height: 300,
-							width: 500,
-							modal: true,
-							buttons: {
-								"შენახვა": function() {
-									let params = new Object;
-										var price_total = 0;
-										params.act = 'save_path';
-										params.id = $("#path_id").val();
-										params.glass_id = $("#glass_id").val();
-
-										params.path_group_id = proc_id;
-										params.path_status = 1;
-										//params.sort_n = $("#sort_n").val();
-										if(proc_id == 4){
-											price_total = $("#holes").val() * $("#hole_price").val()
-										}
-										if(proc_id == 3){
-											price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
-										}
-										if(proc_id == 5){
-											price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
-										}
-										if(proc_id == 2){
-											price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
-										}
-										if(proc_id == 6 || proc_id == 7){
-											$.ajax({
-												url: "server-side/writes.action.php",
-												type: "POST",
-												async: false,
-												data: {
-													act: "get_lameks_data",
-													glass_id: $("#glass_id").val()
-												},
-												dataType: "json",
-												success: function(data) {
-													price_total = data.max_kv * $("#kv_price").val() * data.glass_count;
-												}
-											});
-										}
-
-										params.price = price_total;
-										var ready_to_save = 0;
-
-
-										if(ready_to_save == 0) {
-											$.ajax({
-												url: "server-side/writes.action.php",
-												type: "POST",
-												data: params,
-												dataType: "json",
-												
-												success: function(data) {
-													$("#path_div").data("kendoGrid").dataSource.read();
-													$('#get_price_page').dialog("close");
-												}
-											});
-										}
-								},
-								'დახურვა': function() {
-									$(this).dialog("close");
-								}
-							}
-						});
-					}
-				});
-				
-
-				/* let params = new Object;
-
-				params.act = 'save_path';
-				params.id = $("#path_id").val();
-				params.glass_id = $("#glass_id").val();
-
-				params.path_group_id = proc_id;
-				params.path_status = 1;
-				//params.sort_n = $("#sort_n").val();
-				
-
-
-				var ready_to_save = 0;
-
-
-				if(ready_to_save == 0) {
-					$.ajax({
-						url: "server-side/writes.action.php",
-						type: "POST",
-						data: params,
-						dataType: "json",
-						success: function(data) {
-							$("#path_div").data("kendoGrid").dataSource.read();
-							$('#get_path_page').dialog("close");
-						}
-					});
-				} */
-
-			});
-			</script>
+	</script>
 </body>
 
 </html>
