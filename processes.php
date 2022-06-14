@@ -171,6 +171,7 @@
 			background-color: #2aad2e;
 			cursor: pointer;
             margin: 5px;
+			width: fit-content;
 		}
         #copy_writing, #copy_product, #copy_glass {
 			border: 1px solid black;
@@ -181,6 +182,7 @@
 			background-color: #020080;
 			cursor: pointer;
             margin: 5px;
+			width: fit-content;
 		}
 		
 		#del_writing, #del_product, #del_glass, #del_path {
@@ -192,6 +194,7 @@
 			background-color: red;
 			cursor: pointer;
             margin: 5px;
+			width: fit-content;
 		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
@@ -329,9 +332,154 @@ $proc_data = $db->getResultArray()['result'][0];
 	
 	<div class="main-navbar-backdrop"></div>
 	<div title="საწყობი - მიღება" id="get_edit_page">
+	<div title="პროცესის დაწყება" id="proc_start_page"></div>
+	<div title="პროცესის დასრულება" id="proc_finish_page"></div>
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
+		$(document).on('click', '.finish_proc', function(){
+			var id = $(this).attr('data-id');
+			var path_id = $(this).attr('path-id');
+			$.ajax({
+				url: "server-side/writes.action.php",
+				type: "POST",
+				data: {
+					act: "finish_proc",
+					proc_id: <?php echo $id; ?>,
+					path_id: path_id,
+					glass_id: id
+				},
+				dataType: "json",
+				success: function(data) {
+					$('#proc_finish_page').html(data.page);
+						
+					$("#proc_finish_page").dialog({
+						resizable: false,
+						height: "auto",
+						width: 400,
+						modal: true,
+						buttons: {
+							"დასრულება": function() {
+								var pyramid = $("#pyramid_num").val();
+
+								if(pyramid == ''){
+									alert("გთხოვთ შეიყვანეთ პირამიდის ნომერი!!!");
+								}
+								else{
+									$.ajax({
+										url: "server-side/writes.action.php",
+										type: "POST",
+										data: {
+											act: "finish_glass_proc",
+											glass_id: id,
+											path_id: path_id,
+											pyramid: pyramid
+										},
+										dataType: "json",
+										success: function(data) {
+											$("#main_div").data("kendoGrid").dataSource.read();
+											$('#proc_finish_page').dialog("close");
+										}
+									});
+								}
+							}
+						}
+					});
+				}
+			});
+		});
+		$(document).on('click', '.start_proc', function(){
+			var id = $(this).attr('data-id');
+			var path_id = $(this).attr('path-id');
+			$.ajax({
+				url: "server-side/writes.action.php",
+				type: "POST",
+				data: {
+					act: "start_proc",
+					proc_id: <?php echo $id; ?>,
+					glass_id: id
+				},
+				dataType: "json",
+				success: function(data) {
+					$('#proc_start_page').html(data.page);
+						
+					$("#proc_start_page").dialog({
+						resizable: false,
+						height: "auto",
+						width: 600,
+						modal: true,
+						buttons: {
+							"დაწყება": function() {
+								var checked = $(".glass_rate:checked").val()
+								if(typeof checked == 'undefined'){
+									alert("გთხოვთ აირჩიოთ შეფასება!!!");
+								}
+								else if(checked == 0){
+									if (confirm("ნამდვილად გსურთ შეაფასოთ მინა როგორც “ცუდი“? ამ შემთხვევაში მინის დამუშავებას ვერ შეძლებთ ") == true) {
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: {
+												act: "start_glass_proc",
+												glass_id: id,
+												path_id: path_id,
+												glass_rate: checked
+											},
+											dataType: "json",
+											success: function(data) {
+												$("#main_div").data("kendoGrid").dataSource.read();
+												$('#proc_start_page').dialog("close");
+											}
+										});
+									}
+								}
+								else if(checked == 1){
+									if (confirm("ნამდვილად გსურთ შეაფასოთ მინა როგორც “საშუალო“? ამ შემთხვევაში მინის დამუშავებას ვერ შეძლებთ ოფისის საბოლოო გადაწყვეტილებამდე ") == true) {
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: {
+												act: "start_glass_proc",
+												glass_id: id,
+												path_id: path_id,
+												glass_rate: checked
+											},
+											dataType: "json",
+											success: function(data) {
+												$("#main_div").data("kendoGrid").dataSource.read();
+												$('#proc_start_page').dialog("close");
+											}
+										});
+									}
+								}
+								else if(checked == 2){
+									if (confirm("ნამდვილად გსურთ შეაფასოთ მინა როგორც “კარგი“?") == true) {
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: {
+												act: "start_glass_proc",
+												glass_id: id,
+												path_id: path_id,
+												glass_rate: checked
+											},
+											dataType: "json",
+											success: function(data) {
+												$("#main_div").data("kendoGrid").dataSource.read();
+												$('#proc_start_page').dialog("close");
+											}
+										});
+									}
+								}
+							},
+							'დახურვა': function() {
+								$(this).dialog("close");
+							}
+						}
+					});
+				}
+			});
+		});
 	function GetDate(iname) {
 				$("#" + iname).datepicker({
 					changeMonth: true,
@@ -379,7 +527,8 @@ $proc_data = $db->getResultArray()['result'][0];
 			$(document).ready(function() {
 				GetDate('start_date');
 				GetDate('end_date');
-				LoadKendoTable_main();
+				var hid = "&path_id=<?php echo $id; ?>"
+				LoadKendoTable_main(hid);
 				$.ajax({
 					url: "server-side/writes.action.php",
 					type: "POST",
@@ -408,9 +557,9 @@ $proc_data = $db->getResultArray()['result'][0];
 				var actions = '';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 9;
-				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
-				var columnGeoNames = ["ID", "მინა", "ტიპი", "ფერი", "სიგრძე", "სიგანე", "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
+				var columnsCount = 11;
+				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "cliddent_addr:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
+				var columnGeoNames = ["ID", "მინა", "ტიპი", "ფერი", "სიგრძე", "სიგანე", "სურათი", "ინფო", "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -606,39 +755,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					}
 				});
 			});
-			$(document).on('click', '#new_glass', function(){
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "get_glass_page"
-					},
-					dataType: "json",
-					success: function(data) {
-						$('#get_glass_page').html(data.page);
-						var kendo = new kendoUI();
-						var pr = "&glass_id="+$("#glass_id").val();
 
-						LoadKendoTable_path(pr);
-						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status").chosen();
-						$("#get_glass_page").dialog({
-							resizable: false,
-							height: "auto",
-							width: 600,
-							height: 650,
-							modal: true,
-							buttons: {
-								"შენახვა": function() {
-									save_glass();
-								},
-								'დახურვა': function() {
-									$(this).dialog("close");
-								}
-							}
-						});
-					}
-				});
-			});
 			$(document).on('click','#new_path', function(){
 				$.ajax({
 					url: "server-side/writes.action.php",

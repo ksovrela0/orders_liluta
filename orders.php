@@ -377,9 +377,12 @@
 	<div title="SMS მონიშნულებთან" id="sms_to_checked_div"></div>
 	<div title="შეკვეთა - პროდუქტი - მინები - პროცესი" id="get_path_page"></div>
 	<div title="პროცესის ფასი" id="get_price_page"></div>
+
+	<div title="პროცესის ფასი" id="proc_start_page"></div>
 		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
 	</div>
 	<script>
+			
 			function GetDate(iname) {
 				$("#" + iname).datepicker({
 					changeMonth: true,
@@ -1264,9 +1267,11 @@
 
 										params.path_group_id = proc_id;
 										params.path_status = 1;
+										params.holes = $("#holes").val();
+										params.cuts = $("#cuts").val();
 										//params.sort_n = $("#sort_n").val();
 										if(proc_id == 4){
-											price_total = $("#holes").val() * $("#hole_price").val()
+											price_total = ($("#holes").val() * $("#hole_price").val()) + ($("#cuts").val() * $("#cut_price").val())
 										}
 										if(proc_id == 3){
 											price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
