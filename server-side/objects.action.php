@@ -229,7 +229,7 @@ function getPage($res = ''){
             </div>
 
             <div class="col-sm-4">
-                <label>აირჩიეთ ტიპი</label>
+                <label>აირჩიეთ მწარმოებელი</label>
                 <select id="selected_glass_type_id">
                     '.getGlassTypeOptions($res['glass_type_id']).'
                 </select>
