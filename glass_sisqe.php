@@ -189,17 +189,17 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">საწყობი</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">მინის სისქე</h2>
 						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="#">საწყობის მართვა</a></li>
-							<li class="breadcrumb-item active" aria-current="page">საწყობი</li>
+							<li class="breadcrumb-item"><a href="#">პარამეტრები</a></li>
+							<li class="breadcrumb-item active" aria-current="page">მინის სისქე</li>
 						</ol>
 					</div>
 				</div>
 				<!-- End Page Header -->
 				<!-- Row -->
 				<div class="row">
-					<div id="product_categories"></div>
+					<div style="width:500px;" id="product_categories"></div>
 				</div>
 				<!-- End Row -->
 			</div>
@@ -290,11 +290,11 @@
 	<!-- Jquery js-->
 	
 	<div class="main-navbar-backdrop"></div>
-	<div title="საწყობი - მიღება" id="get_edit_page">
+	<div title="სისქე" id="get_edit_page">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
-	var aJaxURL = "server-side/objects.action.php";
+	var aJaxURL = "server-side/sisqe.action.php";
 	$(document).on("dblclick", "#product_categories tr.k-state-selected", function () {
 		var grid = $("#product_categories").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
@@ -316,8 +316,8 @@
                 $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_manuf_id").chosen();
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: 400,
-					width: 900,
+					height: 250,
+					width: 600,
 					modal: true,
 					buttons: {
 						"შენახვა": function() {
@@ -344,8 +344,8 @@
 				$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_manuf_id").chosen();
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: 400,
-					width: 900,
+					height: 250,
+					width: 600,
 					modal: true,
 					buttons: {
 						"შენახვა": function() {
@@ -422,33 +422,19 @@
 	function LoadKendoTable_incomming(hidden){
 
 		//KendoUI CLASS CONFIGS BEGIN
-		var aJaxURL	        =   "server-side/objects.action.php";
+		var aJaxURL	        =   "server-side/sisqe.action.php";
 		var gridName        = 	'product_categories';
 		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	9;
+		var columnsCount    =	2;
 		var columnsSQL      = 	[
 									"id:string",
-									"glass:string",
-									"manuf:string",
-									"type_glass:string",
-									"glass_color:string",
-                                    "qty:string",
-									"size:string",
-									"price:string",
-									"pyramid:string"
+									"name:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
-									"შუშა",
-									"მწარმოებელი",
-									"ტიპი",
-									"ფერი",
-                                    "დარ.რაოდ",
-									"ზომა",
-									"ფასი კვ.",
-									"პირამიდის #"
+									"შუშა"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0]; 
@@ -624,17 +610,10 @@
 	});
 	function save_category(){
 		let params 			= new Object;
-		params.act 			= 'save_warehouse';
-		params.id 			= $("#warehouse_id").val();
-		params.glass_cat 	= $("#selected_glass_cat_id").val();
-		params.glass_type 	= $("#selected_glass_type_id").val();
-		params.glass_color	= $("#selected_glass_color_id").val();
-		params.glass_qty 		= $("#glass_qty").val();
-		params.glass_width 		= $("#glass_width").val();
-		params.glass_height 		= $("#glass_height").val();
-		params.sqr_price 	= $("#sqr_price").val();
-		params.pyramid 	= $("#pyramid").val();
-		params.glass_manuf 	= $("#selected_glass_manuf_id").val();
+		params.act 			= 'save_option';
+		params.id 			= $("#option_id").val();
+		params.glass_option 	= $("#glass_option").val();
+		
 		$.ajax({
 			url: aJaxURL,
 			type: "POST",

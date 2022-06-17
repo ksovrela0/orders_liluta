@@ -388,10 +388,47 @@ $proc_data = $db->getResultArray()['result'][0];
 				}
 			});
 		});
+		$(document).on('click', '.del_glass', function(){
+			var id = $(this).attr('data-id');
+			var path_id = $(this).attr('path-id');
+			if (confirm("ნამდვილად გსურთ მინის დახარვეზება?") == true) {
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "start_glass_proc",
+						glass_id: id,
+						path_id: path_id,
+						glass_rate: 0
+					},
+					dataType: "json",
+					success: function(data) {
+						$("#main_div").data("kendoGrid").dataSource.read();
+					}
+				});
+			}
+		})
 		$(document).on('click', '.start_proc', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
-			$.ajax({
+			if (confirm("ნამდვილად გსურთ დაიწყოთ პროცესი?") == true) {
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "start_glass_proc",
+						glass_id: id,
+						path_id: path_id,
+						glass_rate: 2
+					},
+					dataType: "json",
+					success: function(data) {
+						$("#main_div").data("kendoGrid").dataSource.read();
+					}
+				});
+			}
+
+			/* $.ajax({
 				url: "server-side/writes.action.php",
 				type: "POST",
 				data: {
@@ -478,7 +515,7 @@ $proc_data = $db->getResultArray()['result'][0];
 						}
 					});
 				}
-			});
+			}); */
 		});
 	function GetDate(iname) {
 				$("#" + iname).datepicker({
@@ -557,9 +594,9 @@ $proc_data = $db->getResultArray()['result'][0];
 				var actions = '';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 11;
-				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "cliddent_addr:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
-				var columnGeoNames = ["ID", "მინა", "ტიპი", "ფერი", "სიგრძე", "სიგანე", "სურათი", "ინფო", "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
+				var columnsCount = 10;
+				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_phone:string", "client_addr:string", "cliddent_addr:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
+				var columnGeoNames = ["ID", "მინა", "ტიპი", "ფერი", "სიგრძეXსიგანე", "სურათი", "ინფო", "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -863,36 +900,6 @@ $proc_data = $db->getResultArray()['result'][0];
 							dataType: "json",
 							success: function(data) {
 								$("#product_div").data("kendoGrid").dataSource.read();
-							}
-						});
-					}
-					
-				}
-			});
-			$(document).on('click', '#del_glass', function() {
-				var grid = $("#glasses_div").data("kendoGrid");
-				var selectedRows = grid.select();
-				var writing_id;
-				selectedRows.each(function(index, row) {
-					var selectedItem = grid.dataItem(row);
-					writing_id = selectedItem.id;
-				});
-				if(typeof writing_id == 'undefined') {
-					alert('აირჩიეთ მინა!!!');
-				} else {
-					var ask = confirm("ნამდვილად გსურთ მინის წაშლა?");
-					if(ask){
-						$.ajax({
-							url: "server-side/writes.action.php",
-							type: "POST",
-							data: {
-								act: "disable",
-								type: "glass",
-								id: writing_id
-							},
-							dataType: "json",
-							success: function(data) {
-								$("#glasses_div").data("kendoGrid").dataSource.read();
 							}
 						});
 					}

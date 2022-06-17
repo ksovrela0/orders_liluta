@@ -26,6 +26,8 @@ switch ($act){
         $glass_height   = $_REQUEST['glass_height'];
         $sqr_price      = $_REQUEST['sqr_price'];
         $pyramid        = $_REQUEST['pyramid'];
+
+        $glass_manuf        = $_REQUEST['glass_manuf'];
         
         if($id == ''){
             $db->setQuery(" INSERT INTO  warehouse 
@@ -36,7 +38,7 @@ switch ($act){
                                     `glass_width` = '$glass_width',
                                     `glass_height` = '$glass_height',
                                     `sqr_price` = '$sqr_price',
-                                    
+                                    `glass_manuf_id` = '$glass_manuf',
                                     `pyramid` = '$pyramid'");
             $db->execQuery();
         }
@@ -49,12 +51,14 @@ switch ($act){
                                     `glass_width` = '$glass_width',
                                     `glass_height` = '$glass_height',
                                     `sqr_price` = '$sqr_price',
-                                    
+                                    `glass_manuf_id` = '$glass_manuf',
                                     `pyramid` = '$pyramid'
                             WHERE   id = '$id'");
             $db->execQuery();
         }
 
+        $db->setQuery("UPDATE warehouse SET `sqr_price` = '$sqr_price' WHERE `glass_manuf_id` = '$glass_manuf' AND `glass_option_id` = '$glass_cat' AND `glass_type_id` = '$glass_type' AND `glass_color_id` = '$glass_color'");
+        $db->execQuery();
         $data = array("status" => 1);
     break;
     case 'disable':
@@ -167,6 +171,7 @@ switch ($act){
 
             $db->setQuery(" SELECT warehouse.id,
                                         glass_options.name,
+                                        glass_manuf.name,
                                         glass_type.name AS type,
                                         glass_colors.name AS color,
                                         warehouse.qty,
@@ -174,10 +179,12 @@ switch ($act){
                                         warehouse.sqr_price,
                                         warehouse.pyramid
                             FROM warehouse
-                            JOIN glass_options ON glass_options.id = warehouse.glass_option_id
-                            JOIN glass_type ON glass_type.id = warehouse.glass_type_id
-                            JOIN glass_colors ON glass_colors.id = warehouse.glass_color_id
-                            WHERE warehouse.actived = 1");
+                            LEFT JOIN glass_options ON glass_options.id = warehouse.glass_option_id
+                            LEFT JOIN glass_type ON glass_type.id = warehouse.glass_type_id
+                            LEFT JOIN glass_colors ON glass_colors.id = warehouse.glass_color_id
+                            LEFT JOIN glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
+                            WHERE warehouse.actived = 1
+                            GROUP BY warehouse.id");
 
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
@@ -227,9 +234,14 @@ function getPage($res = ''){
                     '.getGlassOptions($res['glass_option_id']).'
                 </select>
             </div>
-
             <div class="col-sm-4">
                 <label>აირჩიეთ მწარმოებელი</label>
+                <select id="selected_glass_manuf_id">
+                    '.getGlassManuf($res['glass_manuf_id']).'
+                </select>
+            </div>
+            <div class="col-sm-4">
+                <label>აირჩიეთ ტიპი</label>
                 <select id="selected_glass_type_id">
                     '.getGlassTypeOptions($res['glass_type_id']).'
                 </select>
@@ -354,12 +366,31 @@ function getObject($id){
                                 warehouse.sqr_price,
                                 warehouse.pyramid,
                                 warehouse.glass_width,
-                                warehouse.glass_height
+                                warehouse.glass_height,
+                                warehouse.glass_manuf_id
 
                     FROM        warehouse
                     WHERE       warehouse.id = '$id'");
     $result = $db->getResultArray();
 
     return $result['result'][0];
+}
+function getGlassManuf($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_manuf
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
 }
 ?>

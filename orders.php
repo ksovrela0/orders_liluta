@@ -671,6 +671,20 @@
 							width: 1200,
 							modal: true,
 							buttons: {
+								"გადათვლა": function() {
+									$.ajax({
+										url: "server-side/writes.action.php",
+										type: "POST",
+										data: {
+											act: "calc_price",
+											order_id: $("#writing_id").val()
+										},
+										dataType: "json",
+										success: function(data) {
+											$("#pay_total").val(data.total_price);
+										}
+									});
+								},
 								"შენახვა": function() {
 									save_order();
 								},
@@ -727,7 +741,7 @@
 						var pr = "&glass_id="+$("#glass_id").val();
 
 						LoadKendoTable_path(pr);
-						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status").chosen();
+						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id").chosen();
 						$("#get_glass_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -970,6 +984,20 @@
 							width: 1200,
 							modal: true,
 							buttons: {
+								"გადათვლა": function() {
+									$.ajax({
+										url: "server-side/writes.action.php",
+										type: "POST",
+										data: {
+											act: "calc_price",
+											order_id: $("#writing_id").val()
+										},
+										dataType: "json",
+										success: function(data) {
+											$("#pay_total").val(data.total_price);
+										}
+									});
+								},
 								"შენახვა": function() {
 									save_order();
 								},
@@ -1000,7 +1028,7 @@
 						var kendo = new kendoUI();
 						var hid = "&glass_id="+dItem.id;
 						LoadKendoTable_path(hid);
-						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status").chosen();
+						$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id").chosen();
 						$("#get_glass_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -1184,12 +1212,12 @@
 				params.act = 'save_glass';
 				params.id = $("#glass_id").val();
 				params.product_id = $("#product_id").val();
-
+				params.order_id = $("#writing_id").val();
 				params.glass_cat = $("#selected_glass_cat_id").val();
 				params.glass_type = $("#selected_glass_type_id").val();
 				params.glass_color = $("#selected_glass_color_id").val();
 				params.glass_status = $("#selected_glass_status").val();
-
+				params.glass_manuf = $("#selected_glass_manuf_id").val();
 				params.glass_width = $("#glass_width").val();
 				params.glass_height = $("#glass_height").val();
 
@@ -1235,8 +1263,23 @@
 						success: function(data) {
 							$("#path_div").data("kendoGrid").dataSource.read();
 							$('#get_path_page').dialog("close");
+
+							$.ajax({
+								url: "server-side/writes.action.php",
+								type: "POST",
+								data: {
+									act: "calc_price",
+									order_id: $("#writing_id").val()
+								},
+								dataType: "json",
+								success: function(data) {
+									$("#pay_total").val(data.total_price);
+								}
+							});
 						}
 					});
+
+					
 				}
 			}
 

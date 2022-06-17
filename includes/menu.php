@@ -26,12 +26,19 @@ $user_gr = $_SESSION['GRPID'];
                     if($item[url] == '#'){
                         $menu_li .= '<li class="nav-label">'.$item[name].'</li>';
                         if($item['id'] == 15){
-                            $db->setQuery(" SELECT  id, 
-                                                    name,
-                                                    (SELECT COUNT(*) FROM glasses_paths WHERE path_group_id = groups.id AND status_id = 2 AND actived = 1) AS cc_active,
-                                                    (SELECT COUNT(*) FROM glasses_paths WHERE path_group_id = groups.id AND status_id = 1 AND actived = 1) AS cc_queue
+                            $db->setQuery(" SELECT  groups.id, 
+                                                                        name,
+                                                                        (SELECT COUNT(*) FROM glasses_paths WHERE path_group_id = groups.id AND status_id = 2 AND actived = 1) AS cc_active,
+                                                                        (SELECT COUNT(*) FROM glasses_paths 
+                                            JOIN products_glasses ON products_glasses.id = glasses_paths.glass_id AND products_glasses.actived = 1
+                                            JOIN orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                                            JOIN orders ON orders.id = orders_product.order_id AND orders.actived = 1 WHERE path_group_id = groups.id AND glasses_paths.status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS pa2 WHERE pa2.glass_id = glasses_paths.glass_id AND pa2.sort_n = glasses_paths.sort_n - 1 LIMIT 1), 3) = 3 AND glasses_paths.actived = 1) AS cc_queue
                                             FROM    groups
-                                            WHERE actived = 1 AND id NOT IN (1)");
+
+
+                                            WHERE groups.actived = 1 AND groups.id NOT IN (1)
+
+                                            GROUP BY groups.id");
                             $processes = $db->getResultArray()['result'];
 
                             foreach($processes AS $group){
