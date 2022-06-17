@@ -258,7 +258,7 @@ function getPage($res = ''){
                 <input value="'.$res['qty'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="glass_qty" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4">
-                <label>თითოს ზომა (სიგრძეXსიგანე)</label>
+                <label>თითოს ზომა (სმ) (სიგრძეXსიგანე) </label>
                 <div class="row">
                     <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_width" value="'.$res['glass_width'].'"></div>
                     <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_height" value="'.$res['glass_height'].'"></div>
