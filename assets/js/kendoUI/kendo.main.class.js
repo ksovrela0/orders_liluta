@@ -90,30 +90,13 @@ class kendoUI{
 
 		var self = this;
 		var onDataBound = (arg) => { 
-			var KendoisLoaded = true;
-			self.getStatus(KendoisLoaded, this.gridName);
-			if(this.gridName == 'kendo_given'){
-				const kendo = new kendoUI();
-				var category_id = $("#dep_project_0").val();
-					$.ajax({
-						url: aJaxURL,
-						data: "act=get_given_result_reason_data&inc_id="+$("#hidden_incomming_call_id").val()+"&directory_type="+category_id,
-						success: function(data) {
-							var given_ids = data.given_ids;
 
-							given_ids.forEach(function(name, index){
-								var given_id = given_ids[index].id;
-								var given_result = given_ids[index].info_result;
-								var given_reason = given_ids[index].result_reason;
-								setTimeout(function(){ 
-									kendo.kendoSelector('results_'+given_id,'server-side/call/incomming.action.php', 'get_given_results', "---",given_result);
-									kendo.kendoSelector('reasons_'+given_id,'server-side/call/incomming.action.php', 'get_given_reasons', "---",given_reason);
-								},300);
-								GetDateTimes('app_time_'+given_id);
-								GetDateTimes('write_time_'+given_id);
-							});
-						}
-					});
+			if(this.gridName == 'product_categories'){
+				var total = 0;
+				$("#product_categories tr[role='row'] td:nth-child(6)").each(function(i, x){
+					total += parseInt($(x).html());
+				})
+				$("#total_glass").html(total);
 			}
 		}
 

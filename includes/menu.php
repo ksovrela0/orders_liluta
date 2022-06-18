@@ -28,7 +28,11 @@ $user_gr = $_SESSION['GRPID'];
                         if($item['id'] == 15){
                             $db->setQuery(" SELECT  groups.id, 
                                                                         name,
-                                                                        (SELECT COUNT(*) FROM glasses_paths WHERE path_group_id = groups.id AND status_id = 2 AND actived = 1) AS cc_active,
+                                                                        (SELECT COUNT(*) FROM glasses_paths
+                                                                                            JOIN products_glasses ON products_glasses.id = glasses_paths.glass_id AND products_glasses.actived = 1
+                                                                                            JOIN orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                                                                                            JOIN orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                                                                         WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1) AS cc_active,
                                                                         (SELECT COUNT(*) FROM glasses_paths 
                                             JOIN products_glasses ON products_glasses.id = glasses_paths.glass_id AND products_glasses.actived = 1
                                             JOIN orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1

@@ -160,7 +160,7 @@
 		position: relative!important;
 		vertical-align: middle !important;
 		cursor: default!important;
-		padding: 0!important;
+		padding: 14px!important;
 	}
     #new_writing, #new_product, #new_glass, #new_path {
 			border: 1px solid black;
@@ -240,7 +240,15 @@ $proc_data = $db->getResultArray()['result'][0];
 				<!-- End Page Header -->
 				<!-- Row -->
 				<div class="row">
-                <div id="main_div"></div>
+				<?php
+					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
+						echo '<div id="main_div_2"></div>';
+					}
+					else{
+						echo '<div id="main_div"></div>';
+					}
+				?>
+                
 				</div>
 				<!-- End Row -->
 			</div>
@@ -565,26 +573,16 @@ $proc_data = $db->getResultArray()['result'][0];
 				GetDate('start_date');
 				GetDate('end_date');
 				var hid = "&path_id=<?php echo $id; ?>"
-				LoadKendoTable_main(hid);
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "count_total_money",
-						start_date: $('#start_date').val(),
-						end_date: $('#end_date').val()
-					},
-					dataType: "json",
-					success: function(data) {
-						var total = data.total + ' GEL';
-						var personal_total = data.personal;
-						$("#money_total").html(total);
-						$("#personal_total").html('');
-						$.each(personal_total, function(i, item) {
-							$("#personal_total").append('<p><b>' + personal_total[i].name + ':</b> ' + personal_total[i].cc + ' GEL</p>');
-						});
+
+				<?php
+					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
+						echo 'LoadKendoTable_main2(hid);';
 					}
-				});
+					else{
+						echo 'LoadKendoTable_main(hid);';
+					}
+				?>
+
 			});
 
 			function LoadKendoTable_main(hidden) {
@@ -597,6 +595,26 @@ $proc_data = $db->getResultArray()['result'][0];
 				var columnsCount = 10;
 				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_phone:string", "client_addr:string", "cliddent_addr:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
 				var columnGeoNames = ["ID", "მინა", "ტიპი", "ფერი", "სიგრძეXსიგანე", "სურათი", "ინფო", "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_proccess', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
+
+			function LoadKendoTable_main2(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'main_div_2';
+				var actions = '';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 7;
+				var columnsSQL = ["product_id:string", "product_glasses:string", "butil:string", "lameks:string", "product_pic:string", "product_status:string", "product_act:string"];
+				var columnGeoNames = ["პრ.ID", "მინები", "ბუტილის ზომა", "ფირი", "სურათი", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR);
 require 'db.php';
 global $db;
 $db      = new dbClass();
@@ -10,13 +11,32 @@ $new_name		= $_REQUEST['newName'];
 $chatID	        = $_REQUEST['chatID'];
 
 $new = $new_name.'.'.$type;
-if($act == 'project_docs'){
+if($act == 'product_img'){
     if (0 < $_FILES['file']['error']) {
         echo 'Error: ' . $_FILES['file']['error'] . '<br>';
     } else {
-        if(move_uploaded_file($_FILES['file']['tmp_name'], 'media/uploads/documents/' . $new_name.'.'.$type))
+        if(move_uploaded_file($_FILES['file']['tmp_name'], 'assets/uploads/' . $new_name.'.'.$type))
         {
-            echo 'uploaded';
+            $product_id = $_REQUEST['product_id'];
+            $db->setQuery(" SELECT  COUNT(*) AS cc
+                            FROM    orders_product
+                            WHERE   id = '$product_id' AND actived = 1");
+            $isset = $db->getResultArray();
+            $pic = "assets/uploads/". $new_name.'.'.$type;
+            if($isset['result'][0]['cc'] == 0){
+                $db->setQuery("INSERT INTO orders_product SET id = '$product_id', picture = '$pic'");
+
+                $db->execQuery();
+            }
+
+            else{
+                $db->setQuery(" UPDATE  orders_product 
+                                SET     picture='$pic'
+                                WHERE   id='$product_id'");
+                $db->execQuery();
+            }
+
+            echo json_encode(array("status" => 'OK', "src" => $pic));
         }
         else{
             echo 'error';

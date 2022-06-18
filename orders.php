@@ -37,7 +37,7 @@
 		position: relative!important;
 		vertical-align: middle !important;
 		cursor: default!important;
-		padding: 0!important;
+		padding: 14px!important;
 	}
 	.chosen-container {
 		width: 95% !important;
@@ -60,7 +60,7 @@
 		cursor: pointer;
 	}
 	#ui-datepicker-div {
-			z-index: 999!important;
+			z-index: 99999999!important;
 		}
 		
 		.ui-state-active {
@@ -456,7 +456,7 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_div';
-				var actions = '<div id="new_writing">ახალი შეკვეთა</div><div id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';
+				var actions = '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 11;
@@ -816,10 +816,10 @@
 			$(document).on('click', '#del_writing', function() {
 				var grid = $("#main_div").data("kendoGrid");
 				var selectedRows = grid.select();
-				var writing_id;
+				var writing_id = [];
 				selectedRows.each(function(index, row) {
 					var selectedItem = grid.dataItem(row);
-					writing_id = selectedItem.id;
+					writing_id.push(selectedItem.id);
 				});
 				if(typeof writing_id == 'undefined') {
 					alert('აირჩიეთ შეკვეთა!!!');
@@ -846,10 +846,10 @@
 			$(document).on('click', '#del_product', function() {
 				var grid = $("#product_div").data("kendoGrid");
 				var selectedRows = grid.select();
-				var writing_id;
+				var writing_id = [];
 				selectedRows.each(function(index, row) {
 					var selectedItem = grid.dataItem(row);
-					writing_id = selectedItem.id2;
+					writing_id.push(selectedItem.id2);
 				});
 				if(typeof writing_id == 'undefined') {
 					alert('აირჩიეთ პროდუქტი!!!');
@@ -876,10 +876,10 @@
 			$(document).on('click', '#del_glass', function() {
 				var grid = $("#glasses_div").data("kendoGrid");
 				var selectedRows = grid.select();
-				var writing_id;
+				var writing_id = [];
 				selectedRows.each(function(index, row) {
 					var selectedItem = grid.dataItem(row);
-					writing_id = selectedItem.id;
+					writing_id.push(selectedItem.id);
 				});
 				if(typeof writing_id == 'undefined') {
 					alert('აირჩიეთ მინა!!!');
@@ -907,10 +907,10 @@
 			$(document).on('click', '#del_path', function() {
 				var grid = $("#path_div").data("kendoGrid");
 				var selectedRows = grid.select();
-				var writing_id;
+				var writing_id = [];
 				selectedRows.each(function(index, row) {
 					var selectedItem = grid.dataItem(row);
-					writing_id = selectedItem.id2;
+					writing_id.push(selectedItem.id2);
 				});
 				if(typeof writing_id == 'undefined') {
 					alert('აირჩიეთ პროცესი!!!');
@@ -1189,6 +1189,9 @@
 				params.order_id = $("#writing_id").val();
 				params.selected_product_id = $("#selected_product_id").val();
 
+				params.butil_size = $("#butil_size").val();
+				params.firi_lameks = $("#firi_lameks").val();
+
 
 				var ready_to_save = 0;
 
@@ -1282,6 +1285,78 @@
 					
 				}
 			}
+			
+			$(document).on('click', '#copy_product', function(){
+				var grid = $("#product_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id = [];
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id.push(selectedItem.id2);
+				});
+				if(typeof writing_id == 'undefined') {
+					alert('აირჩიეთ პროდუქტი!!!');
+				} else {
+					var ask = prompt("რამდენჯერ დაკოპირდეს პროდუქტი?");
+					
+					if(ask > 0){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "copy",
+								type: "product",
+								id: writing_id,
+								qty: ask
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#product_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					else{
+						alert("თქვენ შეიყვანეთ არასწორი რაოდენობა");
+					}
+					
+				}
+			});
+			$(document).on('click', '#copy_glass', function(){
+				var grid = $("#glasses_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id = [];
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id.push(selectedItem.id);
+				});
+				if(typeof writing_id == 'undefined') {
+					alert('აირჩიეთ მინა!!!');
+				} else {
+					var ask = prompt("რამდენჯერ დაკოპირდეს მინა?");
+					
+					if(ask > 0){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "copy",
+								type: "glass",
+								id: writing_id,
+								qty: ask
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#glasses_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					else{
+						alert("თქვენ შეიყვანეთ არასწორი რაოდენობა");
+					}
+					
+				}
+			});
+
 
 			$(document).on('click', '.proccess', function(){
 				var proc_id = $(this).attr('data-id');
@@ -1396,6 +1471,59 @@
 					});
 				} */
 
+			});
+			$(document).on('click', "#upProdImg", function(){
+				$("#product_file").trigger("click");
+			})
+			$(document).on('change','#product_file',function(e){
+				//submit the form here
+				//var name = $(".fileupchat").val();
+				var file_data = $('#product_file').prop('files')[0];
+				var fileName = e.target.files[0].name;
+				var fileNameN = Math.ceil(Math.random()*99999999999);
+				var fileSize = e.target.files[0].size;
+				var fileExt = $(this).val().split('.').pop().toLowerCase();
+				var form_data = new FormData();
+				console.log(file_data)
+				form_data.append('act', 'product_img');
+				form_data.append('file', file_data);
+				form_data.append('ext', fileExt);
+				form_data.append('original', fileName);
+				form_data.append('newName', fileNameN);
+				form_data.append('product_id', $("#product_id").val());
+				var fileExtension = ['jpg','png','gif','jpeg'];
+				if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+				alert("დაუშვებელი ფორმატი!!!  გამოიყენეთ მხოლოდ: "+fileExtension.join(', '));
+				$("#product_file").val('');
+				}
+				else {
+					if(fileSize>20971520) {
+						alert("შეცდომა! ფაილის ზომა 20MB-ზე მეტია!!!");
+						$("#product_file").val('');
+					}
+					else{
+						$.ajax({
+							url: 'up.php', // point to server-side PHP script
+							dataType: 'json',  // what to expect back from the PHP script, if anything
+							cache: false,
+							contentType: false,
+							processData: false,
+							data: form_data,
+							type: 'post',
+							success: function (data) {
+								
+								if(data.status == 'OK'){
+									$("#upProdImg").attr("src", data.src);
+									alert("ფაილი ატვირთულია");
+								}
+								else{
+									alert('ვერ მოხერხდა ფაილის ატვირთვა');
+								}
+							}
+						});
+					}
+				}
+				
 			});
 			</script>
 </body>
