@@ -166,6 +166,48 @@ switch ($act){
             }
         }
         break;
+    case 'save_list_cut':
+        $raw_ids = $_REQUEST['glass_ids'];
+        $glass_ids = explode(',', $_REQUEST['glass_ids']);
+        $list_id = $_REQUEST['list_id'];
+        $order_id = $_REQUEST['order_id'];
+        $product_id = $_REQUEST['product_id'];
+
+        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($raw_ids) AND status_id = 1");
+        $glass_check = $db->getResultArray()['result'][0]['cc'];
+
+        if(count($glass_ids) == $glass_check){
+            $db->setQuery("UPDATE lists_to_cut SET actived = 0 WHERE order_product_id = '$product_id'");
+            $db->execQuery();
+            foreach($glass_ids AS $glass){
+                $db->setQuery("INSERT INTO lists_to_cut SET order_product_id = '$product_id', order_id = '$order_id', list_id = '$list_id', glass_id = '$glass'");
+                $db->execQuery();
+            }
+
+            $data['status'] = 'OK';
+        }
+        else{
+            $data['error'] = 'ერთერთი ან რომელიმე მინა უკვე მზადების პროცესშია, თქვენ ვერ დაიწყებთ ჭრის პროცესს';
+        }
+
+        
+
+
+        break;
+    case 'get_cut_page':
+        $glass_ids = $_REQUEST['ids'];
+
+        $option_id = $_REQUEST['option_id'];
+        $type_id = $_REQUEST['type_id'];
+        $color_id = $_REQUEST['color_id'];
+        $manuf_id = $_REQUEST['manuf_id'];
+
+        $data = array('page' => cutPage($glass_ids, $option_id, $type_id, $color_id, $manuf_id));
+
+        
+
+        
+        break;
     case 'finish_proc':
         $glass_id = $_REQUEST['glass_id'];
         $path_id = $_REQUEST['path_id'];
@@ -1000,7 +1042,7 @@ switch ($act){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => '5%');
 
-					}elseif($columns[$j] == "id2" OR $columns[$j] == "write_date" OR $columns[$j] == "impuls_qty" ){
+					}elseif($columns[$j] == "id2" OR $columns[$j] == "write_date" OR $columns[$j] == "impuls_qty" OR $columns[$j] == "glass_option_id" OR $columns[$j] == "glass_type_id" OR $columns[$j] == "glass_color_id" OR $columns[$j] == "glass_manuf_id" ){
 
 						$g = array('field'=>$columns[$j], 'hidden' => true,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 100);
 
@@ -1347,7 +1389,11 @@ switch ($act){
         $product_id = $_REQUEST['product_id'];
 
         $db->setQuery(" SELECT  products_glasses.id,
-                                glass_options.name,
+                                products_glasses.glass_option_id,
+                                products_glasses.glass_type_id,
+                                products_glasses.glass_color_id,
+                                products_glasses.glass_manuf_id,
+                                CONCAT(glass_options.name, '(',glass_manuf.name,')'),
                                 CONCAT(products_glasses.glass_width, 'სმ X ', products_glasses.glass_height,'სმ'),
                                 glass_type.name,
                                 glass_colors.name,
@@ -1367,13 +1413,16 @@ switch ($act){
                                     WHEN glass_status.id = 4 THEN 'background-color: red;'
                                     WHEN glass_status.id = 5 THEN 'background-color: red;'
                                 END
-                                ,'\">', glass_status.name,'</span>') AS glasses
+                                ,'\">', glass_status.name,'</span>') AS glasses,
+
+                                IFNULL((SELECT list_id FROM lists_to_cut WHERE actived = 1 AND lists_to_cut.order_product_id = products_glasses.order_product_id AND lists_to_cut.glass_id = products_glasses.id), 'არ იჭრება')
 
                         FROM    products_glasses
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
                         JOIN    glass_status ON glass_status.id = products_glasses.status_id
+                        JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
                         LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1
                         LEFT JOIN groups ON groups.id = glasses_paths.path_group_id
                         LEFT JOIN glass_status AS path_status ON path_status.id = glasses_paths.status_id
@@ -1393,6 +1442,7 @@ switch ($act){
         $glass_id = $_REQUEST['glass_id'];
 
         $db->setQuery(" SELECT  glasses_paths.id,
+
                                 groups.name,
                                 ROW_NUMBER() OVER () AS sort_n,
                                 glasses_paths.price,
@@ -1543,7 +1593,7 @@ function getGlassPage($id, $res = ''){
                     justify-content: space-around;">';
                         $db->setQuery("SELECT   id,name
                                         FROM groups
-                                        WHERE actived = 1 AND id NOT IN (1)");
+                                        WHERE actived = 1 AND id NOT IN (1, 2)");
                         $rows = $db->getResultArray()['result'];
 
                         foreach($rows AS $row){
@@ -2075,4 +2125,47 @@ function getCab($id){
 
 }
 
+function cutPage($glass_ids, $option_id, $type_id, $color_id, $manuf_id){
+    GLOBAL $db;
+    
+    $id = implode(',', $glass_ids);
+
+    $data = '   <fieldset class="fieldset">
+                    <legend>ინფორმაცია</legend>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>აირჩიეთ ლისტი</label>
+                                <select id="selected_list_id">
+                                    '.getCutOptions($option_id, $type_id, $color_id, $manuf_id).'
+                                </select>
+                            </div>
+                            
+                        </div>
+                    </legend>
+                </fieldset>
+
+                <input type="hidden" id="glass_ids" value="'.$id.'">';
+
+    return $data;
+}
+
+function getCutOptions($option_id, $type_id, $color_id, $manuf_id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            CONCAT('ზომები: ', warehouse.glass_width, 'სმ X ',warehouse.glass_height, 'სმ, პირამიდა: ', warehouse.pyramid ) AS name
+                    FROM    warehouse
+                    WHERE   actived = 1 AND qty > 0 AND glass_option_id = '$option_id' AND glass_type_id = '$type_id' AND glass_color_id = '$color_id' AND glass_manuf_id = '$manuf_id' ");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+
+    return $data;
+}
 ?>

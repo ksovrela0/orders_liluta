@@ -120,6 +120,17 @@
 			cursor: pointer;
 			margin-left: 20px;
 		}
+
+		#cut_glass{
+			border: 1px solid black;
+			width: fit-content;
+			padding: 7px;
+			font-size: 18px;
+			color: #fff;
+			background-color: #ff00fb;
+			cursor: pointer;
+			margin-left: 20px;
+		}
 		
 		.red_dot {
 			width: 100%;
@@ -379,6 +390,8 @@
 	<div title="პროცესის ფასი" id="get_price_page"></div>
 
 	<div title="პროცესის ფასი" id="proc_start_page"></div>
+
+	<div title="ჭრა!!!" id="get_cut_page"></div>
 		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
 	</div>
 	<script>
@@ -495,16 +508,16 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'glasses_div';
-				var actions = '<div id="new_glass">დამატება</div><div id="copy_glass">კოპირება</div><div id="del_glass"> წაშლა</div>';
+				var actions = '<div id="new_glass">დამატება</div><div id="copy_glass">კოპირება</div><div id="del_glass"> წაშლა</div><div id="cut_glass"> ჭრა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 7;
-				var columnsSQL = ["id:string", "name_product:string", "dimm:string", "type:string", "color:string", "proccess2:string", "status:string"];
-				var columnGeoNames = ["ID კოდი", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი"];
-				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var columnsCount = 12;
+				var columnsSQL = ["id:string","glass_option_id:string","glass_type_id:string","glass_color_id:string","glass_manuf_id:string", "name_product:string", "dimm:string", "type:string", "color:string", "proccess2:string", "status:string", "cut_list:string"];
+				var columnGeoNames = ["ID კოდი","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი", "ლისტი"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
@@ -1525,6 +1538,112 @@
 				}
 				
 			});
+
+			$(document).on("click", "#cut_glass", function(){
+				var grid = $("#glasses_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var glass_ids = [];
+				var option_ids = [];
+				var type_ids = [];
+				var color_ids = [];
+				var manuf_ids = [];
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					glass_ids.push(selectedItem.id);
+					option_ids.push(selectedItem.glass_option_id);
+					type_ids.push(selectedItem.glass_type_id);
+					color_ids.push(selectedItem.glass_color_id);
+					manuf_ids.push(selectedItem.glass_manuf_id);
+				});
+				
+				var allowToCut = 0;
+				if(!allAreEqual(option_ids) || !allAreEqual(type_ids) || !allAreEqual(color_ids) || !allAreEqual(manuf_ids)){
+					allowToCut++;
+				}
+
+				if(glass_ids.length == 0){
+					alert("აირჩიეთ ერთი მინა მაინც!!");
+				}
+				else{
+					if(allowToCut == 0){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "get_cut_page",
+								ids: glass_ids,
+								option_id: option_ids[0],
+								type_id: type_ids[0],
+								color_id: color_ids[0],
+								manuf_id: manuf_ids[0],
+							},
+							dataType: "json",
+							success: function(data) {
+								$('#get_cut_page').html(data.page);
+								var kendo = new kendoUI();
+								/* var pr = "&product_id="+dItem.id2;
+								LoadKendoTable_glass(pr); */
+								$("#selected_list_id").chosen();
+								$("#get_cut_page").dialog({
+									resizable: false,
+									height: 400,
+									width: 800,
+									modal: true,
+									buttons: {
+										"შენახვა": function() {
+											save_cut();
+										},
+										'დახურვა': function() {
+											$(this).dialog("close");
+										}
+									}
+								});
+							}
+						});
+					}
+					else{
+						alert("დასაჭრელად არჩეული მინები არ არიან ერთნაირი ტიპის, ფერის, მწარმოებლის ან სისქის, გთხოვთ აირჩიოთ მხოლოდ მსგავსი მინები");
+					}
+				}
+				
+
+			})
+
+			function allAreEqual(array) {
+				const result = array.every(element => {
+					if (element === array[0]) {
+					return true;
+					}
+				});
+
+				return result;
+			}
+
+			function save_cut(){
+				let params = new Object;
+
+				params.act = 'save_list_cut';
+				params.glass_ids = $("#glass_ids").val();
+				params.list_id = $("#selected_list_id").val();
+				params.product_id = $("#product_id").val();
+				params.order_id = $("#writing_id").val();
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: params,
+					dataType: "json",
+					success: function(data) {
+						if(data.status == 'OK'){
+							$("#glasses_div").data("kendoGrid").dataSource.read();
+							$('#get_cut_page').dialog("close");
+						}else{
+							alert(data.error)
+						}
+						
+					}
+				});
+			}
 			</script>
 </body>
 
