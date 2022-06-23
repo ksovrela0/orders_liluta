@@ -504,6 +504,25 @@
 				const kendo = new kendoUI();
 				kendo.loadKendoUI(aJaxURL, 'get_list_product', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
 			}
+			function LoadKendoTable_otxod(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'otxod_div';
+				var actions = '<div id="new_glass">დამატება</div><div id="del_glass"> წაშლა</div>';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 2;
+				var columnsSQL = ["id:string","otxod:string"];
+				var columnGeoNames = ["ID კოდი","ატხოდის ზომა"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_glasses', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
 			function LoadKendoTable_glass(hidden) {
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
@@ -1581,8 +1600,7 @@
 							success: function(data) {
 								$('#get_cut_page').html(data.page);
 								var kendo = new kendoUI();
-								/* var pr = "&product_id="+dItem.id2;
-								LoadKendoTable_glass(pr); */
+								LoadKendoTable_otxod();
 								$("#selected_list_id").chosen();
 								$("#get_cut_page").dialog({
 									resizable: false,

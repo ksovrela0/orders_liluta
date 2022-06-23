@@ -244,6 +244,9 @@ $proc_data = $db->getResultArray()['result'][0];
 					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
 						echo '<div id="main_div_2"></div>';
 					}
+					else if($proc_data['id'] == 2){
+						echo '<div id="main_cut"></div>';
+					}
 					else{
 						echo '<div id="main_div"></div>';
 					}
@@ -348,53 +351,110 @@ $proc_data = $db->getResultArray()['result'][0];
 		$(document).on('click', '.finish_proc', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
-			$.ajax({
-				url: "server-side/writes.action.php",
-				type: "POST",
-				data: {
-					act: "finish_proc",
-					proc_id: <?php echo $id; ?>,
-					path_id: path_id,
-					glass_id: id
-				},
-				dataType: "json",
-				success: function(data) {
-					$('#proc_finish_page').html(data.page);
-						
-					$("#proc_finish_page").dialog({
-						resizable: false,
-						height: "auto",
-						width: 400,
-						modal: true,
-						buttons: {
-							"დასრულება": function() {
-								var pyramid = $("#pyramid_num").val();
+			var get_path_id = <?php echo $_REQUEST['id']; ?>;
 
-								if(pyramid == ''){
-									alert("გთხოვთ შეიყვანეთ პირამიდის ნომერი!!!");
-								}
-								else{
-									$.ajax({
-										url: "server-side/writes.action.php",
-										type: "POST",
-										data: {
-											act: "finish_glass_proc",
-											glass_id: id,
-											path_id: path_id,
-											pyramid: pyramid
-										},
-										dataType: "json",
-										success: function(data) {
-											$("#main_div").data("kendoGrid").dataSource.read();
-											$('#proc_finish_page').dialog("close");
-										}
-									});
+			if(get_path_id == 2){
+				var product_id = $(this).attr('product-id');
+				var list_id = $(this).attr('list-id');
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "finish_proc",
+						path_id: get_path_id,
+						product_id: product_id,
+						list_id: list_id,
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#proc_finish_page').html(data.page);
+							
+						$("#proc_finish_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 800,
+							modal: true,
+							buttons: {
+								"დასრულება": function() {
+									var pyramid = $("#pyramid_num").val();
+
+									if(pyramid == ''){
+										alert("გთხოვთ შეიყვანეთ პირამიდის ნომერი!!!");
+									}
+									else{
+										// $.ajax({
+										// 	url: "server-side/writes.action.php",
+										// 	type: "POST",
+										// 	data: {
+										// 		act: "finish_glass_proc",
+										// 		glass_id: id,
+										// 		path_id: path_id,
+										// 		pyramid: pyramid
+										// 	},
+										// 	dataType: "json",
+										// 	success: function(data) {
+												$("#main_cut").data("kendoGrid").dataSource.read();
+												$('#proc_finish_page').dialog("close");
+										// 	}
+										// });
+									}
 								}
 							}
-						}
-					});
-				}
-			});
+						});
+					}
+				});
+			}
+			else{
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "finish_proc",
+						proc_id: <?php echo $id; ?>,
+						path_id: path_id,
+						glass_id: id
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#proc_finish_page').html(data.page);
+							
+						$("#proc_finish_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 400,
+							modal: true,
+							buttons: {
+								"დასრულება": function() {
+									var pyramid = $("#pyramid_num").val();
+
+									if(pyramid == ''){
+										alert("გთხოვთ შეიყვანეთ პირამიდის ნომერი!!!");
+									}
+									else{
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: {
+												act: "finish_glass_proc",
+												glass_id: id,
+												path_id: path_id,
+												pyramid: pyramid
+											},
+											dataType: "json",
+											success: function(data) {
+												$("#main_div").data("kendoGrid").dataSource.read();
+												$('#proc_finish_page').dialog("close");
+											}
+										});
+									}
+								}
+							}
+						});
+					}
+				});
+			}
+			
 		});
 		$(document).on('click', '.del_glass', function(){
 			var id = $(this).attr('data-id');
@@ -419,21 +479,47 @@ $proc_data = $db->getResultArray()['result'][0];
 		$(document).on('click', '.start_proc', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
+			var get_path_id = <?php echo $_REQUEST['id']; ?>;
 			if (confirm("ნამდვილად გსურთ დაიწყოთ პროცესი?") == true) {
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "start_glass_proc",
-						glass_id: id,
-						path_id: path_id,
-						glass_rate: 2
-					},
-					dataType: "json",
-					success: function(data) {
-						$("#main_div").data("kendoGrid").dataSource.read();
-					}
-				});
+				if(get_path_id == 2){
+					var product_id = $(this).attr('product-id');
+					var list_id = $(this).attr('list-id');
+
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "start_glass_proc",
+							glass_id: id,
+							path_id: get_path_id,
+							product_id: product_id,
+							list_id: list_id,
+							glass_rate: 2
+						},
+						dataType: "json",
+						success: function(data) {
+							$("#main_cut").data("kendoGrid").dataSource.read();
+						}
+					});
+				}
+				else{
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "start_glass_proc",
+							glass_id: id,
+							path_id: path_id,
+							glass_rate: 2
+						},
+						dataType: "json",
+						success: function(data) {
+							$("#main_div").data("kendoGrid").dataSource.read();
+						}
+					});
+				}
+				
+
 			}
 
 			/* $.ajax({
@@ -578,6 +664,9 @@ $proc_data = $db->getResultArray()['result'][0];
 					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
 						echo 'LoadKendoTable_main2(hid);';
 					}
+					else if($proc_data['id'] == 2){
+						echo 'LoadKendoTable_main3(hid);';
+					}
 					else{
 						echo 'LoadKendoTable_main(hid);';
 					}
@@ -615,6 +704,26 @@ $proc_data = $db->getResultArray()['result'][0];
 				var columnsCount = 7;
 				var columnsSQL = ["product_id:string", "product_glasses:string", "butil:string", "lameks:string", "product_pic:string", "product_status:string", "product_act:string"];
 				var columnGeoNames = ["პრ.ID", "მინები", "ბუტილის ზომა", "ფირი", "სურათი", "სტატუსი", "ქმედება"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_proccess', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
+
+			function LoadKendoTable_main3(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'main_cut';
+				var actions = '';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 4;
+				var columnsSQL = ["list:string", "product_glasses:string", "product_status:string", "product_act:string"];
+				var columnGeoNames = ["ლისტი", "მინები", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
