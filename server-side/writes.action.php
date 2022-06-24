@@ -458,6 +458,9 @@ switch ($act){
             else{
                 $db->setQuery("UPDATE cut_glass SET status_id = 2 WHERE id = '$cut_id' AND actived = 1");
                 $db->execQuery();
+
+                $db->setQuery("UPDATE lists_to_cut SET status_id = 2 WHERE cut_id = '$cut_id' AND actived = 1");
+                $db->execQuery();
     
                 $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glass_id) AS glass_id
                                 FROM    lists_to_cut
