@@ -44,7 +44,7 @@ $user_gr = $_SESSION['GRPID'];
 
                                             GROUP BY groups.id");
                             $processes = $db->getResultArray()['result'];
-
+                            $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=manage_cut"><i class="fe fe-database"></i> ჭრის მართვა</a> </li>';
                             foreach($processes AS $group){
                                 $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label">'.$group[name].' <span style="color: #95952a;">('.$group[cc_active].')</span> <span style="color: red;">('.$group[cc_queue].')</span> </span></a> </li>';
                             }

@@ -527,7 +527,7 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'glasses_div';
-				var actions = '<div id="new_glass">დამატება</div><div id="copy_glass">კოპირება</div><div id="del_glass"> წაშლა</div><div id="cut_glass"> ჭრა</div>';
+				var actions = '<div id="new_glass">დამატება</div><div id="copy_glass">კოპირება</div><div id="del_glass"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 12;

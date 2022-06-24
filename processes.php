@@ -345,6 +345,7 @@ $proc_data = $db->getResultArray()['result'][0];
 	<div title="საწყობი - მიღება" id="get_edit_page">
 	<div title="პროცესის დაწყება" id="proc_start_page"></div>
 	<div title="პროცესის დასრულება" id="proc_finish_page"></div>
+	<div title="პროცესის დახარვეზება" id="proc_error_page"></div>
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
@@ -354,8 +355,7 @@ $proc_data = $db->getResultArray()['result'][0];
 			var get_path_id = <?php echo $_REQUEST['id']; ?>;
 
 			if(get_path_id == 2){
-				var product_id = $(this).attr('product-id');
-				var list_id = $(this).attr('list-id');
+				var cut_id = $(this).attr('cut-id');
 
 				$.ajax({
 					url: "server-side/writes.action.php",
@@ -363,8 +363,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					data: {
 						act: "finish_proc",
 						path_id: get_path_id,
-						product_id: product_id,
-						list_id: list_id,
+						cut_id: cut_id,
 					},
 					dataType: "json",
 					success: function(data) {
@@ -377,27 +376,47 @@ $proc_data = $db->getResultArray()['result'][0];
 							modal: true,
 							buttons: {
 								"დასრულება": function() {
-									var pyramid = $("#pyramid_num").val();
+									var ready_to_save = 0;
+									var url = new Object();
+									url.act = "finish_glass_proc";
+									url['gpyr'] = [];
+									url['apyr'] = [];
+									$(".glass_pyramids").each(function(i, x){
+										if($(x).val() == ''){
+											ready_to_save++;
+										}
+										else{
+											url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+										}
+										
+									})
 
-									if(pyramid == ''){
-										alert("გთხოვთ შეიყვანეთ პირამიდის ნომერი!!!");
+									$(".atxod_pyramids").each(function(i, x){
+										if($(x).val() == ''){
+											ready_to_save++;
+										}
+										else{
+											url['apyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+										}
+									})
+
+									url.path_id = get_path_id;
+									url.cut_id = cut_id;
+
+									if(ready_to_save > 0){
+										alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
 									}
 									else{
-										// $.ajax({
-										// 	url: "server-side/writes.action.php",
-										// 	type: "POST",
-										// 	data: {
-										// 		act: "finish_glass_proc",
-										// 		glass_id: id,
-										// 		path_id: path_id,
-										// 		pyramid: pyramid
-										// 	},
-										// 	dataType: "json",
-										// 	success: function(data) {
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: url,
+											dataType: "json",
+											success: function(data) {
 												$("#main_cut").data("kendoGrid").dataSource.read();
 												$('#proc_finish_page').dialog("close");
-										// 	}
-										// });
+											}
+										});
 									}
 								}
 							}
@@ -459,22 +478,99 @@ $proc_data = $db->getResultArray()['result'][0];
 		$(document).on('click', '.del_glass', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
-			if (confirm("ნამდვილად გსურთ მინის დახარვეზება?") == true) {
+			var get_path_id = <?php echo $_REQUEST['id']; ?>;
+
+			if(get_path_id == 2){
+				var cut_id = $(this).attr('cut-id');
+
 				$.ajax({
 					url: "server-side/writes.action.php",
 					type: "POST",
 					data: {
 						act: "start_glass_proc",
-						glass_id: id,
-						path_id: path_id,
+						path_id: get_path_id,
+						cut_id: cut_id,
 						glass_rate: 0
 					},
 					dataType: "json",
 					success: function(data) {
-						$("#main_div").data("kendoGrid").dataSource.read();
+						$('#proc_error_page').html(data.page);
+							
+						$("#proc_error_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 800,
+							modal: true,
+							buttons: {
+								"დასრულება": function() {
+									alert("დახარვეზებულია!!!")
+									/* var ready_to_save = 0;
+									var url = new Object();
+									url.act = "error_glass_proc";
+									url['gpyr'] = [];
+									url['apyr'] = [];
+									$(".glass_pyramids").each(function(i, x){
+										if($(x).val() == ''){
+											ready_to_save++;
+										}
+										else{
+											url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+										}
+										
+									})
+
+									$(".atxod_pyramids").each(function(i, x){
+										if($(x).val() == ''){
+											ready_to_save++;
+										}
+										else{
+											url['apyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+										}
+									})
+
+									url.path_id = get_path_id;
+									url.cut_id = cut_id;
+
+									if(ready_to_save > 0){
+										alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
+									}
+									else{
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: url,
+											dataType: "json",
+											success: function(data) {
+												$("#main_cut").data("kendoGrid").dataSource.read();
+												$('#proc_error_page').dialog("close");
+											}
+										});
+									} */
+								}
+							}
+						});
 					}
 				});
 			}
+			else{
+				if (confirm("ნამდვილად გსურთ მინის დახარვეზება?") == true) {
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "start_glass_proc",
+							glass_id: id,
+							path_id: path_id,
+							glass_rate: 0
+						},
+						dataType: "json",
+						success: function(data) {
+							$("#main_div").data("kendoGrid").dataSource.read();
+						}
+					});
+				}
+			}
+			
 		})
 		$(document).on('click', '.start_proc', function(){
 			var id = $(this).attr('data-id');
@@ -482,8 +578,7 @@ $proc_data = $db->getResultArray()['result'][0];
 			var get_path_id = <?php echo $_REQUEST['id']; ?>;
 			if (confirm("ნამდვილად გსურთ დაიწყოთ პროცესი?") == true) {
 				if(get_path_id == 2){
-					var product_id = $(this).attr('product-id');
-					var list_id = $(this).attr('list-id');
+					var cut_id = $(this).attr('cut-id');
 
 					$.ajax({
 						url: "server-side/writes.action.php",
@@ -492,8 +587,7 @@ $proc_data = $db->getResultArray()['result'][0];
 							act: "start_glass_proc",
 							glass_id: id,
 							path_id: get_path_id,
-							product_id: product_id,
-							list_id: list_id,
+							cut_id: cut_id,
 							glass_rate: 2
 						},
 						dataType: "json",
