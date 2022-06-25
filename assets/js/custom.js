@@ -437,3 +437,20 @@ $(function() {
 	})
 });
 
+$(document).ready(function(){
+	setInterval(function () {
+		$.ajax({
+			url: "ajax/menu.ajax.php",
+			type: "POST",
+			data: "act=get_count",
+			dataType: "json",
+			success: function (data) {
+				if(typeof data != 'undefined'){
+					data.forEach(function(i, x){
+						$("#proccess_"+i.id).html(i.title+` <span style="color: #95952a;">(`+i.active+`)</span> <span style="color: red;">(`+i.queue+`)</span> `);
+					})
+				}
+			}
+		});
+	}, 5000);
+})

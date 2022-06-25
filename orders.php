@@ -1397,80 +1397,92 @@
 					type: "POST",
 					data: {
 						act: "calc_proc_price",
-						proc_id: proc_id
+						proc_id: proc_id,
+						glass_id:  $("#glass_id").val(),
+						width: $("#glass_width").val(),
+						height: $("#glass_height").val(),
 					},
 					dataType: "json",
 					success: function(data) {
-						$('#get_price_page').html(data.page);
-						$("#get_price_page").dialog({
-							resizable: false,
-							height: 300,
-							width: 500,
-							modal: true,
-							buttons: {
-								"შენახვა": function() {
-									let params = new Object;
-										var price_total = 0;
-										params.act = 'save_path';
-										params.id = $("#path_id").val();
-										params.glass_id = $("#glass_id").val();
+						if(proc_id == 4){
+							$('#get_price_page').html(data.page);
+							$("#get_price_page").dialog({
+								resizable: false,
+								height: 300,
+								width: 500,
+								modal: true,
+								buttons: {
+									"შენახვა": function() {
+										let params = new Object;
+											var price_total = 0;
+											params.act = 'save_path';
+											params.id = $("#path_id").val();
+											params.glass_id = $("#glass_id").val();
 
-										params.path_group_id = proc_id;
-										params.path_status = 1;
-										params.holes = $("#holes").val();
-										params.cuts = $("#cuts").val();
-										//params.sort_n = $("#sort_n").val();
-										if(proc_id == 4){
-											price_total = ($("#holes").val() * $("#hole_price").val()) + ($("#cuts").val() * $("#cut_price").val())
-										}
-										if(proc_id == 3){
-											price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
-										}
-										if(proc_id == 5){
-											price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
-										}
-										if(proc_id == 2){
-											price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
-										}
-										if(proc_id == 6 || proc_id == 7){
-											$.ajax({
-												url: "server-side/writes.action.php",
-												type: "POST",
-												async: false,
-												data: {
-													act: "get_lameks_data",
-													glass_id: $("#glass_id").val()
-												},
-												dataType: "json",
-												success: function(data) {
-													price_total = data.max_kv * $("#kv_price").val() * data.glass_count;
-												}
-											});
-										}
+											params.path_group_id = proc_id;
+											params.path_status = 1;
+											params.holes = $("#holes").val();
+											params.cuts = $("#cuts").val();
+											//params.sort_n = $("#sort_n").val();
+											if(proc_id == 4){
+												price_total = ($("#holes").val() * $("#hole_price").val()) + ($("#cuts").val() * $("#cut_price").val())
+											}
+											if(proc_id == 3){
+												price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
+											}
+											if(proc_id == 5){
+												price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
+											}
+											if(proc_id == 2){
+												price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
+											}
+											if(proc_id == 6 || proc_id == 7){
+												$.ajax({
+													url: "server-side/writes.action.php",
+													type: "POST",
+													async: false,
+													data: {
+														act: "get_lameks_data",
+														glass_id: $("#glass_id").val()
+													},
+													dataType: "json",
+													success: function(data) {
+														price_total = data.max_kv * $("#kv_price").val() * data.glass_count;
+													}
+												});
+											}
 
-										params.price = price_total;
-										var ready_to_save = 0;
+											params.price = price_total;
+											var ready_to_save = 0;
 
 
-										if(ready_to_save == 0) {
-											$.ajax({
-												url: "server-side/writes.action.php",
-												type: "POST",
-												data: params,
-												dataType: "json",
-												
-												success: function(data) {
-													$("#path_div").data("kendoGrid").dataSource.read();
-													$('#get_price_page').dialog("close");
-												}
-											});
-										}
-								},
-								'დახურვა': function() {
-									$(this).dialog("close");
+											if(ready_to_save == 0) {
+												$.ajax({
+													url: "server-side/writes.action.php",
+													type: "POST",
+													data: params,
+													dataType: "json",
+													
+													success: function(data) {
+														$("#path_div").data("kendoGrid").dataSource.read();
+														$('#get_price_page').dialog("close");
+													}
+												});
+											}
+									},
+									'დახურვა': function() {
+										$(this).dialog("close");
+									}
 								}
-							}
-						});
+							});
+						}
+						else{
+							$("#path_div").data("kendoGrid").dataSource.read();
+							$('#get_price_page').dialog("close");
+						}
+						
+
+						
 					}
 				});
 				

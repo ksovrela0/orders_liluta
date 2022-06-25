@@ -410,7 +410,7 @@ switch ($act){
     
             $db->setQuery(" SELECT  path_next.id AS n_path
                             FROM    glasses_paths
-                            JOIN    glasses_paths AS path_next ON path_next.sort_n = glasses_paths.sort_n + 1 AND path_next.glass_id = glasses_paths.glass_id
+                            JOIN    glasses_paths AS path_next ON path_next.sort_n = glasses_paths.sort_n + 1 AND path_next.glass_id = glasses_paths.glass_id AND path_next.actived = 1
                             WHERE   glasses_paths.id = '$path_id'
                             
                             LIMIT 1");
@@ -509,7 +509,49 @@ switch ($act){
     case 'calc_proc_price':
         $proc_id = $_REQUEST['proc_id'];
 
-        $data = array('page' => getPricePage($proc_id));
+        if($proc_id == 4){
+            $data = array('page' => getPricePage($proc_id));
+        }
+        else{
+            $glass_id = $_REQUEST['glass_id'];
+            $width = $_REQUEST['width'];
+            $height = $_REQUEST['height'];
+            $price_total = 0;
+
+
+            $db->setQuery("SELECT default_price
+                            FROM groups
+                            WHERE id = '$proc_id'");
+            $price = $db->getResultArray()['result'][0]['default_price'];
+
+            if($proc_id == 3){
+                $price_total = (($width/100) + ($height/100))*2*$price;
+                
+            }
+            if($proc_id == 5){
+                $price_total = (($width/100) * ($height/100))*$price;
+            }
+            if($proc_id == 2){
+                $price_total = (($width/100) * ($height/100))*$price;
+            }
+
+            $db->setQuery(" SELECT  MAX(sort_n) AS max_sort
+                            FROM    glasses_paths
+                            WHERE   actived = 1 AND glass_id = '$glass_id'");
+            $sort_n = $db->getResultArray()['result'][0]['max_sort']+1;
+            $db->setQuery("INSERT INTO glasses_paths SET
+                                                user_id='$user_id',
+                                                datetime=NOW(),
+                                                glass_id='$glass_id',
+                                                path_group_id='$proc_id',
+                                                status_id=1,
+                                                price = '$price_total',
+                                                sort_n = '$sort_n'");
+
+            $db->execQuery();
+        }
+
+        //$data = array('page' => getPricePage($proc_id));
         break;
     case 'start_sms_checked':
         $message = $_REQUEST['sms_text'];
@@ -1532,10 +1574,14 @@ switch ($act){
 
                                     CONCAT('<a style=\"color:red; font-size: 18px;\" target=\"_blank\" href=\"',orders_product.picture,'\">სურათის გახსნა</a>') AS pic,
                                     CONCAT('ნახვრეტი: 4, ჭრის რაოდენობა:5'),
-                                    IF(IFNULL((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1), 0) != glasses_paths.path_group_id, glasses_paths.pyramid,(SELECT path_2.pyramid FROM glasses_paths AS path_2 WHERE path_2.glass_id = products_glasses.id AND path_2.sort_n = glasses_paths.sort_n - 1 AND actived = 1)),
-                                    
-                                    
                                     CASE
+                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT gp1.pyramid FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1), IFNULL((SELECT pyramid FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1), (SELECT pyramid FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1))), lists_to_cut.pyramid), IF(lists_to_cut.status_id IN (1,2), 'არ დევს პირამიდაზე',lists_to_cut.pyramid))
+                                    
+                                    ELSE IFNULL((SELECT gp1.pyramid FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1), IFNULL((SELECT pyramid FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1), (SELECT pyramid FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))
+                                END AS pyramid,
+                                    
+                                    
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), 3) = 3,CASE
                                     WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) != glasses_paths.path_group_id, '<span style=\"padding:5px;background-color: red;\">რიგში</span>',CONCAT('<span style=\"padding:5px;', CASE
                                                                                                             WHEN glass_status.id = 1 THEN 'background-color: red;'
                                                                                                             WHEN glass_status.id = 2 THEN 'background-color: yellow;'
@@ -1552,9 +1598,9 @@ switch ($act){
                                         WHEN glass_status.id = 5 THEN 'background-color: red;'
                                     END
                                     ,'\">', glass_status.name,'</span>')
-                                    END AS glasses,
-                                    
-                                    CASE
+                                    END,'<span style=\"padding:5px;background-color: red;\">რიგში</span>') AS glasses,
+
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), 3) = 3,CASE
                                         WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"http://assets.stickpng.com/images/580b57fcd9996e24bc43c4f9.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
                                         WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"https://e7.pngegg.com/pngimages/871/200/png-clipart-check-mark-computer-icons-icon-design-complete-angle-logo.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
                                         WHEN glass_status.id = 3 THEN ''
@@ -1562,7 +1608,7 @@ switch ($act){
                                         WHEN glass_status.id = 5 THEN ''
 
 
-                                    END AS acc
+                                    END,'') AS acc
                                     
                                     
                             FROM 		products_glasses
@@ -1573,6 +1619,7 @@ switch ($act){
                             JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
                             JOIN		glasses_paths ON glasses_paths.glass_id = products_glasses.id
                             JOIN		glass_status ON glass_status.id = glasses_paths.status_id
+                            LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
 
                             WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND glasses_paths.actived = 1
 
