@@ -23,7 +23,7 @@ switch ($act){
         <html>
             <body>
                 <style>
-                @page { size: 60mm 65mm }
+                @page { size: 65mm 60mm landscape; }
                 p{
                     margin: 0;
                 }
