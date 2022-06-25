@@ -24,6 +24,9 @@ switch ($act){
             <body>
                 <style>
                 @page { size: 65mm 60mm }
+                p{
+                    margin: 0;
+                }
                 </style>
                 <p>'.$glass['client_name'].'<p>
                 <p>'.$glass['size'].'<p>
