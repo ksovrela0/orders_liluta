@@ -1404,6 +1404,7 @@
 					},
 					dataType: "json",
 					success: function(data) {
+						//asdasd
 						if(proc_id == 4){
 							$('#get_price_page').html(data.page);
 							$("#get_price_page").dialog({
