@@ -27,6 +27,10 @@ switch ($act){
         $sqr_price      = $_REQUEST['sqr_price'];
         $pyramid        = $_REQUEST['pyramid'];
 
+        $marja        = $_REQUEST['marja'];
+        $owner        = $_REQUEST['owner'];
+        $gtype        = $_REQUEST['gtype'];
+
         $glass_manuf        = $_REQUEST['glass_manuf'];
         
         if($id == ''){
@@ -39,6 +43,9 @@ switch ($act){
                                     `glass_height` = '$glass_height',
                                     `sqr_price` = '$sqr_price',
                                     `glass_manuf_id` = '$glass_manuf',
+                                    `marja` = '$marja',
+                                    `owner` = '$owner',
+                                    `gtype` = '$gtype',
                                     `pyramid` = '$pyramid'");
             $db->execQuery();
         }
@@ -52,6 +59,9 @@ switch ($act){
                                     `glass_height` = '$glass_height',
                                     `sqr_price` = '$sqr_price',
                                     `glass_manuf_id` = '$glass_manuf',
+                                    `marja` = '$marja',
+                                    `owner` = '$owner',
+                                    `gtype` = '$gtype',
                                     `pyramid` = '$pyramid'
                             WHERE   id = '$id'");
             $db->execQuery();
@@ -218,6 +228,9 @@ switch ($act){
                                         glass_colors.name AS color,
                                         warehouse.qty,
                                         CONCAT(warehouse.glass_width, 'სმ X ',warehouse.glass_height, 'სმ' ),
+                                        glass_bring.name,
+                                        IF(warehouse.gtype = 1,'ლისტი', 'ატხოდი'),
+                                        CONCAT(warehouse.marja, '%'),
                                         warehouse.sqr_price,
                                         warehouse.pyramid
                             FROM warehouse
@@ -225,6 +238,7 @@ switch ($act){
                             LEFT JOIN glass_type ON glass_type.id = warehouse.glass_type_id
                             LEFT JOIN glass_colors ON glass_colors.id = warehouse.glass_color_id
                             LEFT JOIN glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
+                            LEFT JOIN glass_bring ON glass_bring.id = warehouse.owner
                             WHERE warehouse.actived = 1
                             GROUP BY warehouse.id");
 
@@ -296,6 +310,20 @@ function getPage($res = ''){
             </div>
 
             <div class="col-sm-4">
+                <label>ვინ მოიტანა?</label>
+                <select id="owner">
+                    '.getGlassBringOptions($res['owner']).'
+                </select>
+            </div>
+
+            <div class="col-sm-4">
+                <label>კატეგროია</label>
+                <select id="gtype">
+                    '.getGlassGtype($res['gtype']).'
+                </select>
+            </div>
+
+            <div class="col-sm-4">
                 <label>რაოდენობა</label>
                 <input value="'.$res['qty'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="glass_qty" class="idle" autocomplete="off">
             </div>
@@ -311,6 +339,10 @@ function getPage($res = ''){
                 <input value="'.$res['sqr_price'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="sqr_price" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4">
+                <label>ფასნამატი %</label>
+                <input value="'.$res['marja'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="marja" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4">
                 <label>პირამიდის ნომერი</label>
                 <input value="'.$res['pyramid'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="pyramid" class="idle" autocomplete="off">
             </div>
@@ -321,6 +353,32 @@ function getPage($res = ''){
     <input type="hidden" id="warehouse_id" value="'.$res[id].'">
     ';
 
+    return $data;
+}
+
+function getGlassGtype(){
+    GLOBAL $db;
+    $data = '';
+    $data .= '<option value="1">ლისტი</option>';
+    $data .= '<option value="2">ატხოდი</option>';
+    return $data;
+}
+function getGlassBringOptions(){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_bring
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
     return $data;
 }
 function getGlassColorOptions($id){
@@ -409,6 +467,9 @@ function getObject($id){
                                 warehouse.pyramid,
                                 warehouse.glass_width,
                                 warehouse.glass_height,
+                                warehouse.marja,
+                                warehouse.owner,
+                                warehouse.gtype,
                                 warehouse.glass_manuf_id
 
                     FROM        warehouse
