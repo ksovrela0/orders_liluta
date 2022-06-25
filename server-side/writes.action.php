@@ -1479,7 +1479,7 @@ switch ($act){
         $path_id = $_REQUEST['path_id'];
         if($path_id == 2){
             $db->setQuery("SELECT 		CONCAT('ID: ', warehouse.id, ' ზომები: ', warehouse.glass_width, 'სმ X ',warehouse.glass_height, 'სმ პირამიდა: ', warehouse.pyramid) AS list,
-                                        GROUP_CONCAT(CONCAT('ID: ', products_glasses.id, ' ზომები: ', products_glasses.glass_width, 'სმ X ',products_glasses.glass_height, 'სმ' ) SEPARATOR ', <br>') AS glasses,
+                                        GROUP_CONCAT(CONCAT('ID: ', products_glasses.id, ' ზომები: ', products_glasses.glass_width, 'სმ X ',products_glasses.glass_height, 'სმ -',' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\">დაბეჭდე</span>') SEPARATOR ', <br>') AS glasses,
                                         
                                         CONCAT('<span style=\"padding:5px;', CASE
                                                 WHEN glass_status.id = 1 THEN 'background-color: red;'
@@ -1521,7 +1521,7 @@ switch ($act){
                                         WHEN glass_status.id = 4 THEN 'background-color: red;'
                                         WHEN glass_status.id = 5 THEN 'background-color: red;'
                                     END
-                                    ,'\">', glass_status.name,'</span> ', products_glasses.glass_width,'სმX',products_glasses.glass_height, ' პირამიდა: ', IFNULL(IF(IFNULL((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1), 0) != glasses_paths.path_group_id, glasses_paths.pyramid,(SELECT path_2.pyramid FROM glasses_paths AS path_2 WHERE path_2.glass_id = products_glasses.id AND path_2.sort_n = glasses_paths.sort_n - 1 AND actived = 1)),'')) SEPARATOR ',<br>') AS glasses,
+                                    ,'\">', glass_status.name,'</span> ', products_glasses.glass_width,'სმX',products_glasses.glass_height, ' პირამიდა: ', IFNULL(IF(IFNULL((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1), 0) != glasses_paths.path_group_id, glasses_paths.pyramid,(SELECT path_2.pyramid FROM glasses_paths AS path_2 WHERE path_2.glass_id = products_glasses.id AND path_2.sort_n = glasses_paths.sort_n - 1 AND actived = 1)),''),' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\">დაბეჭდე</span>') SEPARATOR ',<br>') AS glasses,
                                     orders_product.butili,
                                     orders_product.lameqs_int,
                                     CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\">სურათის გახსნა</a>') AS picture,
@@ -1567,7 +1567,7 @@ switch ($act){
         }
         else{
             $db->setQuery(" SELECT	products_glasses.id,
-                                    glass_options.name AS option,
+                                    CONCAT(glass_options.name,' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\">დაბეჭდე</span>') AS option,
                                     glass_type.name AS type,
                                     glass_colors.name AS color,
                                     CONCAT(products_glasses.glass_width,'სმX', products_glasses.glass_height,'სმ') AS param,

@@ -196,6 +196,11 @@
             margin: 5px;
 			width: fit-content;
 		}
+		.print_shtrixkod{
+			color: blue;
+			cursor: pointer;
+			font-size: 17px;
+		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -1309,6 +1314,31 @@ $proc_data = $db->getResultArray()['result'][0];
 					});
 				}
 			}
+
+			$(document).on('click', '.print_shtrixkod', function(){
+				var glass_id = $(this).attr('data-id');
+
+				$.ajax({
+					url: "ajax/print.ajax.php",
+					type: "POST",
+					data: "act=print&glass_id="+glass_id,
+					dataType: "json",
+					success: function (data) {
+						if(typeof data != 'undefined'){
+							var a = window.open('', '', 'height=500, width=500');
+							a.document.write(data.page);
+							a.document.close();
+							setTimeout(function(){
+								a.print();
+							}, 1000)
+							
+						}
+						else{
+							alert('დაფიქსირდა შეცდომა');
+						}
+					}
+				});
+			});
 	</script>
 </body>
 
