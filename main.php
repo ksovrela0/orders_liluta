@@ -527,54 +527,100 @@
                
                <!-- End Row --> <!-- Row--> 
                <div class="row">
-                  <div class="col-sm-12 col-xl-12 col-lg-12">
+                  <div class="col-sm-6 col-xl-6 col-lg-6">
                      <div class="card custom-card">
                         <div class="card-body">
                            <div>
-                              <h6 class="card-title mb-1">გაყიდული პროდუქციის სტატისტიკა</h6>
+                              <h3 class="mb-1">შემოსული პროდუქცია თვეების მიხედვით</h3>
+                           </div>
+                           <div class="table-responsive">
+                              <table class="table table-bordered text-nowrap mb-0">
+                                 <thead>
+                                    <tr>
+                                       <th>თარიღი</th>
+                                       <th>პროდუქცია</th>
+                                       <th>პროდუქციის რ-ბა</th>
+                                       <th>ჯამში კვადრატულობა</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    <?php
+                                       $db->setQuery("SELECT 	CONCAT(YEAR(DATE(warehouse_log.datetime)),'-',MONTH(DATE(warehouse_log.datetime))) AS get_date,
+                                                               glass_options.name,
+                                                               SUM(warehouse_log.qty) AS total,
+                                                               ROUND(SUM((warehouse.glass_width * warehouse.glass_height)/10000)*SUM(warehouse_log.qty), 2) AS total_sqr
+                                                      FROM 		warehouse_log
+                                                      JOIN		warehouse ON warehouse.actived = 1 AND warehouse.id = warehouse_log.warehouse_id
+                                                      JOIN		glass_options ON glass_options.id = warehouse.glass_option_id
+                                                      WHERE 	warehouse_log.dc = 1 AND warehouse_log.actived = 1 AND YEAR(DATE(warehouse_log.datetime)) = '2022'
+                                                      
+                                                      GROUP BY MONTH(DATE(warehouse_log.datetime)), warehouse.glass_option_id");
+
+                                       $taken_stat = $db->getResultArray();
+
+                                       foreach($taken_stat['result'] AS $res){
+                                          echo '
+                                          <tr>
+                                             <td>'.$res['get_date'].'</td>
+                                             <td>'.$res['name'].'</td>
+                                             <td>'.$res['total'].'</td>
+                                             <td>'.$res['total_sqr'].'</td>
+                                             
+                                          </tr>
+                                          ';
+                                       }
+                                    ?>
+                                    
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-sm-6 col-xl-6 col-lg-6">
+                     <div class="card custom-card">
+                        <div class="card-body">
+                           <div>
+                              <h6 class="card-title mb-1">გასული პროდუქცია თვეების მიხედვით</h6>
                               <p class="text-muted card-sub-title">*ობიექტისთვის</p>
                            </div>
                            <div class="table-responsive">
                               <table class="table table-bordered text-nowrap mb-0">
                                  <thead>
                                     <tr>
-                                       <th>#No</th>
-                                       <th>პროდ.დასახელება</th>
-                                       <th>პროდ.კატეგორია</th>
-                                       <th>პროდ.ფასი</th>
-                                       <th>გაყიდვეების რაოდენობა</th>
-                                       <th>საერთო ჯამი</th>
-                                       <th>შეუსრ.შეკვეთები</th>
+                                       <th>თარიღი</th>
+                                       <th>პროდუქცია</th>
+                                       <th>პროდუქციის რ-ბა</th>
+                                       <th>ჯამში კვადრატულობა</th>
                                     </tr>
                                  </thead>
                                  <tbody>
-                                    <tr>
-                                       <td>1</td>
-                                       <td>იმერული ხაჭაპური</td>
-                                       <td>ცომეული</td>
-                                       <td>15 GEL</td>
-                                       <td>100</td>
-                                       <td>1500 GEL</td>
-                                       <td>15</td>
-                                    </tr>
-                                    <tr>
-                                       <td>2</td>
-                                       <td>ხინკალი</td>
-                                       <td>ხინკალი</td>
-                                       <td>1 GEL</td>
-                                       <td>1000</td>
-                                       <td>1000 GEL</td>
-                                       <td>10</td>
-                                    </tr>
-                                    <tr>
-                                       <td>3</td>
-                                       <td>პიცა მარგარიტა</td>
-                                       <td>პიცა</td>
-                                       <td>10 GEL</td>
-                                       <td>500</td>
-                                       <td>5000 GEL</td>
-                                       <td>19</td>
-                                    </tr>
+                                 <?php
+                                       $db->setQuery("SELECT 	CONCAT(YEAR(DATE(warehouse_log.datetime)),'-',MONTH(DATE(warehouse_log.datetime))) AS get_date,
+                                                               glass_options.name,
+                                                               SUM(warehouse_log.qty) AS total,
+                                                               ROUND(SUM((warehouse.glass_width * warehouse.glass_height)/10000)*SUM(warehouse_log.qty), 2) AS total_sqr
+                                                      FROM 		warehouse_log
+                                                      JOIN		warehouse ON warehouse.actived = 1 AND warehouse.id = warehouse_log.warehouse_id
+                                                      JOIN		glass_options ON glass_options.id = warehouse.glass_option_id
+                                                      WHERE 	warehouse_log.dc = -1 AND warehouse_log.actived = 1 AND YEAR(DATE(warehouse_log.datetime)) = '2022'
+                                                      
+                                                      GROUP BY MONTH(DATE(warehouse_log.datetime)), warehouse.glass_option_id");
+
+                                       $taken_stat = $db->getResultArray();
+
+                                       foreach($taken_stat['result'] AS $res){
+                                          echo '
+                                          <tr>
+                                             <td>'.$res['get_date'].'</td>
+                                             <td>'.$res['name'].'</td>
+                                             <td>'.$res['total'].'</td>
+                                             <td>'.$res['total_sqr'].'</td>
+                                             
+                                          </tr>
+                                          ';
+                                       }
+                                    ?>
                                  </tbody>
                               </table>
                            </div>
@@ -582,71 +628,7 @@
                      </div>
                   </div>
                </div>
-               <div class="row">
-                  <div class="col-sm-12 col-xl-12 col-lg-12">
-                     <div class="card custom-card">
-                        <div class="card-body">
-                           <div>
-                              <h6 class="card-title mb-1">კურიერის სტატისტიკა</h6>
-                              <p class="text-muted card-sub-title">*ობიექტისთვის</p>
-                           </div>
-                           <div class="table-responsive">
-                              <table class="table table-bordered text-nowrap mb-0">
-                                 <thead>
-                                    <tr>
-                                       <th>#No</th>
-                                       <th>სახელი</th>
-                                       <th>გვარი</th>
-                                       <th>შესრულებული შეკვეთა</th>
-                                       <th>შეუსრულებელი შეკვეთა</th>
-                                       <th>მიტანის საშუალო დრო</th>
-                                       <th>ხშირად მიტანილი პროდუქტი</th>
-                                    </tr>
-                                 </thead>
-                                 <tbody>
-                                    <tr>
-                                       <td>1</td>
-                                       <td>გიგი</td>
-                                       <td>ანთიძე</td>
-                                       <td>15</td>
-                                       <td>0</td>
-                                       <td>5 წუთი</td>
-                                       <td>პიცა</td>
-                                    </tr>
-                                    <tr>
-                                       <td>2</td>
-                                       <td>ნინი</td>
-                                       <td>ჭყონია</td>
-                                       <td>10</td>
-                                       <td>2</td>
-                                       <td>10 წუთი</td>
-                                       <td>ხინკალი</td>
-                                    </tr>
-                                    <tr>
-                                       <td>3</td>
-                                       <td>საბა</td>
-                                       <td>შონია</td>
-                                       <td>5</td>
-                                       <td>1</td>
-                                       <td>15 წუთი</td>
-                                       <td>ხაჭაპური</td>
-                                    </tr>
-                                    <tr>
-                                       <td>4</td>
-                                       <td>ნიკა</td>
-                                       <td>ქარდავა</td>
-                                       <td>2</td>
-                                       <td>0</td>
-                                       <td>20 წუთი</td>
-                                       <td>კანჭი</td>
-                                    </tr>
-                                 </tbody>
-                              </table>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
+
                <!-- End Row --> 
             </div>
          </div>
