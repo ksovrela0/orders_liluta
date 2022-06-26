@@ -620,6 +620,14 @@ switch ($act){
     
                 $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($glass_ids)");
                 $db->execQuery();
+
+                $db->setQuery(" UPDATE orders 
+                                JOIN products_glasses ON products_glasses.id IN($glass_ids)
+                                JOIN orders_product ON orders_product.id = products_glasses.order_product_id
+                                SET orders.status_id = 2
+                                
+                                WHERE orders.id = orders_product.order_id");
+                $db->execQuery();
             }
             
         }
