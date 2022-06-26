@@ -11,8 +11,9 @@ switch ($act){
         $glass_id = $_REQUEST['glass_id'];
 
         $db->setQuery(" SELECT products_glasses.id,
-                                CONCAT(products_glasses.glass_width,'სმX', products_glasses.glass_height,'სმ') AS size,
-                                orders.client_name
+                                CONCAT(products_glasses.glass_width,'მმ', products_glasses.glass_height,'მმ') AS size,
+                                orders.client_name,
+                                orders.comment
                         FROM products_glasses
                         JOIN orders ON orders.id = products_glasses.order_id AND orders.actived = 1
                         WHERE products_glasses.actived = 1 AND products_glasses.id = '$glass_id'");
@@ -29,6 +30,7 @@ switch ($act){
                 }
                 </style>
                 <p>'.$glass['client_name'].'<p>
+                <p>'.$glass['comment'].'<p>
                 <p>'.$glass['size'].'<p>
                 <p><img src="includes/barcode/index.php?title='.$glass['id'].'"><p>
             </body

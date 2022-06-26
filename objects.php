@@ -424,7 +424,7 @@
 		//KendoUI CLASS CONFIGS BEGIN
 		var aJaxURL	        =   "server-side/objects.action.php";
 		var gridName        = 	'product_categories';
-		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a></div> <div> ჯამში მინა: <span id="total_glass">0</span></div>';
+		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a><a id="button_copy" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> კოპირება</a></div> <div> ჯამში მინა: <span id="total_glass">0</span></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
 		var columnsCount    =	12;
@@ -656,6 +656,43 @@
 		});
 		
 	}
+
+	$(document).on('click', '#button_copy', function(){
+		var grid = $("#product_categories").data("kendoGrid");
+		var selectedRows = grid.select();
+		var writing_id = [];
+		selectedRows.each(function(index, row) {
+			var selectedItem = grid.dataItem(row);
+			writing_id.push(selectedItem.id);
+		});
+		if(typeof writing_id == 'undefined' || writing_id.length == 0) {
+			alert('აირჩიეთ პროდუქტი!!!');
+		} 
+		else if(writing_id.length > 1){
+			alert("აირჩიეთ მხოლოდ 1 პროდუქტი");
+		}
+		else {
+			var ask = prompt("მიუთითეთ პირამიდის ნომერი");
+			
+			if(ask > 0){
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "copy",
+						type: "warehouse",
+						id: writing_id,
+						pyramid: ask
+					},
+					dataType: "json",
+					success: function(data) {
+						$("#product_categories").data("kendoGrid").dataSource.read();
+					}
+				});
+			}
+			
+		}
+	});
 	</script>
 </body>
 

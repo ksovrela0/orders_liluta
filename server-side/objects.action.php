@@ -178,7 +178,7 @@ switch ($act){
 		$cols[]      =      $_REQUEST['cols'];
 
         $db->setQuery("SELECT	products_glasses.id,
-                                CONCAT(glass_options.name,' ',products_glasses.glass_width,'სმX', products_glasses.glass_height,'სმ') AS glass,
+                                CONCAT(glass_options.name,' ',products_glasses.glass_width,'მმ', products_glasses.glass_height,'მმ') AS glass,
                                 CASE
                                     WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT gp1.pyramid FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1), IFNULL((SELECT pyramid FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1), (SELECT pyramid FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1))), lists_to_cut.pyramid), IF(lists_to_cut.status_id IN (1,2), 'არ დევს პირამიდაზე',lists_to_cut.pyramid))
                                     
@@ -227,7 +227,7 @@ switch ($act){
                                         glass_type.name AS type,
                                         glass_colors.name AS color,
                                         warehouse.qty,
-                                        CONCAT(warehouse.glass_width, 'სმ X ',warehouse.glass_height, 'სმ' ),
+                                        CONCAT(warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ' ),
                                         glass_bring.name,
                                         IF(warehouse.gtype = 1,'ლისტი', 'ატხოდი'),
                                         CONCAT(warehouse.marja, '%'),
@@ -328,7 +328,7 @@ function getPage($res = ''){
                 <input value="'.$res['qty'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="glass_qty" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4">
-                <label>თითოს ზომა (სმ) (სიგრძეXსიგანე) </label>
+                <label>თითოს ზომა (მმ) (სიმაღლეXსიგანე) </label>
                 <div class="row">
                     <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_width" value="'.$res['glass_width'].'"></div>
                     <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_height" value="'.$res['glass_height'].'"></div>

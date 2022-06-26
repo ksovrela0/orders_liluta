@@ -201,6 +201,16 @@
 			cursor: pointer;
 			font-size: 17px;
 		}
+		#cut_glass{
+        border: 1px solid black;
+        width: fit-content;
+        padding: 7px;
+        font-size: 18px;
+        color: #fff;
+        background-color: #ff00fb;
+        cursor: pointer;
+        margin-left: 20px;
+    }
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -817,16 +827,16 @@ $proc_data = $db->getResultArray()['result'][0];
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_cut';
-				var actions = '';
+				var actions = '<?php if($_SESSION['GRPID'] == 1){ echo '<div id="cut_glass">ლისტის კოპირება</div>'; } ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 4;
-				var columnsSQL = ["list:string", "product_glasses:string", "product_status:string", "product_act:string"];
-				var columnGeoNames = ["ლისტი", "მინები", "სტატუსი", "ქმედება"];
-				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var columnsCount = 5;
+				var columnsSQL = ["cut_id","list:string", "product_glasses:string", "product_status:string", "product_act:string"];
+				var columnGeoNames = ["ჭრის ID","ლისტი", "მინები", "სტატუსი", "ქმედება"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
@@ -1339,6 +1349,44 @@ $proc_data = $db->getResultArray()['result'][0];
 					}
 				});
 			});
+
+			$(document).on('click', '#cut_glass', function(){
+				var grid = $("#main_cut").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id = [];
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id.push(selectedItem.cut_id);
+				});
+				if(typeof writing_id == 'undefined' || writing_id.length == 0) {
+					alert('აირჩიეთ ლისტი!!');
+				} 
+				else if(writing_id.length > 1){
+					alert("გთხოვთ აირჩიოთ მხოლოდ 1 ლისტი");
+				}
+				else {
+					var ask = prompt("ნამდვილად გსურთ ლისტის დაკოპირება? თუ კი შეიყვანეთ კოპირების რ-ბა");
+					if(ask > 0){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "copy_cut",
+								ids: writing_id,
+								limit: ask
+							},
+							dataType: "json",
+							success: function(data) {
+								if(typeof data.error != 'undefined'){
+									alert(data.error);
+								}
+								$("#main_cut").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
+				}
+			});	
 	</script>
 </body>
 

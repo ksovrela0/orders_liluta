@@ -677,7 +677,7 @@
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
 						$("#personal,#statuses,#cabinet").chosen();
-						$("#order_date").datetimepicker({
+						$("#order_date,#datetime_finish").datetimepicker({
 							dateFormat: "yy-mm-dd",
 							timeFormat: "HH:mm:ss"
 						});
@@ -984,7 +984,7 @@
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
 						$("#personal,#statuses,#cabinet").chosen();
-						$("#order_date").datetimepicker({
+						$("#order_date,#datetime_finish").datetimepicker({
 							dateFormat: "yy-mm-dd",
 							timeFormat: "HH:mm:ss"
 						});
@@ -1178,6 +1178,8 @@
 				params.client_phone = $("#client_phone").val();
 				params.client_addr = $("#client_addr").val();
 				params.order_date = $("#order_date").val();
+				params.add_info = $("#add_info").val();
+				params.datetime_finish = $("#datetime_finish").val();
 				params.pay_total = $("#pay_total").val();
 				params.avansi = $("#avansi").val();
 				params.avans_plus = $("#avans_plus").val();

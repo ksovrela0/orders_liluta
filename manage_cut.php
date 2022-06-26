@@ -429,12 +429,12 @@
 				//KendoUI CLASS CONFIGS BEGIN
         var aJaxURL = "server-side/writes.action.php";
         var gridName = 'glasses_div';
-        var actions = '<div id="cut_glass">ჭრაზე გაშვება</div>';
+        var actions = '<div id="cut_glass">ჭრაზე გაშვება</div> <div id="del_glass">ჭრიდან წაშლა</div>';
         var editType = "popup"; // Two types "popup" and "inline"
         var itemPerPage = 100;
         var columnsCount = 12;
         var columnsSQL = ["id:string","glass_option_id:string","glass_type_id:string","glass_color_id:string","glass_manuf_id:string", "name_product:string", "dimm:string", "type:string", "color:string", "proccess2:string", "status:string", "cut_list:string"];
-        var columnGeoNames = ["ID კოდი","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი", "ლისტი"];
+        var columnGeoNames = ["ID კოდი","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი", "ჭრის ID"];
         var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -448,7 +448,7 @@
         //KendoUI CLASS CONFIGS BEGIN
         var aJaxURL = "server-side/writes.action.php";
         var gridName = 'otxod_div';
-        var actions = '<div id="new_glass">დამატება</div><div id="del_glass"> წაშლა</div>';
+        var actions = '<div id="new_glass">დამატება</div><div id="del_glass2"> წაშლა</div>';
         var editType = "popup"; // Two types "popup" and "inline"
         var itemPerPage = 100;
         var columnsCount = 2;
@@ -621,7 +621,34 @@
             }
         });
     });
-
+	$(document).on('click', '#del_glass', function(){
+		var grid = $("#glasses_div").data("kendoGrid");
+		var selectedRows = grid.select();
+		var writing_id = [];
+		selectedRows.each(function(index, row) {
+			var selectedItem = grid.dataItem(row);
+			writing_id.push(selectedItem.id);
+		});
+		if(typeof writing_id == 'undefined' || writing_id.length == 0) {
+			alert('აირჩიეთ მინა!!!');
+		} else {
+			if(confirm("მინის ჭრიდან წაშლის შემთხვევაში, ჭრის პროცესი, რომელშიც შედის ეგ მინა/მინები გაუქმდება. ნამდვილად გსურთ მინის/მინების წაშლა?")){
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "delete_cut",
+						ids: writing_id
+					},
+					dataType: "json",
+					success: function(data) {
+						$("#glasses_div").data("kendoGrid").dataSource.read();
+					}
+				});
+			}
+			
+		}
+	});	
     function save_atxod(){
         let params = new Object;
 
