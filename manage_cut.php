@@ -160,7 +160,6 @@
 		position: relative!important;
 		vertical-align: middle !important;
 		cursor: default!important;
-		padding: 12px!important;
 	}
 
     #cut_glass{
@@ -170,8 +169,8 @@
         font-size: 18px;
         color: #fff;
         background-color: #ff00fb;
+		margin-top:5px;
         cursor: pointer;
-        margin-left: 20px;
     }
     .k-grid-toolbar {
         display: flex;
@@ -207,6 +206,51 @@
         cursor: pointer;
         margin-left: 20px;
     }
+	#filter{
+		border: 1px solid black;
+		width: fit-content;
+		padding: 9px;
+		background-color: #0079ff;
+		color: white;
+		cursor: pointer;
+	}
+	#list_area{
+		border: 1px solid black;
+		padding: 10px;
+		display: flex;
+		justify-content: center;
+		margin-bottom: 15px;
+		flex-wrap: wrap;
+		gap: 15px;
+	}
+	#no_list{
+		margin: 0;
+		color: red;
+	}
+	.element_in_list{
+		border: 1px solid #cdcdcd;
+		padding: 8px;
+		background-color: #f7fffd;
+		font-weight: bold;
+		position: relative;
+	}
+	.remove_from_list{
+		border: 1px solid black;
+		width: fit-content;
+		padding: 4px 5px 4px 5px;
+		line-height: 11px;
+		border-radius: 9px;
+		cursor: pointer;
+		position: absolute;
+		top: -8px;
+		right: -10px;
+		background-color: white;
+		transition: 0.4s ease;
+	}
+	.remove_from_list:hover{
+		background-color: red;
+		color: white;
+	}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -243,6 +287,42 @@
 				</div>
 				<!-- End Page Header -->
 				<!-- Row -->
+				<div class="row" style="margin-bottom: 17px;">
+					<div class="col-sm-2">
+						<label>აირჩიეთ მწარმოებელი</label>
+						<select id="selected_glass_manuf_id">
+							<?php getGlassManuf(0); ?>
+						</select>
+					</div>
+					<div class="col-sm-2">
+						<label>აირჩიეთ შუშა</label>
+						<select id="selected_glass_cat_id">
+							<?php getGlassOptions(0); ?>
+						</select>
+					</div>
+					<div class="col-sm-2">
+						<label>აირჩიეთ ფერი</label>
+						<select id="selected_glass_color_id">
+							<?php getGlassColorOptions(0); ?>
+						</select>
+					</div>
+
+					<div class="col-sm-2">
+						<div id="filter">ფილტრი</div>
+						<div id="cut_glass">ჭრაზე გაშვება</div>
+					</div>
+					<div class="col-sm-2">
+						
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<div id="list_area">
+							<p id="no_list">ლისტი ცარიელია</p>
+						</div>
+						
+					</div>
+				</div>
 				<div class="row">
 					<div id="glasses_div"></div>
 				</div>
@@ -342,41 +422,70 @@
 	</div>
 	<script>
 	var aJaxURL = "server-side/objects.action.php";
-	$(document).on("dblclick", "#product_categories tr.k-state-selected", function () {
-		var grid = $("#product_categories").data("kendoGrid");
+	var f_product_name = '';
+	var f_color = '';
+	$(document).on("dblclick", "#glasses_div tr.k-state-selected", function () {
+		var grid = $("#glasses_div").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
 		
 		if(dItem.id == ''){
 			return false;
 		}
 		
-		$.ajax({
-			url: aJaxURL,
-			type: "POST",
-			data: {
-				act: "get_edit_page",
-				id: dItem.id
-			},
-			dataType: "json",
-			success: function(data){
-				$('#get_edit_page').html(data.page);
-                $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_manuf_id").chosen();
-				$("#get_edit_page").dialog({
-					resizable: false,
-					height: 400,
-					width: 900,
-					modal: true,
-					buttons: {
-						"შენახვა": function() {
-							save_category();
-						},
-						'დახურვა': function() {
-							$( this ).dialog( "close" );
-						}
-					}
-				});
+		var glass_id = dItem.id;
+
+		if($(".element_in_list").length == 0){
+			f_product_name = dItem.name_product_22;
+			f_color = dItem.color_22;
+		}
+		if($(".element_in_list").length > 0){
+			if(f_product_name != dItem.name_product_22 || f_color != dItem.color_22){
+				alert("დასაჭრელად არჩეული მინები არ არიან ერთნაირი ფერის, მწარმოებლის ან სისქის, გთხოვთ აირჩიოთ მხოლოდ მსგავსი მინები");
+				return false;
 			}
-		});
+		}
+		if($(".element_in_list[glass-id='"+glass_id+"']").length == 0){
+
+			$.ajax({
+				url: "server-side/writes.action.php",
+				type: "POST",
+				data: {
+					act: "check_glass_status",
+					glass_id: glass_id
+				},
+				dataType: "json",
+				success: function(data){
+					if(typeof data.error != 'undefined'){
+						alert(data.error);
+					}
+					else{
+						$("#list_area").append(`
+						<div class="element_in_list" glass-id="`+glass_id+`" glass_option_id="`+dItem.glass_option_id+`" glass_type_id="`+dItem.glass_type_id+`" glass_color_id="`+dItem.glass_color_id+`" glass_manuf_id="`+dItem.glass_manuf_id+`">
+							<div>ID: `+glass_id+`  `+dItem.name_product_22+`</div>
+							<div>`+dItem.dimm_22+`</div>
+							<div>`+dItem.color_22+`</div>
+
+							<div class="remove_from_list">X</div>
+						</div>`);
+
+						$("#no_list").css('display', 'none');
+					}
+					
+				}
+			});
+			
+		}
+		else{
+			alert("არჩეული მინა უკვე დამატებულია ლისტში");
+		}
+
+		
+	});
+	$(document).on('click', '.remove_from_list', function(){
+		$(this).parent().remove();
+		if($(".element_in_list").length == 0){
+			$("#no_list").css('display', 'block');
+		}
 	});
 	$(document).on('click','#button_add',function(){
 		$.ajax({
@@ -429,11 +538,11 @@
 				//KendoUI CLASS CONFIGS BEGIN
         var aJaxURL = "server-side/writes.action.php";
         var gridName = 'glasses_div';
-        var actions = '<div id="cut_glass">ჭრაზე გაშვება</div> <div id="del_glass">ჭრიდან წაშლა</div>';
+        var actions = '';
         var editType = "popup"; // Two types "popup" and "inline"
         var itemPerPage = 100;
         var columnsCount = 12;
-        var columnsSQL = ["id:string","glass_option_id:string","glass_type_id:string","glass_color_id:string","glass_manuf_id:string", "name_product:string", "dimm:string", "type:string", "color:string", "proccess2:string", "status:string", "cut_list:string"];
+        var columnsSQL = ["id:string","glass_option_id:string","glass_type_id:string","glass_color_id:string","glass_manuf_id:string", "name_product_22:string", "dimm_22:string", "type_22:string", "color_22:string", "proccess2_22:string", "status_22:string", "cut_list_22:string"];
         var columnGeoNames = ["ID კოდი","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი", "ჭრის ID"];
         var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -464,7 +573,8 @@
         kendo.loadKendoUI(aJaxURL, 'get_list_atxods', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
     }
 	$( document ).ready(function() {
-		LoadKendoTable_glass()
+		LoadKendoTable_glass();
+		$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id").chosen();
 	});
 	function save_category(){
 		let params 			= new Object;
@@ -493,21 +603,20 @@
 	}
 
     $(document).on("click", "#cut_glass", function(){
-        var grid = $("#glasses_div").data("kendoGrid");
-        var selectedRows = grid.select();
         var glass_ids = [];
         var option_ids = [];
         var type_ids = [];
         var color_ids = [];
         var manuf_ids = [];
-        selectedRows.each(function(index, row) {
-            var selectedItem = grid.dataItem(row);
-            glass_ids.push(selectedItem.id);
-            option_ids.push(selectedItem.glass_option_id);
-            type_ids.push(selectedItem.glass_type_id);
-            color_ids.push(selectedItem.glass_color_id);
-            manuf_ids.push(selectedItem.glass_manuf_id);
-        });
+		$(".element_in_list").each(function(i,x){
+			console.log($(x).attr('glass-id'))
+
+			glass_ids.push($(x).attr('glass-id'));
+            option_ids.push($(x).attr('glass_option_id'));
+            type_ids.push($(x).attr('glass_type_id'));
+            color_ids.push($(x).attr('glass_color_id'));
+            manuf_ids.push($(x).attr('glass_manuf_id'));
+		})
         
         var allowToCut = 0;
         if(!allAreEqual(option_ids) || !allAreEqual(type_ids) || !allAreEqual(color_ids) || !allAreEqual(manuf_ids)){
@@ -577,6 +686,9 @@
                 if(data.status == 'OK'){
                     $("#glasses_div").data("kendoGrid").dataSource.read();
                     $('#get_cut_page').dialog("close");
+					$(".element_in_list").remove();
+					$("#no_list").css('display', 'block');
+
                 }else{
                     alert(data.error)
                 }
@@ -674,7 +786,78 @@
             }
         });
     }
+
+	$(document).on('click', '#filter', function(){
+		let params = new Object;
+
+        params.manuf_id = $("#selected_glass_manuf_id").val();
+        params.option_id = $("#selected_glass_cat_id").val();
+        params.color_id = $("#selected_glass_color_id").val();
+
+		var search = "&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id
+        LoadKendoTable_glass(search);
+	});
 	</script>
 </body>
 
 </html>
+
+<?php
+function getGlassColorOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_colors
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+function getGlassManuf($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_manuf
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+function getGlassOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_options 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+?>

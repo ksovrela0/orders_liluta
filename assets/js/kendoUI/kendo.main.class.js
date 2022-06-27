@@ -159,6 +159,7 @@ class kendoUI{
 				pageable: {
 					refresh: true,
 					pageSizes: true,
+					position: "top",
 					buttonCount: 5
 				},
 				// toolbar: this.actButtons,
@@ -190,6 +191,7 @@ class kendoUI{
 				pageable: {
 					refresh: true,
 					pageSizes: true,
+					position: "top",
 					buttonCount: 5
 				},
 				columns: kendoData.columnss,

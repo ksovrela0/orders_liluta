@@ -37,7 +37,6 @@
 		position: relative!important;
 		vertical-align: middle !important;
 		cursor: default!important;
-		padding: 14px!important;
 	}
 	.chosen-container {
 		width: 95% !important;
@@ -82,7 +81,6 @@
 			position: relative!important;
 			vertical-align: middle !important;
 			cursor: default!important;
-			padding: 0!important;
 		}
 		
 		.k-grid-toolbar {
@@ -1257,6 +1255,7 @@
 				params.glass_manuf = $("#selected_glass_manuf_id").val();
 				params.glass_width = $("#glass_width").val();
 				params.glass_height = $("#glass_height").val();
+				params.go_to_cut = $("#go_to_cut").is(':checked');
 
 
 				var ready_to_save = 0;

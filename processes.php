@@ -160,7 +160,6 @@
 		position: relative!important;
 		vertical-align: middle !important;
 		cursor: default!important;
-		padding: 14px!important;
 	}
     #new_writing, #new_product, #new_glass, #new_path {
 			border: 1px solid black;
@@ -185,7 +184,7 @@
 			width: fit-content;
 		}
 		
-		#del_writing, #del_product, #del_glass, #del_path {
+		#del_writing, #del_product, #del_glass,#del_list, #del_path {
 			border: 1px solid black;
 			
 			padding: 7px;
@@ -202,6 +201,7 @@
 			font-size: 17px;
 		}
 		#cut_glass{
+			margin: 5px;
         border: 1px solid black;
         width: fit-content;
         padding: 7px;
@@ -607,6 +607,12 @@ $proc_data = $db->getResultArray()['result'][0];
 						},
 						dataType: "json",
 						success: function(data) {
+							if(typeof(data.error) == 'undefined'){
+								
+							}
+							else{
+								alert(data.error);
+							}
 							$("#main_cut").data("kendoGrid").dataSource.read();
 						}
 					});
@@ -623,6 +629,12 @@ $proc_data = $db->getResultArray()['result'][0];
 						},
 						dataType: "json",
 						success: function(data) {
+							if(typeof(data.error) == 'undefined'){
+								
+							}
+							else{
+								alert(data.error);
+							}
 							$("#main_div").data("kendoGrid").dataSource.read();
 						}
 					});
@@ -827,7 +839,7 @@ $proc_data = $db->getResultArray()['result'][0];
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_cut';
-				var actions = '<?php if($_SESSION['GRPID'] == 1){ echo '<div id="cut_glass">ლისტის კოპირება</div>'; } ?>';
+				var actions = '<?php if($_SESSION['GRPID'] == 1){ echo '<div style="display:flex;"><div id="cut_glass">ლისტის კოპირება</div> <div id="del_list">ლისტის წაშლა</div></div>'; } ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 5;
@@ -1387,6 +1399,36 @@ $proc_data = $db->getResultArray()['result'][0];
 					
 				}
 			});	
+			$(document).on('click', '#del_list', function(){
+				var grid = $("#main_cut").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id = [];
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id.push(selectedItem.cut_id);
+				});
+				if(typeof writing_id == 'undefined' || writing_id.length == 0) {
+					alert('აირჩიეთ ლისტი!!');
+				} 
+				else {
+					var ask = confirm("ნამდვილად გსურთ ლისტის წაშლა?");
+					if(ask){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "delete_cut",
+								ids: writing_id
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#main_cut").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
+				}
+			});
 	</script>
 </body>
 

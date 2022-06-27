@@ -13,7 +13,7 @@ $db = new dbClass();
 $act = $_REQUEST['act'];
 
 $user_id = $_SESSION['USERID'];
-
+$data = array();
 function getProcStart($id, $glass_id){
     $data = '   <fieldset class="fieldset">
                     <legend>შეფასება</legend>
@@ -150,7 +150,7 @@ switch ($act){
 
         if($type == 'glass'){
             $glass_id   = $_REQUEST['id'];
-            $qty        = $_REQUEST['qty'];
+            $qty        = $_REQUEST['qty']-1;
 
 
             foreach($glass_id AS $glassID){
@@ -197,7 +197,7 @@ switch ($act){
         }
         else if($type == 'product'){
             $product_id   = $_REQUEST['id'];
-            $qty        = $_REQUEST['qty'];
+            $qty        = $_REQUEST['qty'] -1;
 
             foreach($product_id AS $productID){
                 $db->setQuery("SELECT * FROM orders_product WHERE id = '$productID'");
@@ -290,7 +290,7 @@ switch ($act){
 
     case 'copy_cut':
         $cut_id =$_REQUEST['ids'][0];
-        $limit = $_REQUEST['limit'];
+        $limit = $_REQUEST['limit'] - 1;
         $matrix = array();
         $glass_arr = array();
         $db->setQuery(" SELECT  products_glasses.id,
@@ -424,22 +424,22 @@ switch ($act){
         $ids = $_REQUEST['ids'];
 
         foreach($ids AS $id){
-            $db->setQuery("SELECT COUNT(*) AS cc,
-                            lists_to_cut.cut_id
-                            FROM products_glasses
-                            LEFT JOIN lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
-                            WHERE products_glasses.id = '$id' AND products_glasses.actived = 1 AND products_glasses.status_id = 1");
-            $glass_check = $db->getResultArray()['result'][0];
-
-            $cut_id = $glass_check['cut_id'];
-            $glass_check = $glass_check['cc'];
-
-            if($glass_check > 0){
-                $db->setQuery("UPDATE cut_glass SET actived = 0 WHERE id = '$cut_id'");
-                $db->execQuery();
-            }
+            $db->setQuery("UPDATE cut_glass SET actived = 0 WHERE id = '$id'");
+            $db->execQuery();
         }
         break;
+    case 'check_glass_status':
+        $glass_id = $_REQUEST['glass_id'];
+        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id = $glass_id AND status_id = 1");
+        $glass_check = $db->getResultArray()['result'][0]['cc'];
+
+        if($glass_check == 0){
+            $data['error'] = 'მინა უკვე მზადების პროცესშია, ვერ დაამატებთ მას ლისტში';
+        }
+        else{
+            $data['status'] = 'OK';
+        }
+    break;
     case 'save_list_cut':
         $raw_ids = $_REQUEST['glass_ids'];
         $glass_ids = explode(',', $_REQUEST['glass_ids']);
@@ -606,28 +606,42 @@ switch ($act){
                 $data = array('page' => getProcError($path_id));
             }
             else{
-                $db->setQuery("UPDATE cut_glass SET status_id = 2 WHERE id = '$cut_id' AND actived = 1");
-                $db->execQuery();
 
-                $db->setQuery("UPDATE lists_to_cut SET status_id = 2 WHERE cut_id = '$cut_id' AND actived = 1");
-                $db->execQuery();
-    
-                $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glass_id) AS glass_id
-                                FROM    lists_to_cut
-                                WHERE   cut_id IN ($cut_id) AND actived = 1");
-                $glass_ids = $db->getResultArray()['result'][0]['glass_id'];
-    
-    
-                $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($glass_ids)");
-                $db->execQuery();
+                $db->setQuery("SELECT   COUNT(*) AS cc
+                                FROM cut_glass 
+                                WHERE status_id = 2 AND actived = 1");
 
-                $db->setQuery(" UPDATE orders 
-                                JOIN products_glasses ON products_glasses.id IN($glass_ids)
-                                JOIN orders_product ON orders_product.id = products_glasses.order_product_id
-                                SET orders.status_id = 2
-                                
-                                WHERE orders.id = orders_product.order_id");
-                $db->execQuery();
+                $cc = $db->getResultArray()['result'][0]['cc'];
+
+                if($cc >= 2){
+                    $data['error'] = 'თქვენ არ გაქვთ 2-ზე მეტი ჭრის დაწყების უფლება';
+                }
+                else{
+                    $db->setQuery("UPDATE cut_glass SET status_id = 2 WHERE id = '$cut_id' AND actived = 1");
+                    $db->execQuery();
+    
+                    $db->setQuery("UPDATE lists_to_cut SET status_id = 2 WHERE cut_id = '$cut_id' AND actived = 1");
+                    $db->execQuery();
+        
+                    $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glass_id) AS glass_id
+                                    FROM    lists_to_cut
+                                    WHERE   cut_id IN ($cut_id) AND actived = 1");
+                    $glass_ids = $db->getResultArray()['result'][0]['glass_id'];
+        
+        
+                    $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($glass_ids)");
+                    $db->execQuery();
+    
+                    $db->setQuery(" UPDATE orders 
+                                    JOIN products_glasses ON products_glasses.id IN($glass_ids)
+                                    JOIN orders_product ON orders_product.id = products_glasses.order_product_id
+                                    SET orders.status_id = 2
+                                    
+                                    WHERE orders.id = orders_product.order_id");
+                    $db->execQuery();
+                }
+
+                
             }
             
         }
@@ -1143,7 +1157,7 @@ switch ($act){
         $selected_product_id  = $_REQUEST['selected_product_id'];
         $order_id    = $_REQUEST['order_id'];
 
-        $butil_size     = $_REQUEST['butil_size'];
+        $butil_size     = intval($_REQUEST['butil_size']);
         $firi_lameks    = $_REQUEST['firi_lameks'];
 
         $db->setQuery(" SELECT  COUNT(*) AS cc
@@ -1190,6 +1204,13 @@ switch ($act){
         $glass_height      = $_REQUEST['glass_height'];
         $glass_manuf    = $_REQUEST['glass_manuf'];
 
+        $go_to_cut    = $_REQUEST['go_to_cut'];
+        if($go_to_cut == 'true'){
+            $go_to_cut = 1;
+        }
+        else{
+            $go_to_cut = 0;
+        }
         $order_id      = $_REQUEST['order_id'];
 
         $db->setQuery(" SELECT  COUNT(*) AS cc
@@ -1210,6 +1231,7 @@ switch ($act){
                                                 glass_height='$glass_height',
                                                 glass_manuf_id = '$glass_manuf',
                                                 status_id='$glass_status',
+                                                go_to_cut='$go_to_cut',
                                                 order_id = '$order_id'");
 
             $db->execQuery();
@@ -1226,6 +1248,7 @@ switch ($act){
                                                 glass_height='$glass_height',
                                                 glass_manuf_id = '$glass_manuf',
                                                 status_id='$glass_status',
+                                                go_to_cut='$go_to_cut',
                                                 order_id = '$order_id'
                             WHERE id='$id'");
             $db->execQuery();
@@ -1432,7 +1455,7 @@ switch ($act){
                 else
 
                 {
-
+                    $hid_array = array("id2","write_date","impuls_qty","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id","name_product_22","type_22","color_22","proccess2_22","cut_list_22");
 					if($columns[$j] == "inc_status"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 153);
@@ -1445,7 +1468,7 @@ switch ($act){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => '5%');
 
-					}elseif($columns[$j] == "id2" OR $columns[$j] == "write_date" OR $columns[$j] == "impuls_qty" OR $columns[$j] == "glass_option_id" OR $columns[$j] == "glass_type_id" OR $columns[$j] == "glass_color_id" OR $columns[$j] == "glass_manuf_id" ){
+					}elseif(in_array($columns[$j], $hid_array)){
 
 						$g = array('field'=>$columns[$j], 'hidden' => true,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 100);
 
@@ -1751,7 +1774,7 @@ switch ($act){
                                 END AS pyramid,
                                     
                                     
-                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), 3) = 3,CASE
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
                                     WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) != glasses_paths.path_group_id, '<span style=\"padding:5px;background-color: red;\">რიგში</span>',CONCAT('<span style=\"padding:5px;', CASE
                                                                                                             WHEN glass_status.id = 1 THEN 'background-color: red;'
                                                                                                             WHEN glass_status.id = 2 THEN 'background-color: yellow;'
@@ -1770,7 +1793,7 @@ switch ($act){
                                     ,'\">', glass_status.name,'</span>')
                                     END,'<span style=\"padding:5px;background-color: red;\">რიგში</span>') AS glasses,
 
-                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), 3) = 3,CASE
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
                                         WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"http://assets.stickpng.com/images/580b57fcd9996e24bc43c4f9.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
                                         WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"https://e7.pngegg.com/pngimages/871/200/png-clipart-check-mark-computer-icons-icon-design-complete-angle-logo.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
                                         WHEN glass_status.id = 3 THEN ''
@@ -1794,7 +1817,7 @@ switch ($act){
                             WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND glasses_paths.actived = 1
 
                             GROUP BY products_glasses.id
-                            ORDER BY glass_status.sort_n");
+                            ORDER BY glasses_paths.status_id ASC");
         }
         
         $result = $db->getKendoList($columnCount, $cols);
@@ -1839,6 +1862,23 @@ switch ($act){
 
         $product_id = $_REQUEST['product_id'];
 
+        $option_id  = $_REQUEST['option_id'];
+        $manuf_id   = $_REQUEST['manuf_id'];
+        $color_id   = $_REQUEST['color_id'];
+
+        $where = '';
+
+        if($option_id != ''){
+            $where .= " AND products_glasses.glass_option_id = '$option_id'";
+        }
+        if($manuf_id != ''){
+            $where .= " AND products_glasses.glass_manuf_id = '$manuf_id'";
+        }
+        if($color_id != ''){
+            $where .= " AND products_glasses.glass_color_id = '$color_id'";
+        }
+
+
         $db->setQuery(" SELECT  products_glasses.id,
                                 products_glasses.glass_option_id,
                                 products_glasses.glass_type_id,
@@ -1877,7 +1917,7 @@ switch ($act){
                         LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1
                         LEFT JOIN groups ON groups.id = glasses_paths.path_group_id
                         LEFT JOIN glass_status AS path_status ON path_status.id = glasses_paths.status_id
-                        WHERE   products_glasses.actived = 1
+                        WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 $where
                         GROUP BY products_glasses.id
                         ORDER BY products_glasses.id");
 
@@ -2033,7 +2073,8 @@ function getGlass($id){
                             glass_width,
                             glass_height,
                             glass_manuf_id,
-                            status_id
+                            status_id,
+                            go_to_cut
                     FROM    products_glasses
                     WHERE   id = '$id'");
 
@@ -2046,7 +2087,11 @@ function getGlass($id){
 }
 function getGlassPage($id, $res = ''){
     GLOBAL $db;
-    
+    $checked = '';
+
+    if($res['go_to_cut'] == 1){
+        $checked = 'checked';
+    }
     $data = '   <fieldset class="fieldset">
                     <legend>ინფორმაცია</legend>
                         <div class="row">
@@ -2086,6 +2131,11 @@ function getGlassPage($id, $res = ''){
                                 <select id="selected_glass_status">
                                     '.getGlassStatusOptions($res['status_id']).'
                                 </select>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label style="display: flex;"><input type="checkbox" id="go_to_cut" '.$checked.'> <span style="margin-top: 2px;
+                                margin-left: 5px;">გაიაროს ჭრის პროცესი?</span></label>
                             </div>
                            
                         </div>

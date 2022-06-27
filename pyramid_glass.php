@@ -160,7 +160,6 @@
 		position: relative!important;
 		vertical-align: middle !important;
 		cursor: default!important;
-		padding: 10px!important;
 	}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
