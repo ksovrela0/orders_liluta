@@ -29,6 +29,7 @@ switch ($act){
 
         $marja        = $_REQUEST['marja'];
         $owner        = $_REQUEST['owner'];
+        $bringer        = $_REQUEST['bringer'];
         $gtype        = $_REQUEST['gtype'];
 
         $glass_manuf        = $_REQUEST['glass_manuf'];
@@ -45,6 +46,7 @@ switch ($act){
                                     `glass_manuf_id` = '$glass_manuf',
                                     `marja` = '$marja',
                                     `owner` = '$owner',
+                                    `bringer` = '$bringer',
                                     `gtype` = '$gtype',
                                     `pyramid` = '$pyramid'");
             $db->execQuery();
@@ -61,6 +63,7 @@ switch ($act){
                                     `glass_manuf_id` = '$glass_manuf',
                                     `marja` = '$marja',
                                     `owner` = '$owner',
+                                    `bringer` = '$bringer',
                                     `gtype` = '$gtype',
                                     `pyramid` = '$pyramid'
                             WHERE   id = '$id'");
@@ -228,7 +231,7 @@ switch ($act){
                                         glass_colors.name AS color,
                                         warehouse.qty,
                                         CONCAT(warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ' ),
-                                        glass_bring.name,
+                                        IFNULL(glass_bring.name, glass_bringer.name),
                                         IF(warehouse.gtype = 1,'ლისტი', 'ატხოდი'),
                                         CONCAT(warehouse.marja, '%'),
                                         warehouse.sqr_price,
@@ -239,6 +242,7 @@ switch ($act){
                             LEFT JOIN glass_colors ON glass_colors.id = warehouse.glass_color_id
                             LEFT JOIN glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
                             LEFT JOIN glass_bring ON glass_bring.id = warehouse.owner
+                            LEFT JOIN glass_bringer ON glass_bringer.id = warehouse.bringer
                             WHERE warehouse.actived = 1
                             GROUP BY warehouse.id");
 
@@ -310,9 +314,16 @@ function getPage($res = ''){
             </div>
 
             <div class="col-sm-4">
-                <label>ვინ მოიტანა?</label>
+                <label>კლიენტის მინა</label>
                 <select id="owner">
                     '.getGlassBringOptions($res['owner']).'
+                </select>
+            </div>
+
+            <div class="col-sm-4">
+                <label>მომწოდებელი</label>
+                <select id="bringer">
+                    '.getGlassbringer($res['bringer']).'
                 </select>
             </div>
 
@@ -359,11 +370,31 @@ function getPage($res = ''){
 function getGlassGtype(){
     GLOBAL $db;
     $data = '';
+    $data .= '<option value="0">აირჩიეთ</option>';
     $data .= '<option value="1">ლისტი</option>';
     $data .= '<option value="2">ატხოდი</option>';
     return $data;
 }
-function getGlassBringOptions(){
+function getGlassbringer($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_bringer
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    $data .= '<option value="0">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
+function getGlassBringOptions($id){
     GLOBAL $db;
     $data = '';
     $db->setQuery("SELECT   id,
@@ -371,6 +402,7 @@ function getGlassBringOptions(){
                     FROM    glass_bring
                     WHERE actived = 1");
     $cats = $db->getResultArray();
+    $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
@@ -389,6 +421,7 @@ function getGlassColorOptions($id){
                     FROM    glass_colors
                     WHERE actived = 1");
     $cats = $db->getResultArray();
+    $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
@@ -407,6 +440,7 @@ function getGlassTypeOptions($id){
                     FROM    glass_type
                     WHERE actived = 1");
     $cats = $db->getResultArray();
+    $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
@@ -425,6 +459,7 @@ function getGlassOptions($id){
                     FROM    glass_options 
                     WHERE actived = 1");
     $cats = $db->getResultArray();
+    $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
@@ -469,6 +504,7 @@ function getObject($id){
                                 warehouse.glass_height,
                                 warehouse.marja,
                                 warehouse.owner,
+                                warehouse.bringer,
                                 warehouse.gtype,
                                 warehouse.glass_manuf_id
 
@@ -486,6 +522,7 @@ function getGlassManuf($id){
                     FROM    glass_manuf
                     WHERE actived = 1");
     $cats = $db->getResultArray();
+    $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';

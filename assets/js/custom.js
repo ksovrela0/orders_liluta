@@ -447,10 +447,61 @@ $(document).ready(function(){
 			success: function (data) {
 				if(typeof data != 'undefined'){
 					data.forEach(function(i, x){
-						$("#proccess_"+i.id).html(i.title+` <span style="color: #95952a;">(`+i.active+`)</span> <span style="color: red;">(`+i.queue+`)</span> `);
+						if(typeof i.active == 'undefined'){
+							$("#proccess_"+i.id).html(i.title+` <span style="color: red;">(`+i.queue+`)</span> `);
+						}
+						else{
+							$("#proccess_"+i.id).html(i.title+` <span style="color: #95952a;">(`+i.active+`)</span> <span style="color: red;">(`+i.queue+`)</span> `);
+						}
+						
 					})
 				}
 			}
 		});
-	}, 5000);
+
+
+		$.ajax({
+			url: "ajax/menu.ajax.php",
+			type: "POST",
+			data: "act=get_notification_new",
+			dataType: "json",
+			success: function (data) {
+				if(typeof data != 'undefined'){
+					if(data != null){
+						$(".pulse").css("display", 'block');
+						data.forEach(function(i, x){
+							if($(".media[notif-id='"+i.id+"']").length == 0){
+								var url = '#'
+								if(i.page != ''){
+									url = "?page="+i.page;
+								}
+								$(".main-notification-list").prepend(`	<a href="`+url+`">
+																			<div notif-id="`+i.id+`" class="media new">
+																				<div class="media-body">
+																					<p>`+i.text+`</p>
+																					<span>`+i.datetime+`</span> 
+																				</div>
+																			</div>
+																		</a>`);
+							}
+						})
+					}
+					
+				}
+			}
+		});
+	}, 2000);
+})
+
+
+$(document).on('click', '.main-header-notification', function(){
+	$.ajax({
+		url: "ajax/menu.ajax.php",
+		type: "POST",
+		data: "act=read_notification_all",
+		dataType: "json",
+		success: function (data) {
+			$(".pulse").css("display", 'none');
+		}
+	});
 })

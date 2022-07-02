@@ -169,7 +169,6 @@
         font-size: 18px;
         color: #fff;
         background-color: #ff00fb;
-		margin-top:5px;
         cursor: pointer;
     }
     .k-grid-toolbar {
@@ -209,9 +208,10 @@
 	#filter{
 		border: 1px solid black;
 		width: fit-content;
-		padding: 9px;
+		padding: 7px;
 		background-color: #0079ff;
 		color: white;
+		font-size: 18px;
 		cursor: pointer;
 	}
 	#list_area,#glasses_div{
@@ -257,6 +257,19 @@
 		cursor: pointer;
 		position: absolute;
 		top: -8px;
+		right: -10px;
+		background-color: white;
+		transition: 0.4s ease;
+	}
+	.sort_n{
+		border: 1px solid black;
+		width: fit-content;
+		padding: 4px 5px 4px 5px;
+		line-height: 11px;
+		border-radius: 9px;
+		cursor: pointer;
+		position: absolute;
+		bottom: -8px;
 		right: -10px;
 		background-color: white;
 		transition: 0.4s ease;
@@ -322,6 +335,13 @@
 					</div>
 
 					<div class="col-sm-2">
+						<label>აირჩიეთ ზომა</label>
+						<select id="selected_glass_sizes">
+							<?php getSizeOpt(0); ?>
+						</select>
+					</div>
+
+					<div class="col-sm-2" style="display:flex;justify-content: space-between;align-items: end;">
 						<div id="filter">ფილტრი</div>
 						<div id="cut_glass">ჭრაზე გაშვება</div>
 					</div>
@@ -475,11 +495,13 @@
 				else{
 					$("#list_area").append(`
 					<div class="element_in_list" sort_n="`+sort_n+`" glass-id="`+data.id+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
+						<div style="font-size: 20px;">`+data.sizes+`</div>
 						<div>ID: `+data.id+`  `+data.name+`</div>
-						<div>`+data.sizes+`</div>
+						
 						<div>`+data.color+`</div>
 
 						<div class="remove_from_list">X</div>
+						<div class="sort_n">`+sort_n+`</div>
 					</div>`);
 
 					$("#no_list").css('display', 'none');
@@ -651,7 +673,7 @@
     }
 	$( document ).ready(function() {
 		loadBlocks();
-		$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id").chosen();
+		$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id,#selected_glass_sizes").chosen();
 	});
 	function save_category(){
 		let params 			= new Object;
@@ -869,8 +891,9 @@
         params.manuf_id = $("#selected_glass_manuf_id").val();
         params.option_id = $("#selected_glass_cat_id").val();
         params.color_id = $("#selected_glass_color_id").val();
+		params.size = $("#selected_glass_sizes").val();
 
-		var search = "&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id
+		var search = "&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id+"&size="+params.size;
         loadBlocks(search);
 	});
 
@@ -884,10 +907,12 @@
 			success: function(data){
 				if(typeof data != 'undefined' || data.length > 0){
 					data.forEach(function(data, x){
+						x = x+1;
 						$("#glasses_div").append(`
 						<div class="element_in_div" sort_n="`+x+`" glass_width="`+data.glass_width+`" glass_height="`+data.glass_height+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
+							<div style="font-size: 20px;">`+data.sizes+`</div>	
 							<div>`+data.name+`</div>
-							<div>`+data.sizes+`</div>
+							
 							<div>`+data.color+`</div>
 
 							<div class="glass_cc">`+data.cc+`</div>
@@ -903,6 +928,34 @@
 </html>
 
 <?php
+function getSizeOpt($id){
+	GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT  CONCAT(products_glasses.glass_width,'-',products_glasses.glass_height) AS id,
+	CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS name
+	
+	FROM    products_glasses
+	JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+	JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+	JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+	JOIN    glass_status ON glass_status.id = products_glasses.status_id
+	JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+	
+	WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) 
+	GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id
+	ORDER BY products_glasses.id");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
 function getGlassColorOptions($id){
     GLOBAL $db;
     $data = '';

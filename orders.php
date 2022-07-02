@@ -226,6 +226,18 @@
 		.proccess:hover{
 			background-color: grey;
 		}
+		.row_glass{
+			line-height: 11px;
+			display: none;
+		}
+		.glass_detail{
+			color: blue!important;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		.open_close{
+			cursor: pointer;
+		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -528,9 +540,9 @@
 				var actions = '<div id="new_glass">დამატება</div><div id="copy_glass">კოპირება</div><div id="del_glass"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 12;
-				var columnsSQL = ["id:string","glass_option_id:string","glass_type_id:string","glass_color_id:string","glass_manuf_id:string", "name_product:string", "dimm:string", "type:string", "color:string", "proccess2:string", "status:string", "cut_list:string"];
-				var columnGeoNames = ["ID კოდი","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id", "დასახელება", "ზომა", "ტიპი", "ფერი", "პროცესი", "სტატუსი", "ლისტი"];
+				var columnsCount = 2;
+				var columnsSQL = ["glasses_grouped:string","glasses_grouped_cc:string"];
+				var columnGeoNames = ["მინები","რაოდენობა"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -904,12 +916,12 @@
 				}
 			});
 			$(document).on('click', '#del_glass', function() {
-				var grid = $("#glasses_div").data("kendoGrid");
-				var selectedRows = grid.select();
+				var selectedRows = $(".selected_glass")
 				var writing_id = [];
 				selectedRows.each(function(index, row) {
-					var selectedItem = grid.dataItem(row);
-					writing_id.push(selectedItem.id);
+					if($(row).is(":checked")){
+						writing_id.push($(row).attr('data-id'));
+					}
 				});
 				if(typeof writing_id == 'undefined') {
 					alert('აირჩიეთ მინა!!!');
@@ -1039,12 +1051,10 @@
 					}
 				});
 			});
-			$(document).on("dblclick", "#glasses_div tr.k-state-selected", function() {
-				var grid = $("#glasses_div").data("kendoGrid");
-				var dItem = grid.dataItem($(this));
-				if(dItem.id == '') {
-					return false;
-				}
+			$(document).on('click', '.glass_detail', function(){
+				var dItem = new Object();
+
+				dItem.id = $(this).attr('data-id');
 				$.ajax({
 					url: "server-side/writes.action.php",
 					type: "POST",
@@ -1076,7 +1086,8 @@
 						});
 					}
 				});
-			});
+			})
+
 			$(document).on("dblclick", "#product_div tr.k-state-selected", function() {
 				var grid = $("#product_div").data("kendoGrid");
 				var dItem = grid.dataItem($(this));
@@ -1356,11 +1367,12 @@
 			});
 			$(document).on('click', '#copy_glass', function(){
 				var grid = $("#glasses_div").data("kendoGrid");
-				var selectedRows = grid.select();
+				var selectedRows = $(".selected_glass")
 				var writing_id = [];
 				selectedRows.each(function(index, row) {
-					var selectedItem = grid.dataItem(row);
-					writing_id.push(selectedItem.id);
+					if($(row).is(":checked")){
+						writing_id.push($(row).attr('data-id'));
+					}
 				});
 				if(typeof writing_id == 'undefined') {
 					alert('აირჩიეთ მინა!!!');
@@ -1676,6 +1688,16 @@
 					}
 				});
 			}
+
+			$(document).on('click', '.open_close', function(){
+				if($(this).parent().find('.row_glass').css('display') == 'block'){
+					$(this).parent().find('.row_glass').css('display', 'none');
+				}
+				else{
+					$(this).parent().find('.row_glass').css('display', 'block');
+				}
+				
+			})
 			</script>
 </body>
 

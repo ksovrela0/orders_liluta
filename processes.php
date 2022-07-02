@@ -396,7 +396,7 @@ $proc_data = $db->getResultArray()['result'][0];
 									url.act = "finish_glass_proc";
 									url['gpyr'] = [];
 									url['apyr'] = [];
-									$(".glass_pyramids").each(function(i, x){
+									$(".glass_pyramids_m").each(function(i, x){
 										if($(x).val() == ''){
 											ready_to_save++;
 										}
@@ -406,7 +406,7 @@ $proc_data = $db->getResultArray()['result'][0];
 										
 									})
 
-									$(".atxod_pyramids").each(function(i, x){
+									$(".atxod_pyramids_m").each(function(i, x){
 										if($(x).val() == ''){
 											ready_to_save++;
 										}
@@ -517,8 +517,69 @@ $proc_data = $db->getResultArray()['result'][0];
 							width: 800,
 							modal: true,
 							buttons: {
-								"დასრულება": function() {
-									alert("დახარვეზებულია!!!")
+								"დახარვეზება": function() {
+									var ready_to_save = 0;
+									var url = new Object();
+									url.act = "error_glass_proc";
+									url['gpyr'] = [];
+									url['apyr'] = [];
+									$(".glass_error").each(function(i, x){
+										if($(x).is(":checked")){
+											if($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val() == ''){
+												alert("შეიყვანეთ პირამიდის ნომერი დახარვეზებული მინისთვის");
+												ready_to_save++;
+											}
+											else{
+												url['gpyr'].push($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(x).attr('data-id'));
+											}
+											
+										}
+										
+									})
+
+									$(".atxod_error").each(function(i, x){
+										if($(x).is(":checked")){
+											if($(".atxod_pyramids[data-id='"+$(x).attr('data-id')+"']").val() == ''){
+												alert("შეიყვანეთ პირამიდის ნომერი დახარვეზებული ატხოდისთვის");
+												ready_to_save++;
+											}
+											else{
+												if($(".atxod_width[data-id='"+$(x).attr('data-id')+"']").val() == '' || $(".atxod_height[data-id='"+$(x).attr('data-id')+"']").val() == ''){
+													alert("ატხოდის ზომები არ შეიძლება იყოს ცარიელი, გთხოვთ შეავსოთ!!!");
+													ready_to_save++;
+												}
+												else{
+													url['apyr'].push($(".atxod_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(x).attr('data-id')+'-'+$(".atxod_width[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(".atxod_height[data-id='"+$(x).attr('data-id')+"']").val());
+												}
+											}
+											
+										}
+										
+									})
+
+
+									if(url['gpyr'].length == 0 && url['apyr'] == 0){
+										alert("დასახარვეზებლად უნდა აირჩიოთ 1 მინა ან ატხოდი მაინც!!!");
+										ready_to_save++;
+									}
+									console.log(url)
+
+									url.path_id = get_path_id;
+									url.cut_id = cut_id;
+
+									if(ready_to_save == 0){
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: url,
+											dataType: "json",
+											success: function(data) {
+												$("#main_cut").data("kendoGrid").dataSource.read();
+												$('#proc_error_page').dialog("close");
+											}
+										});
+									}
+
 									/* var ready_to_save = 0;
 									var url = new Object();
 									url.act = "error_glass_proc";
@@ -568,7 +629,8 @@ $proc_data = $db->getResultArray()['result'][0];
 				});
 			}
 			else{
-				if (confirm("ნამდვილად გსურთ მინის დახარვეზება?") == true) {
+				var ask = prompt("ნამდვილად გსურთ მინის დახარვეზება? მიუთითეთ პირამიდის ნომერი!")
+				if (ask != '' && ask > 0) {
 					$.ajax({
 						url: "server-side/writes.action.php",
 						type: "POST",
@@ -576,7 +638,8 @@ $proc_data = $db->getResultArray()['result'][0];
 							act: "start_glass_proc",
 							glass_id: id,
 							path_id: path_id,
-							glass_rate: 0
+							glass_rate: 0,
+							pyramid: ask
 						},
 						dataType: "json",
 						success: function(data) {
@@ -634,6 +697,7 @@ $proc_data = $db->getResultArray()['result'][0];
 							}
 							else{
 								alert(data.error);
+								
 							}
 							$("#main_div").data("kendoGrid").dataSource.read();
 						}

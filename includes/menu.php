@@ -33,8 +33,8 @@ $user_gr = $_SESSION['GRPID'];
                                                             
                                                             IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 1),
                                                             
-                                                            (SELECT COUNT(*) FROM `glasses_paths` WHERE actived = 1 AND path_group_id = groups.id AND status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), 3) = 3)
-                                                            ) AS cc_queue
+                                                            (SELECT COUNT(*) FROM `glasses_paths` WHERE actived = 1 AND path_group_id = groups.id AND status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), IF((SELECT COUNT(*) FROM products_glasses WHERE id = glasses_paths.glass_id AND go_to_cut = 1 AND products_glasses.actived = 1) > 0,1,3)) = 3)
+								) AS cc_queue
                                             FROM    groups
                                             
                                             
@@ -42,7 +42,7 @@ $user_gr = $_SESSION['GRPID'];
                                             
                                             GROUP BY groups.id");
                             $processes = $db->getResultArray()['result'];
-                            $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=manage_cut"><i class="fe fe-database"></i> ჭრის მართვა</a> </li>';
+                            $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=manage_cut"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_999">ჭრის მართვა <span style="color: red;">(0)</span></span></a> </li>';
                             foreach($processes AS $group){
                                 $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_'.$group['id'].'">'.$group[name].' <span style="color: #95952a;">('.$group[cc_active].')</span> <span style="color: red;">('.$group[cc_queue].')</span> </span></a> </li>';
                             }

@@ -188,17 +188,17 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">საწყობი</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">თანამშრომლები</h2>
 						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="#">საწყობის მართვა</a></li>
-							<li class="breadcrumb-item active" aria-current="page">საწყობი</li>
+							<li class="breadcrumb-item"><a href="#">პარამეტრები</a></li>
+							<li class="breadcrumb-item active" aria-current="page">თანამშრომლები</li>
 						</ol>
 					</div>
 				</div>
 				<!-- End Page Header -->
 				<!-- Row -->
 				<div class="row">
-					<div id="product_categories"></div>
+					<div id="users"></div>
 				</div>
 				<!-- End Row -->
 			</div>
@@ -289,13 +289,13 @@
 	<!-- Jquery js-->
 	
 	<div class="main-navbar-backdrop"></div>
-	<div title="საწყობი - მიღება" id="get_edit_page">
+	<div title="ობიექტი" id="get_edit_page">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
-	var aJaxURL = "server-side/objects.action.php";
-	$(document).on("dblclick", "#product_categories tr.k-state-selected", function () {
-		var grid = $("#product_categories").data("kendoGrid");
+	var aJaxURL = "server-side/users.action.php";
+	$(document).on("dblclick", "#users tr.k-state-selected", function () {
+		var grid = $("#users").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
 		
 		if(dItem.id == ''){
@@ -312,10 +312,12 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-                $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_manuf_id,#owner,#gtype,#bringer").chosen();
+                $("#user_group").chosen();
+                var obj_id = "&obj_id="+dItem.id;
+                LoadKendoTable_branches(obj_id);
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: 500,
+					height: "auto",
 					width: 900,
 					modal: true,
 					buttons: {
@@ -340,10 +342,10 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-				$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_manuf_id,#owner,#gtype,#bringer").chosen();
+				$("#user_group").chosen();
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: 500,
+					height: "auto",
 					width: 900,
 					modal: true,
 					buttons: {
@@ -360,7 +362,7 @@
 	});
 	$(document).on('click','#button_trash',function(){
 		var removeIDS = [];
-		var entityGrid = $("#product_categories").data("kendoGrid");
+		var entityGrid = $("#users").data("kendoGrid");
 		var rows = entityGrid.select();
 		rows.each(function(index, row) {
 			var selectedItem = entityGrid.dataItem(row);
@@ -373,7 +375,7 @@
 			data: "act=disable&id=" + removeIDS,
 			dataType: "json",
 			success: function (data) {
-				$("#product_categories").data("kendoGrid").dataSource.read();
+				$("#users").data("kendoGrid").dataSource.read();
 			}
 		});
 	});
@@ -383,26 +385,33 @@
     function LoadKendoTable_branches(hidden){
 
 		//KendoUI CLASS CONFIGS BEGIN
-		var aJaxURL	        =   "server-side/objects.action.php";
+		var aJaxURL	        =   "server-side/users.action.php";
 		var gridName        = 	'object_branches';
 		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	5;
+		var columnsCount    =	9;
 		var columnsSQL      = 	[
 									"id:string",
 									"name_geo:string",
-
+									"name_rus:string",
+									"name_eng:string",
 									"work_h:string",
 									"phone:string",
-                                    "address:string"
+                                    "address:string",
+                                    "size:string",
+                                    "free_delivery:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
-									"დასახელება",
-									"მარაგში",
-									"კვ. საერთო",
-                                    "კვ. ფასი"
+									"დასახელება GEO",
+									"დასახელება RUS",
+									"დასახელება ENG",
+									"სამუშაო სთ-ები",
+									"ტელეფონი",
+                                    "მისამართი",
+                                    "ზომა",
+                                    "უფასო მიტანა?"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
@@ -421,46 +430,32 @@
 	function LoadKendoTable_incomming(hidden){
 
 		//KendoUI CLASS CONFIGS BEGIN
-		var aJaxURL	        =   "server-side/objects.action.php";
-		var gridName        = 	'product_categories';
-		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a><a id="button_copy" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> კოპირება</a></div> <div> ჯამში მინა: <span id="total_glass">0</span></div>';
+		var aJaxURL	        =   "server-side/users.action.php";
+		var gridName        = 	'users';
+		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გამორთვა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	12;
+		var columnsCount    =	5;
 		var columnsSQL      = 	[
 									"id:string",
-									"glass:string",
-									"manuf:string",
-									"type_glass:string",
-									"glass_color:string",
-                                    "qty:string",
-									"size:string",
-									"price:string",
-									"marja:string",
-									"owner:string",
-									"gtype:string",
-									"pyramid:string"
+									"fullname:string",
+									"phone:string",
+									"pid:string",
+									"group:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
-									"შუშა",
-									"მწარმოებელი",
-									"ტიპი",
-									"ფერი",
-                                    "დარ.რაოდ",
-									"ზომა",
-									"მოიტანა",
-									"კატეგორია",
-									"ფასნამატი",
-									"ფასი კვ.",
-									"პირამიდის #"
+									"სახელი/გვარი",
+									"ტელეფონი",
+									"პ/ნ",
+									"ჯგუფი"
 								];
 
-		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
-		var selectors               =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
+		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
+		var selectors               =   [0,0,0,0,0,0,0,0,0,0]; 
 
-		var locked                  =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-		var lockable                =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+		var locked                  =   [0,0,0,0,0,0,0,0,0,0];
+		var lockable                =   [0,0,0,0,0,0,0,0,0,0];
 
 		var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 		//KendoUI CLASS CONFIGS END
@@ -629,140 +624,27 @@
 	});
 	function save_category(){
 		let params 			= new Object;
-		params.act 			= 'save_warehouse';
-		params.id 			= $("#warehouse_id").val();
-		params.glass_cat 	= $("#selected_glass_cat_id").val();
-		params.owner 	= $("#owner").val();
-		params.bringer 	= $("#bringer").val();
-		params.gtype 	= $("#gtype").val();
-		params.marja 	= $("#marja").val();
-		params.glass_type 	= $("#selected_glass_type_id").val();
-		params.glass_color	= $("#selected_glass_color_id").val();
-		params.glass_qty 		= $("#glass_qty").val();
-		params.glass_width 		= $("#glass_width").val();
-		params.glass_height 		= $("#glass_height").val();
-		params.sqr_price 	= $("#sqr_price").val();
-		params.pyramid 	= $("#pyramid").val();
-		params.glass_manuf 	= $("#selected_glass_manuf_id").val();
-
-		var ready = 0;
-		if(params.glass_cat == 0){
-			alert("თქვენ გამოტოვეთ სისქე");
-			ready++;
-		}
-
-		if(params.glass_manuf == 0){
-			alert("თქვენ გამოტოვეთ მწარმოებელი");
-			ready++;
-		}
-		if(params.glass_type == 0){
-			alert("თქვენ გამოტოვეთ ტიპი");
-			ready++;
-		}
-		if(params.glass_color == 0){
-			alert("თქვენ გამოტოვეთ ფერი");
-			ready++;
-		}
-		if(params.owner == 0 && params.bringer == 0){
-			alert("აუცილებლად შეიყვანეთ მომწოდებელი ან კლიენტი");
-			ready++;
-		}
-		if(params.gtype == 0){
-			alert("თქვენ გამოტოვეთ კატეგორია");
-			ready++;
-		}
-
-		if(params.glass_qty == 0 || params.glass_qty == ''){
-			alert("თქვენ გამოტოვეთ რაოდენობა");
-			ready++;
-		}
-		if(params.glass_width == 0 || params.glass_width == ''){
-			alert("თქვენ გამოტოვეთ სიმაღლე");
-			ready++;
-		}
-		if(params.glass_height == 0 || params.glass_height == ''){
-			alert("თქვენ გამოტოვეთ სიგანე");
-			ready++;
-		}
-		if(params.sqr_price == 0 || params.sqr_price == ''){
-			alert("თქვენ გამოტოვეთ კვადრატულის ფასი");
-			ready++;
-		}
-		if(params.marja == 0 || params.marja == ''){
-			alert("თქვენ გამოტოვეთ ფასნამატი");
-			ready++;
-		}
-		if(params.pyramid == 0 || params.pyramid == ''){
-			alert("თქვენ გამოტოვეთ პირამიდა");
-			ready++;
-		}
-
-		if(ready == 0){
-			$.ajax({
-				url: aJaxURL,
-				type: "POST",
-				data: params,
-				dataType: "json",
-				success: function(data){
-					$("#product_categories").data("kendoGrid").dataSource.read();
-					$('#get_edit_page').dialog("close");
-				}
-			});
-		}
-		
+		params.act 			= 'save_user';
+		params.id 			= $("#user_id").val();
+		params.firstname 	= $("#firstname").val();
+		params.lastname 	= $("#lastname").val();
+		params.phone	= $("#phone").val();
+		params.user_group 		= $("#user_group").val();
+		params.pid 		= $("#pid").val();
+		params.username 	= $("#username").val();
+		params.password 	= $("#password").val();
+		$.ajax({
+			url: aJaxURL,
+			type: "POST",
+			data: params,
+			dataType: "json",
+			success: function(data){
+				$("#users").data("kendoGrid").dataSource.read();
+				$('#get_edit_page').dialog("close");
+			}
+		});
 		
 	}
-
-	$(document).on('click', '#button_copy', function(){
-		var grid = $("#product_categories").data("kendoGrid");
-		var selectedRows = grid.select();
-		var writing_id = [];
-		selectedRows.each(function(index, row) {
-			var selectedItem = grid.dataItem(row);
-			writing_id.push(selectedItem.id);
-		});
-		if(typeof writing_id == 'undefined' || writing_id.length == 0) {
-			alert('აირჩიეთ პროდუქტი!!!');
-		} 
-		else if(writing_id.length > 1){
-			alert("აირჩიეთ მხოლოდ 1 პროდუქტი");
-		}
-		else {
-			var ask = prompt("მიუთითეთ პირამიდის ნომერი");
-			
-			if(ask > 0){
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act: "copy",
-						type: "warehouse",
-						id: writing_id,
-						pyramid: ask
-					},
-					dataType: "json",
-					success: function(data) {
-						$("#product_categories").data("kendoGrid").dataSource.read();
-					}
-				});
-			}
-			
-		}
-	});
-
-	$(document).on('change', '#owner', function(e){
-		//e.preventDefault();
-
-		$("#bringer").val(0);
-		$("#bringer").trigger("chosen:updated");
-	});
-
-	$(document).on('change', '#bringer', function(e){
-		//e.preventDefault();
-
-		$("#owner").val(0);
-		$("#owner").trigger("chosen:updated");
-	});
 	</script>
 </body>
 
