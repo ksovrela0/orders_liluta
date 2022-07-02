@@ -429,16 +429,39 @@ switch ($act){
         }
         break;
     case 'check_glass_status':
-        $glass_id = $_REQUEST['glass_id'];
-        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id = $glass_id AND status_id = 1");
-        $glass_check = $db->getResultArray()['result'][0]['cc'];
+        $glass_width = $_REQUEST['glass_width'];
+        $glass_height = $_REQUEST['glass_height'];
+        $glass_option_id = $_REQUEST['glass_option_id'];
+        $glass_type_id = $_REQUEST['glass_type_id'];
+        $glass_color_id = $_REQUEST['glass_color_id'];
+        $glass_manuf_id = $_REQUEST['glass_manuf_id'];
+        $where = '';
+        $ids = implode(',',$_REQUEST['ids']);
+        if($ids != ''){
+            $where .= " AND products_glasses.id NOT IN ($ids)";
+        }
+        $db->setQuery(" SELECT products_glasses.*,CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
+                                CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
+                                glass_colors.name AS color
+                        FROM    products_glasses 
+                        JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+                        JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+                        JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                        JOIN    glass_status ON glass_status.id = products_glasses.status_id
+                        JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+                        WHERE   products_glasses.glass_width = '$glass_width' 
+                        AND     products_glasses.glass_height = '$glass_height' 
+                        AND     products_glasses.glass_option_id = '$glass_option_id' 
+                        AND     products_glasses.glass_color_id = '$glass_color_id' 
+                        AND     products_glasses.glass_manuf_id = '$glass_manuf_id'
+                        AND     products_glasses.status_id = 1
+                        AND     products_glasses.actived = 1
+                        AND     products_glasses.go_to_cut = 1
+                        $where
+                        LIMIT   1");
+        $data = $db->getResultArray()['result'][0];
 
-        if($glass_check == 0){
-            $data['error'] = 'მინა უკვე მზადების პროცესშია, ვერ დაამატებთ მას ლისტში';
-        }
-        else{
-            $data['status'] = 'OK';
-        }
+        
     break;
     case 'save_list_cut':
         $raw_ids = $_REQUEST['glass_ids'];
@@ -1884,29 +1907,12 @@ switch ($act){
                                 products_glasses.glass_type_id,
                                 products_glasses.glass_color_id,
                                 products_glasses.glass_manuf_id,
-                                CONCAT(glass_options.name, '(',glass_manuf.name,')'),
-                                CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ'),
-                                glass_type.name,
-                                glass_colors.name,
-                                GROUP_CONCAT(CONCAT(groups.name, ' - <span style=\"color:#000;',
-                                CASE
-                                    WHEN glasses_paths.status_id = 1 THEN 'background-color: red;'
-                                    WHEN glasses_paths.status_id = 2 THEN 'background-color: yellow;'
-                                    WHEN glasses_paths.status_id = 3 THEN 'background-color: green;'
-                                    WHEN glasses_paths.status_id = 4 THEN 'background-color: red;'
-                                    WHEN glasses_paths.status_id = 5 THEN 'background-color: red;'
-                                END
-                                ,'\">', path_status.name,'</span>') SEPARATOR ',<br>') AS proccess,
-                                CONCAT('<span style=\"padding:5px;', CASE
-                                    WHEN glass_status.id = 1 THEN 'background-color: red;'
-                                    WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-                                    WHEN glass_status.id = 3 THEN 'background-color: green;'
-                                    WHEN glass_status.id = 4 THEN 'background-color: red;'
-                                    WHEN glass_status.id = 5 THEN 'background-color: red;'
-                                END
-                                ,'\">', glass_status.name,'</span>') AS glasses,
-
-                                IFNULL((SELECT cut_id FROM lists_to_cut WHERE actived = 1 AND lists_to_cut.glass_id = products_glasses.id), 'არ იჭრება')
+                                products_glasses.glass_width,
+                                products_glasses.glass_height,
+                                CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
+                                CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
+                                glass_colors.name AS color,
+                                COUNT(*) AS cc
 
                         FROM    products_glasses
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
@@ -1914,17 +1920,13 @@ switch ($act){
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
                         JOIN    glass_status ON glass_status.id = products_glasses.status_id
                         JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
-                        LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1
-                        LEFT JOIN groups ON groups.id = glasses_paths.path_group_id
-                        LEFT JOIN glass_status AS path_status ON path_status.id = glasses_paths.status_id
-                        WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 $where
-                        GROUP BY products_glasses.id
+
+                        WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) $where
+                        GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id
                         ORDER BY products_glasses.id");
 
 
-        $result = $db->getKendoList($columnCount, $cols);
-
-        $data = $result;
+        $data = $db->getResultArray()['result'];
         break;
     case 'get_list_glasses':
         $columnCount = 		$_REQUEST['count'];

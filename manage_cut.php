@@ -214,7 +214,7 @@
 		color: white;
 		cursor: pointer;
 	}
-	#list_area{
+	#list_area,#glasses_div{
 		border: 1px solid black;
 		padding: 10px;
 		display: flex;
@@ -233,8 +233,22 @@
 		background-color: #f7fffd;
 		font-weight: bold;
 		position: relative;
+		transition: 0.5s ease;
 	}
-	.remove_from_list{
+	.element_in_div{
+		border: 1px solid #cdcdcd;
+		padding: 8px;
+		background-color: #f7fffd;
+		font-weight: bold;
+		position: relative;
+		cursor: pointer;
+		transition: 0.5s ease;
+	}
+	.element_in_div:hover{
+		-webkit-box-shadow: 3px 5px 14px -2px rgba(0,0,0,0.58); 
+		box-shadow: 3px 5px 14px -2px rgba(0,0,0,0.58);
+	}
+	.remove_from_list, .glass_cc{
 		border: 1px solid black;
 		width: fit-content;
 		padding: 4px 5px 4px 5px;
@@ -324,7 +338,10 @@
 					</div>
 				</div>
 				<div class="row">
-					<div id="glasses_div"></div>
+					<div class="col-sm-12">
+						<div id="glasses_div"></div>
+					</div>
+					
 				</div>
 				<!-- End Row -->
 			</div>
@@ -424,6 +441,59 @@
 	var aJaxURL = "server-side/objects.action.php";
 	var f_product_name = '';
 	var f_color = '';
+	$(document).on("dblclick", ".element_in_div", function () {
+		var sort_n = $(this).attr('sort_n');
+		var el = this;
+		var params = new Object();
+		params.act = 'check_glass_status';
+		$(this).each(function() {
+			$.each(this.attributes, function() {
+				// this.attributes is not a plain object, but an array
+				// of attribute nodes, which contain both the name and value
+				if(this.specified) {
+					console.log(this.name, this.value);
+					params[this.name] = this.value;
+				}
+			});
+		});
+
+		var glass_ids = [];
+
+		$(".element_in_list").each(function(i,x){
+			glass_ids.push($(x).attr('glass-id'));
+		})
+		params.ids = glass_ids;
+		$.ajax({
+			url: "server-side/writes.action.php",
+			type: "POST",
+			data: params,
+			dataType: "json",
+			success: function(data){
+				if(typeof data.error != 'undefined'){
+					alert(data.error);
+				}
+				else{
+					$("#list_area").append(`
+					<div class="element_in_list" sort_n="`+sort_n+`" glass-id="`+data.id+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
+						<div>ID: `+data.id+`  `+data.name+`</div>
+						<div>`+data.sizes+`</div>
+						<div>`+data.color+`</div>
+
+						<div class="remove_from_list">X</div>
+					</div>`);
+
+					$("#no_list").css('display', 'none');
+
+					let old_counter = $(el).find(".glass_cc").html();
+					let new_counter = old_counter - 1;
+
+					$(el).find(".glass_cc").html(new_counter)
+
+				}
+				
+			}
+		});
+	})
 	$(document).on("dblclick", "#glasses_div tr.k-state-selected", function () {
 		var grid = $("#glasses_div").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
@@ -482,6 +552,13 @@
 		
 	});
 	$(document).on('click', '.remove_from_list', function(){
+		let sort_n = $(this).parent().attr('sort_n');
+		
+		let old_counter = $(".element_in_div[sort_n='"+sort_n+"']").find(".glass_cc").html();
+
+		
+		let new_counter = parseInt(old_counter) + 1;
+		$(".element_in_div[sort_n='"+sort_n+"']").find(".glass_cc").html(new_counter);
 		$(this).parent().remove();
 		if($(".element_in_list").length == 0){
 			$("#no_list").css('display', 'block');
@@ -573,7 +650,7 @@
         kendo.loadKendoUI(aJaxURL, 'get_list_atxods', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
     }
 	$( document ).ready(function() {
-		LoadKendoTable_glass();
+		loadBlocks();
 		$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id").chosen();
 	});
 	function save_category(){
@@ -684,7 +761,6 @@
             dataType: "json",
             success: function(data) {
                 if(data.status == 'OK'){
-                    $("#glasses_div").data("kendoGrid").dataSource.read();
                     $('#get_cut_page').dialog("close");
 					$(".element_in_list").remove();
 					$("#no_list").css('display', 'block');
@@ -795,8 +871,32 @@
         params.color_id = $("#selected_glass_color_id").val();
 
 		var search = "&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id
-        LoadKendoTable_glass(search);
+        loadBlocks(search);
 	});
+
+	function loadBlocks(search = ''){
+		$("#glasses_div").html('');
+		$.ajax({
+			url: "server-side/writes.action.php",
+			type: "POST",
+			data: "act=get_list_glasses_all"+search,
+			dataType: "json",
+			success: function(data){
+				if(typeof data != 'undefined' || data.length > 0){
+					data.forEach(function(data, x){
+						$("#glasses_div").append(`
+						<div class="element_in_div" sort_n="`+x+`" glass_width="`+data.glass_width+`" glass_height="`+data.glass_height+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
+							<div>`+data.name+`</div>
+							<div>`+data.sizes+`</div>
+							<div>`+data.color+`</div>
+
+							<div class="glass_cc">`+data.cc+`</div>
+						</div>`);
+					})
+				}
+			}
+		})
+	}
 	</script>
 </body>
 
