@@ -2196,7 +2196,7 @@ switch ($act){
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
                         JOIN    glass_status ON glass_status.id = products_glasses.status_id
                         JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
-
+                        JOIN    orders ON orders.id = products_glasses.id AND orders.actived = 1
                         WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) $where
                         GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id
                         ORDER BY products_glasses.id");
