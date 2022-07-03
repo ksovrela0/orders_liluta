@@ -192,11 +192,11 @@ switch ($act){
                                 orders.client_pid,
                                 orders.client_phone,
 
-                                CASE
+                                IF((SELECT COUNT(*) FROM glasses_paths WHERE actived = 1 AND glass_id = products_glasses.id AND status_id IN (1,2,4,5,6)) = 0,'დასრულებული',CASE
                                     WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT gp1.path_group_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id)),'ჭრა')
                                     
                                     ELSE IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT gp1.path_group_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id))
-                                END AS procc,
+                                END) AS procc,
                                 
                                 CASE
                                     WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM glass_status WHERE id = (SELECT gp1.status_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT name FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM glass_status WHERE id = lists_to_cut.status_id)), (SELECT name FROM glass_status WHERE id = lists_to_cut.status_id))
@@ -314,18 +314,20 @@ function getPage($res = ''){
             </div>
 
             <div class="col-sm-4">
+                <label>მომწოდებელი</label>
+                <select id="bringer">
+                    '.getGlassbringer($res['bringer']).'
+                </select>
+            </div>
+
+            <div class="col-sm-4">
                 <label>კლიენტის მინა</label>
                 <select id="owner">
                     '.getGlassBringOptions($res['owner']).'
                 </select>
             </div>
 
-            <div class="col-sm-4">
-                <label>მომწოდებელი</label>
-                <select id="bringer">
-                    '.getGlassbringer($res['bringer']).'
-                </select>
-            </div>
+            
 
             <div class="col-sm-4">
                 <label>კატეგროია</label>

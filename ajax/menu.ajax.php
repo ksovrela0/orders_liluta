@@ -15,7 +15,7 @@ switch ($act){
                                 
                                 IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 1),
                                 
-                                (SELECT COUNT(*) FROM `glasses_paths` WHERE actived = 1 AND path_group_id = groups.id AND status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), IF((SELECT COUNT(*) FROM products_glasses WHERE id = glasses_paths.glass_id AND go_to_cut = 1 AND products_glasses.actived = 1) > 0,1,3)) = 3)
+                                (SELECT COUNT(*) FROM `glasses_paths` JOIN orders ON orders.id = (SELECT order_id FROM products_glasses WHERE id = glasses_paths.glass_id) WHERE glasses_paths.actived = 1 AND path_group_id = groups.id AND glasses_paths.status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), IF((SELECT COUNT(*) FROM products_glasses WHERE id = glasses_paths.glass_id AND go_to_cut = 1 AND products_glasses.actived = 1) > 0,1,3)) = 3)
                                 ) AS cc_queue
                         FROM    groups
 
@@ -35,7 +35,7 @@ switch ($act){
                         LEFT JOIN lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
                         WHERE products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id  =1");
 
-        $cut_queue = $db->getResultArray()['result'][0]['cc'];
+        $cut_queue = intval($db->getResultArray()['result'][0]['cc']);
         array_push($data, array("id" => 999, "title" => "ჭრის მართვა", "queue" => $cut_queue));
 
     break;

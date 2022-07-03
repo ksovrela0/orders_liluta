@@ -12,7 +12,7 @@ switch ($act){
         $ids = explode(',',$ids);
 
         foreach($ids AS $id){
-            $db->setQuery("UPDATE glass_manuf SET actived = 0 WHERE id = '$id'");
+            $db->setQuery("UPDATE glass_bringer SET actived = 0 WHERE id = '$id'");
             $db->execQuery();
         }
     break;
@@ -115,11 +115,10 @@ switch ($act){
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
 
-            $db->setQuery(" SELECT  groups.id,
-                                    groups.name,
-                                    default_price
-                            FROM    groups
-                            WHERE   groups.actived = 1 AND groups.id IN (3,5,6,7,8,9)");
+            $db->setQuery(" SELECT  id,
+                                    name
+                            FROM    glass_bringer
+                            WHERE   actived = 1 AND id != 1");
 
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
@@ -132,19 +131,18 @@ switch ($act){
         $id = $_REQUEST['id'];
         $data = array('page' => getPage(getObject($id)));
     break;
-    case 'save_manuf':
+    case 'save_option':
         $id             = $_REQUEST['id'];
-        $def_price      = $_REQUEST['def_price'];
+        $glass_option      = $_REQUEST['glass_option'];
         
         if($id == ''){
-            $db->setQuery(" INSERT INTO  glass_manuf 
-                            SET     `name` = '$manuf_name',
-                                    `info` = '$manuf_info'");
+            $db->setQuery(" INSERT INTO  glass_bringer 
+                            SET     `name` = '$glass_option'");
             $db->execQuery();
         }
         else{
-            $db->setQuery(" UPDATE  groups 
-                            SET     `default_price` = '$def_price'
+            $db->setQuery(" UPDATE  glass_bringer
+                            SET     `name` = '$glass_option'
                             WHERE   id = '$id'");
             $db->execQuery();
         }
@@ -161,14 +159,14 @@ function getPage($res = ''){
         <legend>ინფორმაცია</legend>
         <div class="row">
             <div class="col-sm-12">
-                <label>ღირებულება</label>
-                <input value="'.$res['default_price'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="def_price" class="idle" autocomplete="off">
+                <label>სახელი</label>
+                <input value="'.$res['name'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="glass_option" class="idle" autocomplete="off">
             </div>
 
             
         </div>
     </fieldset>
-    <input type="hidden" id="proc_id" value="'.$res[id].'">
+    <input type="hidden" id="option_id" value="'.$res[id].'">
     ';
 
     return $data;
@@ -177,12 +175,11 @@ function getPage($res = ''){
 function getObject($id){
     GLOBAL $db;
 
-    $db->setQuery(" SELECT      groups.id,
-                                groups.default_price,
-                                groups.name
+    $db->setQuery(" SELECT      id,
+                                name
 
-                    FROM        groups
-                    WHERE       groups.id = '$id'");
+                    FROM        glass_bringer
+                    WHERE       id = '$id'");
     $result = $db->getResultArray();
 
     return $result['result'][0];

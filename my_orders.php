@@ -265,10 +265,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">შეკვეთბი</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">ჩემი შეკვეთბი</h2>
 						<ol class="breadcrumb">
 							<li class="breadcrumb-item"><a href="#">შეკვეთები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">მიმდინარე შეკვეთები</li>
+							<li class="breadcrumb-item active" aria-current="page">ჩემი შეკვეთები</li>
 						</ol>
 					</div>
 				</div>
@@ -453,7 +453,8 @@
 			$(document).ready(function() {
 				GetDate('start_date');
 				GetDate('end_date');
-				LoadKendoTable_main();
+                var hid = "&type=mine";
+				LoadKendoTable_main(hid);
 				$.ajax({
 					url: "server-side/writes.action.php",
 					type: "POST",
@@ -1193,7 +1194,7 @@
 				params.avansi = $("#avansi").val();
 				params.avans_plus = $("#avans_plus").val();
 
-				params.resp_user = $("#resp_user").val();
+                params.resp_user = $("#resp_user").val();
 
 				var ready_to_save = 0;
 				if(params.client_name == '') {

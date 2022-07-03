@@ -42,6 +42,13 @@ switch ($act){
 }
 
 if(isset($_SESSION['USERID'])){
+	$db->setQuery(" SELECT  id,
+							group_id
+					FROM    users
+					WHERE   actived = 1 AND id = '$_SESSION[USERID]'");
+	$USERDATA = $db->getResultArray();
+	$USERGR = $USERDATA['result'][0]['group_id'];
+	$_SESSION['GRPID'] = $USERGR;
     if($page == ''){
         include('main.php');
     }

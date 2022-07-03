@@ -43,6 +43,38 @@ if($act == 'product_img'){
         }
     }
 }
+else if($act == 'glass_img'){
+    if (0 < $_FILES['file']['error']) {
+        echo 'Error: ' . $_FILES['file']['error'] . '<br>';
+    } else {
+        if(move_uploaded_file($_FILES['file']['tmp_name'], 'assets/uploads/' . $new_name.'.'.$type))
+        {
+            $glass_id = $_REQUEST['glass_id'];
+            $db->setQuery(" SELECT  COUNT(*) AS cc
+                            FROM    products_glasses
+                            WHERE   id = '$glass_id' AND actived = 1");
+            $isset = $db->getResultArray();
+            $pic = "assets/uploads/". $new_name.'.'.$type;
+            if($isset['result'][0]['cc'] == 0){
+                $db->setQuery("INSERT INTO products_glasses SET id = '$glass_id', picture = '$pic'");
+
+                $db->execQuery();
+            }
+
+            else{
+                $db->setQuery(" UPDATE  products_glasses 
+                                SET     picture='$pic'
+                                WHERE   id='$glass_id'");
+                $db->execQuery();
+            }
+
+            echo json_encode(array("status" => 'OK', "src" => $pic));
+        }
+        else{
+            echo 'error';
+        }
+    }
+}
 else if($act == 'upload_object_default_product'){
     $object_id = $_REQUEST['object_id'];
     if (0 < $_FILES['file']['error']) {
