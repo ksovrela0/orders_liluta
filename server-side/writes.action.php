@@ -2764,7 +2764,7 @@ function getPage($id, $res = ''){
         <legend>პარამეტრები</legend>
         <div class="row">
             <div class="col-sm-4">
-                <label>აირჩიეთ პროდუქცია</label>
+                <label>აირჩიეთ პასუხისმგებეელი პირი</label>
                 <select id="resp_user" '.$disable.'>
                     '.getRespUser($res['user_id']).'
                 </select>
