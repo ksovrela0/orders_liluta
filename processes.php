@@ -747,6 +747,7 @@ $proc_data = $db->getResultArray()['result'][0];
 							act: "start_glass_proc",
 							glass_id: id,
 							path_id: get_path_id,
+							proc_path_id: path_id,
 							cut_id: cut_id,
 							glass_rate: 2
 						},
@@ -773,6 +774,7 @@ $proc_data = $db->getResultArray()['result'][0];
 							glass_id: id,
 							path_id: get_path_id,
 							prod_id: prod_id,
+							proc_path_id: path_id,
 							glass_rate: 2
 						},
 						dataType: "json",
@@ -794,7 +796,8 @@ $proc_data = $db->getResultArray()['result'][0];
 						data: {
 							act: "start_glass_proc",
 							glass_id: id,
-							path_id: path_id,
+							path_id: get_path_id,
+							proc_path_id: path_id,
 							glass_rate: 2
 						},
 						dataType: "json",

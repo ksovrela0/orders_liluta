@@ -334,7 +334,7 @@ switch ($act){
         $db->setQuery(" SELECT SUM(qty) AS total
                         FROM warehouse WHERE glass_option_id = '$warehouse[glass_option_id]' AND glass_type_id = '$warehouse[glass_type_id]' AND 
                         glass_color_id = '$warehouse[glass_color_id]' AND glass_width = '$warehouse[glass_width]' AND glass_height = '$warehouse[glass_height]' AND
-                        glass_manuf_id = '$warehouse[glass_manuf_id]' AND owner = 1");
+                        glass_manuf_id = '$warehouse[glass_manuf_id]' AND (owner = '$warehouse[owner]' OR bringer = '$warehouse[bringer]')");
 
         $total = $db->getResultArray()['result'][0]['total'];
 
@@ -749,6 +749,7 @@ switch ($act){
                 $data = array('page' => getProcError($path_id));
             }
             else{
+                $path_id = $_REQUEST['proc_path_id'];
                 $db->setQuery("SELECT COUNT(*) AS cc FROM cut_glass WHERE actived = 1 AND status_id = 1 AND id = '$cut_id'");
                 $isStarted = $db->getResultArray()['result'][0]['cc'];
                 if($isStarted > 0){
@@ -797,6 +798,7 @@ switch ($act){
         }
         else if($path_id == 6 || $path_id == 7){
             $prod_id = $_REQUEST['prod_id'];
+            $path_id = $_REQUEST['proc_path_id'];
             if($glass_rate == 1 || $glass_rate == 0){
                 //$data = array('page' => getProcErrorProd($path_id));
                 $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glasses_paths.id) AS path_ids,
@@ -863,7 +865,7 @@ switch ($act){
 
         }
         else{
-
+            $path_id = $_REQUEST['proc_path_id'];
             if($glass_rate == 1 || $glass_rate == 0){
                 $db->setQuery("UPDATE glasses_paths SET glass_rate = '$glass_rate', user_id = '$user_id', status_id = 4, pyramid = '$pyramid' WHERE id = '$path_id'");
                 $db->execQuery();
@@ -872,6 +874,7 @@ switch ($act){
                 $db->execQuery();
             }
             else{
+                
                 $db->setQuery("SELECT COUNT(*) AS cc FROM glasses_paths WHERE actived = 1 AND id = '$path_id' AND status_id = 1");
                 $isStarted = $db->getResultArray()['result'][0]['cc'];
                 if($isStarted > 0){
