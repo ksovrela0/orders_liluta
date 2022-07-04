@@ -161,6 +161,15 @@
 		vertical-align: middle !important;
 		cursor: default!important;
 	}
+	#new_writing, #new_product, #new_glass, #new_path {
+        border: 1px solid black;
+        width: fit-content;
+        padding: 7px;
+        font-size: 18px;
+        color: #fff;
+        background-color: #2aad2e;
+        cursor: pointer;
+    }
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -289,7 +298,7 @@
 	<!-- Jquery js-->
 	
 	<div class="main-navbar-backdrop"></div>
-	<div title="საწყობი - მიღება" id="get_edit_page">
+	<div title="Excel" id="get_excel">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
@@ -424,10 +433,10 @@
 		//KendoUI CLASS CONFIGS BEGIN
 		var aJaxURL	        =   "server-side/objects.action.php";
 		var gridName        = 	'pyramid_glass';
-		var actions         = 	'';
+		var actions         = 	'<div id="new_glass">მინების გაცემა</div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	9;
+		var columnsCount    =	10;
 		var columnsSQL      = 	[
 									"id:string",
 									"glass:string",
@@ -436,6 +445,7 @@
 									"type_glass:string",
 									"glass_color:string",
                                     "qty:string",
+									"ueeess:string",
 									"qty2:string",
 									"size:string"
 								];
@@ -447,15 +457,16 @@
 									"დამკვეთი",
 									"პ/ნ ან ს/კ",
 									"ტელეფონი",
+									"გადახდილია?",
 									"პროცესი",
                                     "სტატუსი"
 								];
 
-		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0]; 
-		var selectors               =   [0,0,0,0,0,0,0,0,0]; 
+		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
+		var selectors               =   [0,0,0,0,0,0,0,0,0,0]; 
 
-		var locked                  =   [0,0,0,0,0,0,0,0,0];
-		var lockable                =   [0,0,0,0,0,0,0,0,0];
+		var locked                  =   [0,0,0,0,0,0,0,0,0,0];
+		var lockable                =   [0,0,0,0,0,0,0,0,0,0];
 
 		var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 		//KendoUI CLASS CONFIGS END
@@ -464,6 +475,78 @@
 		kendo.loadKendoUI(aJaxURL,'get_list_by_glass',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
 
 	}
+
+	$(document).on('click', '#new_glass', function(){
+		var grid = $("#pyramid_glass").data("kendoGrid");
+		var selectedRows = grid.select();
+		var glass_id = [];
+		var order_id = [];
+		var status = [];
+		selectedRows.each(function(index, row) {
+			var selectedItem = grid.dataItem(row);
+			glass_id.push(selectedItem.id);
+			order_id.push(selectedItem.shekv);
+			status.push(selectedItem.size);
+		});
+		if(typeof glass_id == 'undefined' || glass_id.length == 0) {
+			alert('აირჩიეთ 1 მინა მაინც!!');
+		}
+		else{
+			if(!allAreEqual(order_id)){
+				alert('ერთდროულად მხოლოდ 1 შეკვეთის მინების გაცემაა შესაძლებელი');
+			}
+			else{
+				if(allAreEqual(status) && status[0] == 'დასრულებული'){
+					if(confirm("ნამდვილად გსურთ მინების გაცემა?")){
+						let params 			= new Object;
+						params.act 			= 'give_glasses';
+						params.ids 			= glass_id;
+						params.order_id 			= order_id[0];
+						$.ajax({
+							url: aJaxURL,
+							type: "POST",
+							data: params,
+							dataType: "json",
+							success: function(data){
+								if(typeof(data.error) == 'undefined'){
+									$("#get_excel").html(data.page)
+									$("#get_excel").dialog({
+										resizable: false,
+										height: 'auto',
+										width: 120,
+										modal: true,
+										buttons: {
+											'დახურვა': function() {
+												$(this).dialog("close");
+											}
+										}
+									});
+								}
+								else{
+									alert(data.error);
+								}
+								$("#pyramid_glass").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
+				}
+				else{
+					alert("გასაცემი მინები უნდა იყოს დასრულებული");
+				}
+			}
+		} 
+	})
+
+	function allAreEqual(array) {
+        const result = array.every(element => {
+            if (element === array[0]) {
+            return true;
+            }
+        });
+
+        return result;
+    }
 	$(document).on('click','#upload_img',function(){
 		$("#upload_back_img").trigger('click');
 	});
