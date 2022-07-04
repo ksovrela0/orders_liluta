@@ -11,6 +11,13 @@ $user_gr = $_SESSION['GRPID'];
         <ul class="nav">
             <?php
                 $menu_li;
+
+                if($user_gr == 13 || $user_gr == 12 || $user_gr == 11 || $user_gr == 1){
+                    $where = '';
+                }
+                else{
+                    $where = "AND groups.id = '$user_gr'";
+                }
                 $db->setQuery(" SELECT 		menu_detail.id,
                                             menu_detail.icon,
                                             menu_detail.name,
@@ -38,11 +45,14 @@ $user_gr = $_SESSION['GRPID'];
                                             FROM    groups
                                             
                                             
-                                            WHERE groups.actived = 1 AND groups.id IN (2,3,4,5,6,7,8,9)
+                                            WHERE groups.actived = 1 AND groups.id IN (2,3,4,5,6,7,8,9) $where
                                             
                                             GROUP BY groups.id");
                             $processes = $db->getResultArray()['result'];
-                            $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=manage_cut"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_999">ჭრის მართვა <span style="color: red;">(0)</span></span></a> </li>';
+                            if($user_gr == 13 || $user_gr == 12 || $user_gr == 1){
+                                $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=manage_cut"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_999">ჭრის მართვა <span style="color: red;">(0)</span></span></a> </li>';
+                            }
+                            
                             foreach($processes AS $group){
                                 $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_'.$group['id'].'">'.$group[name].' <span style="color: #95952a;">('.$group[cc_active].')</span> <span style="color: red;">('.$group[cc_queue].')</span> </span></a> </li>';
                             }
