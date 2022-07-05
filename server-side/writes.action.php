@@ -3063,10 +3063,11 @@ function cutPage($glass_ids, $option_id, $type_id, $color_id, $manuf_id, $cut_id
 function getCutOptions($option_id, $type_id, $color_id, $manuf_id){
     GLOBAL $db;
     $data = '';
-    $db->setQuery("SELECT   id,
-                            CONCAT('ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ, პირამიდა: ', warehouse.pyramid ) AS name
+    $db->setQuery("SELECT   warehouse.id,
+                            CONCAT(glass_manuf.name,' ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ, პირამიდა: ', warehouse.pyramid ) AS name
                     FROM    warehouse
-                    WHERE   actived = 1 AND qty > 0 AND glass_option_id = '$option_id' AND glass_type_id = '$type_id' AND glass_color_id = '$color_id'");
+                    JOIN    glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
+                    WHERE   warehouse.actived = 1 AND warehouse.qty > 0 AND warehouse.glass_option_id = '$option_id' AND warehouse.glass_type_id = '$type_id' AND warehouse.glass_color_id = '$color_id'");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
