@@ -7,9 +7,9 @@
       <meta name="author" content="Spruko Technologies Private Limited">
       <meta name="keywords" content="sales dashboard, admin dashboard, bootstrap 4 admin template, html admin template, admin panel design, admin panel design, bootstrap 4 dashboard, admin panel template, html dashboard template, bootstrap admin panel, sales dashboard design, best sales dashboards, sales performance dashboard, html5 template, dashboard template">
       <!-- Favicon --> 
-      <link rel="icon" href="assets/img/brand/favicon.ico" type="image/x-icon">
+      <link rel="icon" href="assets/img/brand/logo.png" type="image/x-icon">
       <!-- Title --> 
-      <title>სატესტო ობიექტი - Iten.ge CONTROL PANEL</title>
+      <title>ლილუტა - Panel</title>
       <!---Fontawesome css--> 
       <?php include('includes/functions.php'); ?>
       <meta http-equiv="imagetoolbar" content="no">

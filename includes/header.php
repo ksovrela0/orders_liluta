@@ -77,7 +77,7 @@
             </div>
          </div>
          <div class="dropdown main-profile-menu">
-            <a class="main-img-user" href=""><img alt="avatar" src="assets/img/users/2.jpg"></a> 
+            <a class="main-img-user" href=""><img alt="avatar" src="assets/img/users/no.png"></a> 
             <div class="dropdown-menu">
                <div class="header-navheading">
                   <?php
