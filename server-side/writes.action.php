@@ -36,7 +36,7 @@ function getProcStart($id, $glass_id){
 }
 function getProcFinish($path_id, $glass_id, $proc_id = 0){
     GLOBAL $db;
-    if($path_id == 2){
+    if($proc_id == 2){
         $cut_id = $_REQUEST['cut_id'];
 
         $db->setQuery(" SELECT  lists_to_cut.id,lists_to_cut.glass_id,
@@ -57,7 +57,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
                         <legend>პირამიდა</legend>
                             <div class="row">';
                                 foreach($glass_ids AS $glass){
-                                    $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass[glass_id]' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n LIMIT 1");
+                                    $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass[glass_id]' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n DESC LIMIT 1");
                                     $next_proc = $db->getResultArray()['result'][0]['name'];
                                     if($next_proc == ''){
                                         $next_proc = 'არ აქვს';
@@ -92,7 +92,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
     }
     else{
         $glass_id = $_REQUEST['glass_id'];
-        $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass_id' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n LIMIT 1");
+        $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass_id' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n DESC LIMIT 1");
         $next_proc = $db->getResultArray()['result'][0]['name'];
         if($next_proc == ''){
             $next_proc = 'არ აქვს';
@@ -110,7 +110,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
                     </legend>
                 </fieldset>
 
-                <input type="hidden" id="path_id" value="'.$proc_id.'">
+                <input type="hidden" id="path_id" value="'.$path_id.'">
 
                 ';
     }
@@ -118,7 +118,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
     return $data;
 }
 
-function getProcError($path_id){
+function getProcError($proc_id){
     GLOBAL $db;
     
     $cut_id = $_REQUEST['cut_id'];
@@ -168,11 +168,7 @@ function getProcError($path_id){
                                 }
                             $data .= '</div>
                         </legend>
-                    </fieldset>
-
-                <input type="hidden" id="path_id" value="'.$path_id.'">
-
-                ';
+                    </fieldset>';
     
 
     return $data;
@@ -433,13 +429,13 @@ switch ($act){
     break;
     case 'error_glass_proc':
         $cut_id = $_REQUEST['cut_id'];
-        $path_id = $_REQUEST['path_id'];
+        $proc_id = $_REQUEST['proc_id'];
 
         $gpyr = $_REQUEST['gpyr'];
         $apyr = $_REQUEST['apyr'];
 
 
-        if($path_id == 2){
+        if($proc_id == 2){
             foreach($gpyr AS $gl_er){
                 $gl_data = explode('-', $gl_er);
                 $pyramid = $gl_data[0];
@@ -626,7 +622,7 @@ switch ($act){
         $glass_id = $_REQUEST['glass_id'];
         $path_id = $_REQUEST['path_id'];
         $proc_id = $_REQUEST['proc_id'];
-        $data = array('page' => getProcFinish($proc_id, $glass_id, $proc_id));
+        $data = array('page' => getProcFinish($path_id, $glass_id, $proc_id));
 
         break;
 
@@ -649,10 +645,11 @@ switch ($act){
         $data = array('page' => getProcStart($proc_id, $glass_id));
         break;
     case 'finish_glass_proc':
+        $proc_id = $_REQUEST['proc_id'];
         $path_id = $_REQUEST['path_id'];
         $glass_id = $_REQUEST['glass_id'];
         $pyramid = $_REQUEST['pyramid'];
-        if($path_id == 2){
+        if($proc_id == 2){
             $gpyr = $_REQUEST['gpyr'];
             $apyr = $_REQUEST['apyr'];
             $cut_id = $_REQUEST['cut_id'];
@@ -674,7 +671,7 @@ switch ($act){
                 //TODO აქედან უნდა ჩაემატოს საწყობსაც ატხოდი
             }
         }
-        else if($path_id == 6 || $path_id == 7){
+        else if($proc_id == 6 || $proc_id == 7){
             $prod_id = $_REQUEST['prod_id'];
 
             $db->setQuery("UPDATE orders_product SET status_id = 3 WHERE id = '$prod_id'");
@@ -683,7 +680,7 @@ switch ($act){
             $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glasses_paths.id) AS path_ids,
                                     GROUP_CONCAT(DISTINCT products_glasses.id) AS glass_ids
                             FROM    products_glasses
-                            JOIN 	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = '$path_id'
+                            JOIN 	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = '$proc_id'
                             WHERE   products_glasses.actived = 1 AND glasses_paths.actived = 1 AND order_product_id = '$prod_id'");
             $result = $db->getResultArray()['result'][0];
 
@@ -754,15 +751,16 @@ switch ($act){
         break;
     case 'start_glass_proc':
         $glass_rate = $_REQUEST['glass_rate'];
+        $proc_id = $_REQUEST['proc_id'];
         $path_id = $_REQUEST['path_id'];
         $glass_id = $_REQUEST['glass_id'];
         $pyramid = $_REQUEST['pyramid'];
 
-        if($path_id == 2){
+        if($proc_id == 2){
             $cut_id = $_REQUEST['cut_id'];
 
             if($glass_rate == 1 || $glass_rate == 0){
-                $data = array('page' => getProcError($path_id));
+                $data = array('page' => getProcError($proc_id));
             }
             else{
                 $db->setQuery("SELECT COUNT(*) AS cc FROM cut_glass WHERE actived = 1 AND status_id = 1 AND id = '$cut_id'");
@@ -790,8 +788,8 @@ switch ($act){
                         $glass_ids = $db->getResultArray()['result'][0]['glass_id'];
 
 
-                        $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($glass_ids) AND status_id != 4");
-                        $db->execQuery();
+                        /* $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($glass_ids) AND status_id != 4");
+                        $db->execQuery(); */
 
                         $db->setQuery(" UPDATE orders 
                                         JOIN products_glasses ON products_glasses.id IN($glass_ids)
@@ -811,15 +809,15 @@ switch ($act){
             }
             
         }
-        else if($path_id == 6 || $path_id == 7){
+        else if($proc_id == 6 || $proc_id == 7){
             $prod_id = $_REQUEST['prod_id'];
-            $path_id = $_REQUEST['proc_path_id'];
+            $path_id = $_REQUEST['path_id'];
             if($glass_rate == 1 || $glass_rate == 0){
                 //$data = array('page' => getProcErrorProd($path_id));
                 $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glasses_paths.id) AS path_ids,
                                         GROUP_CONCAT(DISTINCT products_glasses.id) AS glass_ids
                                 FROM    products_glasses
-                                JOIN 	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = '$path_id'
+                                JOIN 	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = '$proc_id'
                                 WHERE   products_glasses.actived = 1 AND glasses_paths.actived = 1 AND order_product_id = '$prod_id'");
                 $result = $db->getResultArray()['result'][0];
 
@@ -844,14 +842,14 @@ switch ($act){
                     $db->setQuery("UPDATE orders_product SET status_id = 2 WHERE id = '$prod_id' AND actived = 1");
                     $db->execQuery();
 
-                    $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE order_product_id = $prod_id AND actived = 1");
-                    $db->execQuery();
+                    /* $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE order_product_id = $prod_id AND actived = 1");
+                    $db->execQuery(); */
 
 
                     $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glasses_paths.id) AS path_ids,
                                             GROUP_CONCAT(DISTINCT products_glasses.id) AS glass_ids
                                     FROM    products_glasses
-                                    JOIN 	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = '$path_id'
+                                    JOIN 	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = '$proc_id'
                                     WHERE   products_glasses.actived = 1 AND glasses_paths.actived = 1 AND order_product_id = '$prod_id'");
                     $result = $db->getResultArray()['result'][0];
 
@@ -880,7 +878,6 @@ switch ($act){
 
         }
         else{
-            $path_id = $_REQUEST['proc_path_id'];
             if($glass_rate == 1 || $glass_rate == 0){
                 $db->setQuery("UPDATE glasses_paths SET glass_rate = '$glass_rate', user_id = '$user_id', status_id = 4, pyramid = '$pyramid' WHERE id = '$path_id'");
                 $db->execQuery();

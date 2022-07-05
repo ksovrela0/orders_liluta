@@ -372,9 +372,9 @@ $proc_data = $db->getResultArray()['result'][0];
 		$(document).on('click', '.finish_proc', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
-			var get_path_id = <?php echo $_REQUEST['id']; ?>;
+			var get_proc_id = <?php echo $_REQUEST['id']; ?>;
 
-			if(get_path_id == 2){
+			if(get_proc_id == 2){
 				var cut_id = $(this).attr('cut-id');
 
 				$.ajax({
@@ -382,7 +382,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					type: "POST",
 					data: {
 						act: "finish_proc",
-						path_id: get_path_id,
+						proc_id: get_proc_id,
 						cut_id: cut_id,
 					},
 					dataType: "json",
@@ -420,7 +420,7 @@ $proc_data = $db->getResultArray()['result'][0];
 										}
 									})
 
-									url.path_id = get_path_id;
+									url.proc_id = get_proc_id;
 									url.cut_id = cut_id;
 
 									if(ready_to_save > 0){
@@ -444,7 +444,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					}
 				});
 			}
-			else if(get_path_id == 6 || get_path_id == 7){
+			else if(get_proc_id == 6 || get_proc_id == 7){
 				var prod_id = $(this).attr('prod-id');
 
 				$.ajax({
@@ -453,7 +453,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					data: {
 						act: "finish_proc",
 						prod_id: prod_id,
-						path_id: get_path_id
+						proc_id: get_proc_id
 					},
 					dataType: "json",
 					success: function(data) {
@@ -478,7 +478,7 @@ $proc_data = $db->getResultArray()['result'][0];
 											data: {
 												act: "finish_glass_proc",
 												prod_id: prod_id,
-												path_id: get_path_id,
+												proc_id: get_proc_id,
 												pyramid: pyramid
 											},
 											dataType: "json",
@@ -500,7 +500,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					type: "POST",
 					data: {
 						act: "finish_proc",
-						proc_id: <?php echo $id; ?>,
+						proc_id: get_proc_id,
 						path_id: path_id,
 						glass_id: id
 					},
@@ -528,6 +528,7 @@ $proc_data = $db->getResultArray()['result'][0];
 												act: "finish_glass_proc",
 												glass_id: id,
 												path_id: path_id,
+												proc_id: get_proc_id,
 												pyramid: pyramid
 											},
 											dataType: "json",
@@ -548,9 +549,9 @@ $proc_data = $db->getResultArray()['result'][0];
 		$(document).on('click', '.del_glass', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
-			var get_path_id = <?php echo $_REQUEST['id']; ?>;
+			var get_proc_id = <?php echo $_REQUEST['id']; ?>;
 
-			if(get_path_id == 2){
+			if(get_proc_id == 2){
 				var cut_id = $(this).attr('cut-id');
 
 				$.ajax({
@@ -558,7 +559,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					type: "POST",
 					data: {
 						act: "start_glass_proc",
-						path_id: get_path_id,
+						proc_id: get_proc_id,
 						cut_id: cut_id,
 						glass_rate: 0
 					},
@@ -619,7 +620,7 @@ $proc_data = $db->getResultArray()['result'][0];
 									}
 									console.log(url)
 
-									url.path_id = get_path_id;
+									url.proc_id = get_proc_id;
 									url.cut_id = cut_id;
 
 									if(ready_to_save == 0){
@@ -683,7 +684,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					}
 				});
 			}
-			else if(get_path_id == 6 || get_path_id == 7){
+			else if(get_proc_id == 6 || get_proc_id == 7){
 				var prod_id = $(this).attr('prod-id');
 				var ask = prompt("ნამდვილად გსურთ მინის დახარვეზება? მიუთითეთ პირამიდის ნომერი!")
 				if (ask != '' && ask > 0) {
@@ -693,7 +694,7 @@ $proc_data = $db->getResultArray()['result'][0];
 						data: {
 							act: "start_glass_proc",
 							prod_id: prod_id,
-							path_id: get_path_id,
+							proc_id: get_proc_id,
 							glass_rate: 0,
 							pyramid: ask
 						},
@@ -713,6 +714,7 @@ $proc_data = $db->getResultArray()['result'][0];
 						data: {
 							act: "start_glass_proc",
 							glass_id: id,
+							proc_id: get_proc_id,
 							path_id: path_id,
 							glass_rate: 0,
 							pyramid: ask
@@ -729,9 +731,9 @@ $proc_data = $db->getResultArray()['result'][0];
 		$(document).on('click', '.start_proc', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
-			var get_path_id = <?php echo $_REQUEST['id']; ?>;
+			var get_proc_id = <?php echo $_REQUEST['id']; ?>;
 			if (confirm("ნამდვილად გსურთ დაიწყოთ პროცესი?") == true) {
-				if(get_path_id == 2){
+				if(get_proc_id == 2){
 					var cut_id = $(this).attr('cut-id');
 
 					$.ajax({
@@ -740,8 +742,7 @@ $proc_data = $db->getResultArray()['result'][0];
 						data: {
 							act: "start_glass_proc",
 							glass_id: id,
-							path_id: get_path_id,
-							proc_path_id: path_id,
+							proc_id: get_proc_id,
 							cut_id: cut_id,
 							glass_rate: 2
 						},
@@ -757,7 +758,7 @@ $proc_data = $db->getResultArray()['result'][0];
 						}
 					});
 				}
-				else if(get_path_id == 6 || get_path_id == 7){
+				else if(get_proc_id == 6 || get_proc_id == 7){
 					var prod_id = $(this).attr('prod-id');
 
 					$.ajax({
@@ -766,9 +767,9 @@ $proc_data = $db->getResultArray()['result'][0];
 						data: {
 							act: "start_glass_proc",
 							glass_id: id,
-							path_id: get_path_id,
+							proc_id: get_proc_id,
+							path_id: path_id,
 							prod_id: prod_id,
-							proc_path_id: path_id,
 							glass_rate: 2
 						},
 						dataType: "json",
@@ -790,8 +791,8 @@ $proc_data = $db->getResultArray()['result'][0];
 						data: {
 							act: "start_glass_proc",
 							glass_id: id,
-							path_id: get_path_id,
-							proc_path_id: path_id,
+							path_id: path_id,
+							proc_id: get_proc_id,
 							glass_rate: 2
 						},
 						dataType: "json",
