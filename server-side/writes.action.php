@@ -34,7 +34,7 @@ function getProcStart($id, $glass_id){
 
     return $data;
 }
-function getProcFinish($path_id, $glass_id){
+function getProcFinish($path_id, $glass_id, $proc_id = 0){
     GLOBAL $db;
     if($path_id == 2){
         $cut_id = $_REQUEST['cut_id'];
@@ -110,7 +110,7 @@ function getProcFinish($path_id, $glass_id){
                     </legend>
                 </fieldset>
 
-                <input type="hidden" id="path_id" value="'.$path_id.'">
+                <input type="hidden" id="path_id" value="'.$proc_id.'">
 
                 ';
     }
@@ -626,7 +626,7 @@ switch ($act){
         $glass_id = $_REQUEST['glass_id'];
         $path_id = $_REQUEST['path_id'];
         $proc_id = $_REQUEST['proc_id'];
-        $data = array('page' => getProcFinish($proc_id, $glass_id));
+        $data = array('page' => getProcFinish($proc_id, $glass_id, $proc_id));
 
         break;
 
