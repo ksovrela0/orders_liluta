@@ -625,7 +625,8 @@ switch ($act){
     case 'finish_proc':
         $glass_id = $_REQUEST['glass_id'];
         $path_id = $_REQUEST['path_id'];
-        $data = array('page' => getProcFinish($path_id, $glass_id));
+        $proc_id = $_REQUEST['proc_id'];
+        $data = array('page' => getProcFinish($proc_id, $glass_id));
 
         break;
 
