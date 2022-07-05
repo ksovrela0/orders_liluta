@@ -163,12 +163,15 @@
 	}
 	#new_writing, #new_product, #new_glass, #new_path {
         border: 1px solid black;
-        width: fit-content;
-        padding: 7px;
-        font-size: 18px;
-        color: #fff;
-        background-color: #2aad2e;
-        cursor: pointer;
+		width: fit-content;
+		padding: 7px;
+		font-size: 18px;
+		color: #fff;
+		background-color: #2aad2e;
+		cursor: pointer;
+		background: radial-gradient(#31d319 0.3%, #2e8104 90%);
+		border-radius: 15px;
+		box-shadow: 2px 1px black;
     }
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->

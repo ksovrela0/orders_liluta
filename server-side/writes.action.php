@@ -940,64 +940,78 @@ switch ($act){
     case 'calc_proc_price':
         $proc_id = $_REQUEST['proc_id'];
 
-        if($proc_id == 4){
-            $data = array('page' => getPricePage($proc_id));
+        $glass_id = $_REQUEST['glass_id'];
+        $width = $_REQUEST['width'];
+        $height = $_REQUEST['height'];
+        $price_total = 0;
+
+        $db->setQuery("SELECT COUNT(*) AS cc
+                        FROM glasses_paths
+                        WHERE actived = 1 AND glass_id = '$glass_id' AND path_group_id = '$proc_id'");
+        $cc = $db->getResultArray()['result'][0]['cc'];
+
+        if($cc > 0){
+            $data['error'] = 'ამ მინაზე ეგ პროცესი უკვე დამატებულია!!!';
         }
         else{
-            $glass_id = $_REQUEST['glass_id'];
-            $width = $_REQUEST['width'];
-            $height = $_REQUEST['height'];
-            $price_total = 0;
-
-
-            $db->setQuery("SELECT default_price
-                            FROM groups
-                            WHERE id = '$proc_id'");
-            $price = $db->getResultArray()['result'][0]['default_price'];
-
-            if($proc_id == 3){
-                $price_total = (($width/1000) + ($height/1000))*2*$price;
+            if($proc_id == 4){
+                $data = array('page' => getPricePage($proc_id));
+            }
+            else{
+    
+                $db->setQuery("SELECT default_price
+                                FROM groups
+                                WHERE id = '$proc_id'");
+                $price = $db->getResultArray()['result'][0]['default_price'];
+    
+                if($proc_id == 3){
+                    $price_total = (($width/1000) + ($height/1000))*2*$price;
+                    
+                }
+                if($proc_id == 5){
+                    $price_total = (($width/1000) * ($height/1000))*$price;
+                }
+                if($proc_id == 2){
+                    $price_total = (($width/1000) * ($height/1000))*$price;
+                }
+    
+                if($proc_id == 6 || $proc_id == 7){
+                    $db->setQuery(" SELECT MAX(glass_height * glass_width) AS m_kv
+                                    FROM `products_glasses`
+                                    
+                                    WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$glass_id' AND actived = 1)");
+                    $max_kv = $db->getResultArray()['result'][0]['m_kv']/1000000;
+    
+    
+                    $db->setQuery(" SELECT COUNT(*) AS cc
+                                    FROM `products_glasses`
+                                    
+                                    WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$glass_id' AND actived = 1)");
+                    $cc = $db->getResultArray()['result'][0]['cc'];
+                    
+                    $price_total = $max_kv * $price * $cc;
+    
+                }
+    
+                $db->setQuery(" SELECT  MAX(sort_n) AS max_sort
+                                FROM    glasses_paths
+                                WHERE   actived = 1 AND glass_id = '$glass_id'");
+                $sort_n = $db->getResultArray()['result'][0]['max_sort']+1;
+                $db->setQuery("INSERT INTO glasses_paths SET
+                                                    datetime=NOW(),
+                                                    glass_id='$glass_id',
+                                                    path_group_id='$proc_id',
+                                                    status_id=1,
+                                                    price = '$price_total',
+                                                    sort_n = '$sort_n'");
+    
+                $db->execQuery();
+                
                 
             }
-            if($proc_id == 5){
-                $price_total = (($width/1000) * ($height/1000))*$price;
-            }
-            if($proc_id == 2){
-                $price_total = (($width/1000) * ($height/1000))*$price;
-            }
-
-            if($proc_id == 6 || $proc_id == 7){
-                $db->setQuery(" SELECT MAX(glass_height * glass_width) AS m_kv
-                                FROM `products_glasses`
-                                
-                                WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$glass_id' AND actived = 1)");
-                $max_kv = $db->getResultArray()['result'][0]['m_kv']/1000000;
-
-
-                $db->setQuery(" SELECT COUNT(*) AS cc
-                                FROM `products_glasses`
-                                
-                                WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$glass_id' AND actived = 1)");
-                $cc = $db->getResultArray()['result'][0]['cc'];
-                
-                $price_total = $max_kv * $price * $cc;
-
-            }
-
-            $db->setQuery(" SELECT  MAX(sort_n) AS max_sort
-                            FROM    glasses_paths
-                            WHERE   actived = 1 AND glass_id = '$glass_id'");
-            $sort_n = $db->getResultArray()['result'][0]['max_sort']+1;
-            $db->setQuery("INSERT INTO glasses_paths SET
-                                                datetime=NOW(),
-                                                glass_id='$glass_id',
-                                                path_group_id='$proc_id',
-                                                status_id=1,
-                                                price = '$price_total',
-                                                sort_n = '$sort_n'");
-
-            $db->execQuery();
         }
+
+        
 
         //$data = array('page' => getPricePage($proc_id));
         break;
@@ -1567,7 +1581,7 @@ switch ($act){
                                                 sort_n = '$sort_n'");
 
             $db->execQuery();
-            $data['error'] = '';
+            //$data['error'] = '';
         }
 
         else{
@@ -1612,7 +1626,7 @@ switch ($act){
                                                 price = '$price_total'
                             WHERE id='$id'");
             $db->execQuery();
-            $data['error'] = '';
+            //$data['error'] = '';
         }
 
     break;
@@ -1661,8 +1675,9 @@ switch ($act){
 
 
 
+
             foreach($ids AS $id){
-                $db->setQuery("UPDATE glasses_paths SET actived = 0 WHERE id = '$id'");
+                $db->setQuery("UPDATE glasses_paths SET actived = 0 WHERE id = '$id' AND status_id = 1");
                 $db->execQuery();
     
             }

@@ -164,12 +164,16 @@
 
     #cut_glass{
         border: 1px solid black;
-        width: fit-content;
-        padding: 7px;
-        font-size: 18px;
-        color: #fff;
-        background-color: #ff00fb;
-        cursor: pointer;
+		width: fit-content;
+		padding: 7px;
+		font-size: 18px;
+		color: #fff;
+		background-color: red;
+		cursor: pointer;
+		margin-left: 20px;
+		background: radial-gradient(#ff00fb 0.3%, #ff00fb 90%);
+		border-radius: 15px;
+		box-shadow: 2px 1px black;
     }
     .k-grid-toolbar {
         display: flex;
@@ -209,10 +213,14 @@
 		border: 1px solid black;
 		width: fit-content;
 		padding: 7px;
-		background-color: #0079ff;
-		color: white;
 		font-size: 18px;
+		color: #fff;
+		background-color: red;
 		cursor: pointer;
+		margin-left: 20px;
+		background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+		border-radius: 15px;
+		box-shadow: 2px 1px black;
 	}
 	#list_area,#glasses_div{
 		border: 1px solid black;
@@ -341,7 +349,7 @@
 						</select>
 					</div>
 
-					<div class="col-sm-2" style="display:flex;justify-content: space-between;align-items: end;">
+					<div class="col-sm-4" style="display:flex;justify-content: flex-start;align-items: end;">
 						<div id="filter">ფილტრი</div>
 						<div id="cut_glass">ჭრაზე გაშვება</div>
 					</div>
