@@ -50530,5 +50530,5 @@ input[type="search"]::-webkit-search-cancel-button {
     color: white;
     background: radial-gradient(#31d319 0.3%, #2e8104 90%);
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 15px;
   }
