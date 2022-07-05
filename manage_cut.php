@@ -469,6 +469,10 @@
 	var aJaxURL = "server-side/objects.action.php";
 	var f_product_name = '';
 	var f_color = '';
+
+	var glass_option_id = '';
+	var glass_color_id = '';
+	var glass_manuf_id = '';
 	$(document).on("dblclick", ".element_in_div", function () {
 		var sort_n = $(this).attr('sort_n');
 		var el = this;
@@ -479,7 +483,7 @@
 				// this.attributes is not a plain object, but an array
 				// of attribute nodes, which contain both the name and value
 				if(this.specified) {
-					console.log(this.name, this.value);
+					//console.log(this.name, this.value);
 					params[this.name] = this.value;
 				}
 			});
@@ -491,6 +495,10 @@
 			glass_ids.push($(x).attr('glass-id'));
 		})
 		params.ids = glass_ids;
+
+
+
+
 		$.ajax({
 			url: "server-side/writes.action.php",
 			type: "POST",
@@ -501,6 +509,20 @@
 					alert(data.error);
 				}
 				else{
+					if($(".element_in_list").length == 0){
+						
+						glass_option_id = params.glass_option_id;
+						glass_color_id = params.glass_color_id;
+						glass_manuf_id = params.glass_manuf_id;
+
+						
+					}
+					else{
+						if(glass_option_id != params.glass_option_id || glass_color_id != params.glass_color_id || glass_manuf_id != params.glass_manuf_id){
+							alert("დასაჭრელად არჩეული მინები არ არიან ერთნაირი ფერის, მწარმოებლის ან სისქის, გთხოვთ აირჩიოთ მხოლოდ მსგავსი მინები");
+							return false;
+						}
+					}
 					$("#list_area").append(`
 					<div class="element_in_list" sort_n="`+sort_n+`" glass-id="`+data.id+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
 						<div style="font-size: 20px;">`+data.sizes+`</div>
