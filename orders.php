@@ -1778,6 +1778,22 @@
 				}
 				
 			})
+
+			$(document).on('change', '#selected_product_id', function(){
+				var prod_id = $(this).val();
+				if(prod_id == 2){
+					$("#only_minapaket").css('display', 'block');
+					$("#only_lameks").css('display', 'none');
+				}
+				else if(prod_id == 3){
+					$("#only_minapaket").css('display', 'none');
+					$("#only_lameks").css('display', 'block');
+				}
+				else{
+					$("#only_minapaket").css('display', 'none');
+					$("#only_lameks").css('display', 'none');
+				}
+			});
 			</script>
 </body>
 

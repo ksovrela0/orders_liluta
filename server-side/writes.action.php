@@ -2568,11 +2568,11 @@ function getProductPage($id, $res = ''){
                                 <img id="upProdImg" src="'.$res['picture'].'" style="width:100px; cursor: pointer;" >
                                 <input style="display:none;" type="file" id="product_file">
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-6" id="only_minapaket">
                                 <label>ბუტილის ზომა</label>
                                 <input type="number" step=".01" value="'.$res['butili'].'" id="butil_size">
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-6" id="only_lameks">
                                 <label>ფირი (ლამექსისთვის მხოლოდ)</label>
                                 <input type="text" id="firi_lameks" value="'.$res['lameqs_int'].'">
                             </div>
