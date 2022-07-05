@@ -1797,7 +1797,7 @@ switch ($act){
                 else
 
                 {
-                    $hid_array = array("id2","write_date","impuls_qty","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id","name_product_22","type_22","color_22","proccess2_22","cut_list_22");
+                    $hid_array = array("id2","write_date","impuls_qty","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id","name_product_22","type_22","color_22","proccess2_22","cut_list_22","infooo");
 					if($columns[$j] == "inc_status"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 153);
