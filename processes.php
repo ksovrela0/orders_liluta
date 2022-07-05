@@ -277,13 +277,13 @@ $proc_data = $db->getResultArray()['result'][0];
 				<div class="row">
 				<?php
 					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
-						echo '<div id="main_div_2"></div>';
+						echo '<div id="main_div_2" style="width:97%;"></div>';
 					}
 					else if($proc_data['id'] == 2){
-						echo '<div id="main_cut"></div>';
+						echo '<div id="main_cut" style="width:97%;"></div>';
 					}
 					else{
-						echo '<div id="main_div"></div>';
+						echo '<div id="main_div" style="width:97%;"></div>';
 					}
 				?>
                 
