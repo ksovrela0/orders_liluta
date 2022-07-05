@@ -808,8 +808,8 @@
 						$("#get_glass_page").dialog({
 							resizable: false,
 							height: "auto",
-							width: 600,
-							height: 650,
+							width: 1200,
+							height: 550,
 							modal: true,
 							buttons: {
 								"შენახვა": function() {
@@ -1093,8 +1093,8 @@
 						$("#get_glass_page").dialog({
 							resizable: false,
 							height: "auto",
-							width: 600,
-							height: 650,
+							width: 1200,
+							height: 550,
 							modal: true,
 							buttons: {
 								"შენახვა": function() {

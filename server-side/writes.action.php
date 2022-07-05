@@ -1976,14 +1976,7 @@ switch ($act){
                                     orders.avansi,
                                     orders.avans_plus,
                                     orders.total - (orders.avansi+orders.avans_plus) AS left_to_pay,
-                                    CONCAT(order_status.name, 
-                                    CASE
-                                        WHEN orders.status_id = 1 THEN '<div class=\"red_dot\"></div>'
-                                        WHEN orders.status_id = 2 THEN '<div class=\"yellow_dot\"></div>'
-                                        WHEN orders.status_id = 3 THEN '<div class=\"mid_yellow_dot\"></div>'
-                                        WHEN orders.status_id = 4 THEN '<div class=\"green_dot\"></div>'
-                                        WHEN orders.status_id = 5 THEN '<div class=\"red_dot\"></div>'
-                                    END)
+                                    CONCAT('<span class=\"ostatus_',order_status.id,'\">',order_status.name,'</span>') AS status
                                     
                                         
                             FROM 	orders
@@ -2218,15 +2211,7 @@ switch ($act){
 		$cols[]      =      $_REQUEST['cols'];
 
         $product_id = $_REQUEST['product_id'];
-
-        $db->setQuery(" SELECT CONCAT('<span class=\"open_close\">',glass_options.name, '(',glass_manuf.name,') ', products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ ', glass_type.name, ' ', glass_colors.name,'</span>',GROUP_CONCAT(DISTINCT CONCAT('<span class=\"row_glass\"><input type=\"checkbox\" class=\"selected_glass\" data-id=\"',products_glasses.id,'\"><a data-id=\"',products_glasses.id,'\" class=\"glass_detail\">ID:',products_glasses.id,' ', ' - ', IF(products_glasses.go_to_cut = 1,'იჭრება - ','არ იჭრება - '),'<span style=\"padding:5px;', CASE
-        WHEN glass_status.id = 1 THEN 'background-color: red;'
-        WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-        WHEN glass_status.id = 3 THEN 'background-color: green;'
-        WHEN glass_status.id = 4 THEN 'background-color: red;'
-        WHEN glass_status.id = 5 THEN 'background-color: red;'
-END
-,'\">', glass_status.name,'</span>','</a></span>') SEPARATOR '')) AS glasses,
+        $db->setQuery(" SELECT CONCAT('<span class=\"open_close\">',glass_options.name, '(',glass_manuf.name,') ', products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ ', glass_type.name, ' ', glass_colors.name,'</span>',GROUP_CONCAT(DISTINCT CONCAT('<span class=\"row_glass\"><input type=\"checkbox\" class=\"selected_glass\" data-id=\"',products_glasses.id,'\"><a data-id=\"',products_glasses.id,'\" class=\"glass_detail\">ID:',products_glasses.id,' ', ' - ', IF(products_glasses.go_to_cut = 1,'იჭრება - ','არ იჭრება - '),'<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>','</a></span>') SEPARATOR '')) AS glasses,
         
                                         COUNT(DISTINCT products_glasses.id) AS cc
                                         
@@ -2364,7 +2349,10 @@ function getGlassPage($id, $res = ''){
     if($res['go_to_cut'] == '0'){
         $checked = '';
     }
-    $data = '   <fieldset class="fieldset">
+    $data = '   
+        <div class="row">
+            <div class="col-sm-6">
+                <fieldset class="fieldset">
                     <legend>ინფორმაცია</legend>
                         <div class="row">
                             <div class="col-sm-6">
@@ -2419,6 +2407,8 @@ function getGlassPage($id, $res = ''){
                         </div>
                     </legend>
                 </fieldset>
+            </div>
+            <div class="col-sm-6">
                 <fieldset class="fieldset">
                     <legend>პროცესი</legend>
                     <div class="row" style="    flex-direction: row;
@@ -2441,7 +2431,8 @@ function getGlassPage($id, $res = ''){
                     </div>
                     </div>
                 </fieldset>
-
+            </div>
+        </div>
                 <input type="hidden" id="glass_id" value="'.$id.'">
 
                 ';
@@ -2554,6 +2545,16 @@ function getPricePage($proc_id){
 function getProductPage($id, $res = ''){
     GLOBAL $db;
 
+    $dis_minapaket = 'style="display:none"';
+    $dis_lameks = 'style="display:none"';
+
+    if($res['product_cat_id'] == 2){
+        $dis_minapaket = 'style="display:block"';
+    }
+    if($res['product_cat_id'] == 3){
+        $dis_lameks = 'style="display:block"';
+    }
+
     $data = '   <fieldset class="fieldset">
                     <legend>ინფორმაცია</legend>
                         <div class="row">
@@ -2568,11 +2569,11 @@ function getProductPage($id, $res = ''){
                                 <img id="upProdImg" src="'.$res['picture'].'" style="width:100px; cursor: pointer;" >
                                 <input style="display:none;" type="file" id="product_file">
                             </div>
-                            <div class="col-sm-6" id="only_minapaket">
+                            <div class="col-sm-6" id="only_minapaket" '.$dis_minapaket.'>
                                 <label>ბუტილის ზომა</label>
                                 <input type="number" step=".01" value="'.$res['butili'].'" id="butil_size">
                             </div>
-                            <div class="col-sm-6" id="only_lameks">
+                            <div class="col-sm-6" id="only_lameks" '.$dis_lameks.'>
                                 <label>ფირი (ლამექსისთვის მხოლოდ)</label>
                                 <input type="text" id="firi_lameks" value="'.$res['lameqs_int'].'">
                             </div>
