@@ -194,7 +194,7 @@
 		#del_list:hover {
 			box-shadow: unset;
 		}
-		.print_shtrixkod{
+		.print_shtrixkod,.print_shtrixkod_all{
 			color: blue;
 			cursor: pointer;
 			font-size: 17px;
@@ -1521,7 +1521,7 @@ $proc_data = $db->getResultArray()['result'][0];
 				}
 			}
 
-			$(document).on('click', '.print_shtrixkod', function(){
+			$(document).on('click', '.print_shtrixkod, .print_shtrixkod_all', function(){
 				var glass_id = $(this).attr('data-id');
 
 				$.ajax({

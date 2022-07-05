@@ -9,31 +9,75 @@ $user_id = $_SESSION['USERID'];
 switch ($act){
     case 'print':
         $glass_id = $_REQUEST['glass_id'];
-
         $db->setQuery(" SELECT products_glasses.id,
-                                CONCAT(products_glasses.glass_width,'მმ', products_glasses.glass_height,'მმ') AS size,
+                                CONCAT(products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ') AS size,
                                 orders.client_name,
                                 orders.comment
                         FROM products_glasses
                         JOIN orders ON orders.id = products_glasses.order_id AND orders.actived = 1
-                        WHERE products_glasses.actived = 1 AND products_glasses.id = '$glass_id'");
-        $glass = $db->getResultArray()['result'][0];
+                        WHERE products_glasses.actived = 1 AND products_glasses.id IN ($glass_id)");
+        $glasses = $db->getResultArray();
 
         $html = '
         
-        <html>
-            <body>
-                <style>
-                @page { size: 65mm 60mm landscape; }
-                p{
-                    margin: 0;
+        <!DOCTYPE html>
+            <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title></title>
+                    <style type="text/css">
+                        .bechdva{
+                            width: 50mm;
+                            height: 35mm;
+                        };
+                        .bechdva >center ul{
+                            list-style-type: none;
+
+                        }
+
+                        .damkveti{
+                            display: block;
+                        };
+
+                        .minisid{
+                            display: block;
+                        };
+
+                        .zoma{
+                            display: block;
+
+                        };
+                        .barcode{
+                            display: block;
+                        };
+                    </style>
+                </head>
+                <body>';
+                foreach($glasses['result'] AS $glass){
+                    $html .= '
+                        <div class="bechdva">
+                        
+                            <ul style="list-style-type: none">
+                                <li class="damkveti">
+                                    '.$glass['client_name'].'
+                                </li>
+                                <li class="minisid">
+                                    '.$glass['comment'].'
+                                </li>
+                                <li class="zoma">
+                                    <b>'.$glass['size'].'</b>
+                                </li>
+                                <li class="barcode">
+                                    <img src="includes/barcode/index.php?title='.$glass['id'].'">
+                                </li>
+                            </ul>
+
+                        </div>
+                    ';
                 }
-                </style>
-                <p>'.$glass['client_name'].'<p>
-                <p>'.$glass['comment'].'<p>
-                <p>'.$glass['size'].'<p>
-                <p><img src="includes/barcode/index.php?title='.$glass['id'].'"><p>
-            </body
+                
+           $html .= '</body
 
         </html>
         

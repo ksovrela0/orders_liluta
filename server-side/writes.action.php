@@ -2018,11 +2018,11 @@ switch ($act){
                                         
                                         CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') AS status,
                                         CASE
-                                            WHEN glass_status.id = 1 THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
-                                            WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
-                                            WHEN glass_status.id = 3 THEN ''
-                                            WHEN glass_status.id = 4 THEN ''
-                                            WHEN glass_status.id = 5 THEN ''
+                                            WHEN glass_status.id = 1 THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id SEPARATOR ','),'\" class=\"print_shtrixkod_all\">დაბეჭდე</span></div>')
+                                            WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id SEPARATOR ','),'\" class=\"print_shtrixkod_all\">დაბეჭდე</span></div>')
+                                            WHEN glass_status.id = 3 THEN CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id SEPARATOR ','),'\" class=\"print_shtrixkod_all\">დაბეჭდე</span>')
+                                            WHEN glass_status.id = 4 THEN CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id SEPARATOR ','),'\" class=\"print_shtrixkod_all\">დაბეჭდე</span>')
+                                            WHEN glass_status.id = 5 THEN CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id SEPARATOR ','),'\" class=\"print_shtrixkod_all\">დაბეჭდე</span>')
 
 
                                         END AS acc
