@@ -50503,3 +50503,32 @@ input[type="search"]::-webkit-search-cancel-button {
   .main-notification-list::hover{
 	scrollbar-color: #6969dd!important;
   }
+
+
+  .status_finished{
+	padding: 5px;
+    color: white;
+    background: radial-gradient(#31d319 0.3%, #2e8104 90%);
+    border-radius: 5px;
+    font-size: 12px;
+  }
+
+  .status_1{
+	padding: 5px;
+    color: white;
+    background: radial-gradient(#ce1414 0.3%, #ee2828 90%);
+    border-radius: 8px;
+  }
+  .status_2{
+	color: #fff;
+    background-color: #df8d1a;
+    border-radius: 5px;
+	padding: 5px;
+  }
+  .status_3{
+	padding: 5px;
+    color: white;
+    background: radial-gradient(#31d319 0.3%, #2e8104 90%);
+    border-radius: 5px;
+    font-size: 12px;
+  }

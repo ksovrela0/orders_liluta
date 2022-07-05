@@ -95,6 +95,9 @@
 			color: #fff;
 			background-color: #2aad2e;
 			cursor: pointer;
+			background: radial-gradient(#31d319 0.3%, #2e8104 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
 		}
 		
 		#copy_writing, #copy_product, #copy_glass {
@@ -103,9 +106,15 @@
 			padding: 7px;
 			font-size: 18px;
 			color: #fff;
-			background-color: purple;
 			cursor: pointer;
 			margin-left: 20px;
+			background: radial-gradient(#0039f3 0.3%, #1713b4 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
+
+		#copy_writing:hover, #copy_product:hover, #copy_glass:hover {
+			box-shadow: unset;
 		}
 		
 		#del_writing, #del_product, #del_glass, #del_path {
@@ -117,6 +126,17 @@
 			background-color: red;
 			cursor: pointer;
 			margin-left: 20px;
+			background: radial-gradient(#ff0005 0.3%, #a30707 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
+
+		#del_writing:hover, #del_product:hover, #del_glass:hover, #del_path:hover {
+			box-shadow: unset;
+		}
+
+		#new_writing:hover, #new_product:hover, #new_glass:hover, #new_path:hover  {
+			box-shadow: unset;
 		}
 
 		#cut_glass{

@@ -162,29 +162,23 @@
 		cursor: default!important;
 	}
     #new_writing, #new_product, #new_glass, #new_path {
-			border: 1px solid black;
-			
-			padding: 7px;
-			font-size: 14px;
-			color: #fff;
-			background-color: #2aad2e;
+
 			cursor: pointer;
-            margin: 5px;
-			width: fit-content;
+
 		}
         #copy_writing, #copy_product, #copy_glass {
 			border: 1px solid black;
-			
-			padding: 7px;
-			font-size: 14px;
-			color: #fff;
-			background-color: #020080;
+
 			cursor: pointer;
-            margin: 5px;
-			width: fit-content;
+
 		}
 		
 		#del_writing, #del_product, #del_glass,#del_list, #del_path {
+
+			cursor: pointer;
+		}
+
+	#del_list {
 			border: 1px solid black;
 			
 			padding: 7px;

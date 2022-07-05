@@ -192,16 +192,16 @@ switch ($act){
                                 orders.client_pid,
                                 orders.client_phone,
                                 IF(orders.total - (orders.avansi+orders.avans_plus) = 0,'კი','არა'),
-                                IF((SELECT COUNT(*) FROM glasses_paths WHERE actived = 1 AND glass_id = products_glasses.id AND status_id IN (1,2,4,5,6)) = 0,'დასრულებული',CASE
+                                IF((SELECT COUNT(*) FROM glasses_paths WHERE actived = 1 AND glass_id = products_glasses.id AND status_id IN (1,2,4,5,6)) = 0,'<span class=\"status_finished\">დასრულებული</span>',CASE
                                     WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT gp1.path_group_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id)),'ჭრა')
                                     
                                     ELSE IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT gp1.path_group_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id))
                                 END) AS procc,
                                 
                                 IF(products_glasses.status_id != 6,CASE
-                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM glass_status WHERE id = (SELECT gp1.status_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT name FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM glass_status WHERE id = lists_to_cut.status_id)), (SELECT name FROM glass_status WHERE id = lists_to_cut.status_id))
+                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT gp1.status_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = lists_to_cut.status_id)), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = lists_to_cut.status_id))
                                     
-                                    ELSE IFNULL(IFNULL((SELECT name FROM glass_status WHERE id = (SELECT gp1.status_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT name FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), lists_to_cut.status_id)
+                                    ELSE IFNULL(IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT gp1.status_id FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1)), IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), lists_to_cut.status_id)
                                 END,'გაცემული') AS status
                                 
                                 
@@ -219,43 +219,55 @@ switch ($act){
         $data = $result;
     break;
     case 'give_glasses':
-        $ids = implode(',',$_REQUEST['ids']);
+        $glass_ids = $_REQUEST['ids'];
+
+        $ids = implode(',',$glass_ids);
         $order_id = $_REQUEST['order_id'];
 
-        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id = 6");
-        $cc = $db->getResultArray()['result'][0]['cc'];
 
-        if($cc == 0){
-            $db->setQuery("UPDATE products_glasses SET status_id = 6 WHERE id IN ($ids)");
-            $db->execQuery();
-
-            $db->setQuery("INSERT INTO given_glasses SET datetime=NOW(),
-                                                            order_id = '$order_id',
-                                                            glass_ids = '$ids',
-                                                            user_id = '$user_id'");
-
-            $db->execQuery();
-
-            $given_id = $db->getLastId();
-            $data['page'] = '
-            <fieldset class="fieldset">
-                    <legend>ექსელი</legend>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <a href="print_excel.php?act=partly&given_id='.$given_id.'" target="_blank" style="display: flex;
-                                gap: 10px;
-                                justify-content: center;
-                                align-items: center;
-                                cursor: pointer;"><img style="width: 36px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"> გადმოწერა</a>
+        $to_give_count = count($glass_ids);
+        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id = 3");
+        $cc_finished = $db->getResultArray()['result'][0]['cc'];
+        if($cc_finished == $to_give_count){
+            $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id = 6");
+            $cc = $db->getResultArray()['result'][0]['cc'];
+    
+            if($cc == 0){
+                $db->setQuery("UPDATE products_glasses SET status_id = 6 WHERE id IN ($ids)");
+                $db->execQuery();
+    
+                $db->setQuery("INSERT INTO given_glasses SET datetime=NOW(),
+                                                                order_id = '$order_id',
+                                                                glass_ids = '$ids',
+                                                                user_id = '$user_id'");
+    
+                $db->execQuery();
+    
+                $given_id = $db->getLastId();
+                $data['page'] = '
+                <fieldset class="fieldset">
+                        <legend>ექსელი</legend>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <a href="print_excel.php?act=partly&given_id='.$given_id.'" target="_blank" style="display: flex;
+                                    gap: 10px;
+                                    justify-content: center;
+                                    align-items: center;
+                                    cursor: pointer;"><img style="width: 36px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"> გადმოწერა</a>
+                                </div>
                             </div>
-                        </div>
-                    </legend>
-                </fieldset>
-            ';
+                        </legend>
+                    </fieldset>
+                ';
+            }
+            else{
+                $data['error'] = 'ერთი ან რამოდენიმე მინა უკვე გაცემულია';
+            }
         }
         else{
-            $data['error'] = 'ერთი ან რამოდენიმე მინა უკვე გაცემულია';
+            $data['error'] = 'თქვენ მიერ გასაცემად არჩეული მინებიდან 1 ან რამოდენიმე ჯერ არ არის დასრულებული. ამ მინებს ვერ გასცემთ';
         }
+        
     break;
     case 'get_list':
         $id          =      $_REQUEST['hidden'];

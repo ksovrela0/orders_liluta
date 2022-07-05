@@ -57,8 +57,15 @@ function getProcFinish($path_id, $glass_id){
                         <legend>პირამიდა</legend>
                             <div class="row">';
                                 foreach($glass_ids AS $glass){
+                                    $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass[glass_id]' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n LIMIT 1");
+                                    $next_proc = $db->getResultArray()['result'][0]['name'];
+                                    if($next_proc == ''){
+                                        $next_proc = 'არ აქვს';
+                                    }
                                     $data .= '  <div class="col-sm-4" style="text-align: center;">
                                                     <label>მინა #'.$glass['glass_id'].' '.$glass['si'].'</label>
+                                                    <br>
+                                                    <span style="font-size: 13px;font-weight: bold;">შემდეგი პროცესი: '.$next_proc.'</span>
                                                     <input type="tel" min="1" class="glass_pyramids_m" data-id="'.$glass['id'].'">
                                                 </div>';
                                 }
@@ -84,11 +91,19 @@ function getProcFinish($path_id, $glass_id){
                     ';
     }
     else{
+        $glass_id = $_REQUEST['glass_id'];
+        $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass_id' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n LIMIT 1");
+        $next_proc = $db->getResultArray()['result'][0]['name'];
+        if($next_proc == ''){
+            $next_proc = 'არ აქვს';
+        }
         $data = '   <fieldset class="fieldset">
                     <legend>პირამიდა</legend>
                         <div class="row">
                             <div class="col-sm-12" style="text-align: center;">
                                 <label>მიუთითეთ პირამიდის ნომერი</label>
+                                <br>
+                                <span style="font-size: 13px;font-weight: bold;">შემდეგი პროცესი: '.$next_proc.'</span>
                                 <input type="tel" min="1" id="pyramid_num">
                             </div>
                         </div>
@@ -749,7 +764,6 @@ switch ($act){
                 $data = array('page' => getProcError($path_id));
             }
             else{
-                $path_id = $_REQUEST['proc_path_id'];
                 $db->setQuery("SELECT COUNT(*) AS cc FROM cut_glass WHERE actived = 1 AND status_id = 1 AND id = '$cut_id'");
                 $isStarted = $db->getResultArray()['result'][0]['cc'];
                 if($isStarted > 0){
@@ -1985,8 +1999,8 @@ switch ($act){
                                         END
                                         ,'\">', glass_status.name,'</span>') AS status,
                                         CASE
-                                            WHEN glass_status.id = 1 THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"http://assets.stickpng.com/images/580b57fcd9996e24bc43c4f9.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
-                                            WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"https://e7.pngegg.com/pngimages/871/200/png-clipart-check-mark-computer-icons-icon-design-complete-angle-logo.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
+                                            WHEN glass_status.id = 1 THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
+                                            WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
                                             WHEN glass_status.id = 3 THEN ''
                                             WHEN glass_status.id = 4 THEN ''
                                             WHEN glass_status.id = 5 THEN ''
@@ -2032,8 +2046,8 @@ switch ($act){
 
                                     CASE
                                             WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = COUNT(DISTINCT products_glasses.id) THEN CASE
-                                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" prod-id=\"',orders_product.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"http://assets.stickpng.com/images/580b57fcd9996e24bc43c4f9.png\"></div><div id=\"del_glass\" class=\"del_glass\" prod-id=\"',orders_product.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
-                                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" prod-id=\"',orders_product.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"https://e7.pngegg.com/pngimages/871/200/png-clipart-check-mark-computer-icons-icon-design-complete-angle-logo.png\"></div><div id=\"del_glass\" class=\"del_glass\" prod-id=\"',orders_product.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
+                                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" prod-id=\"',orders_product.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" prod-id=\"',orders_product.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
+                                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" prod-id=\"',orders_product.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" prod-id=\"',orders_product.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
                                                         WHEN glass_status.id = 3 THEN ''
                                                         WHEN glass_status.id = 4 THEN ''
                                                         WHEN glass_status.id = 5 THEN ''
@@ -2090,8 +2104,8 @@ switch ($act){
                                     END,'<span style=\"padding:5px;background-color: red;\">რიგში</span>') AS glasses,
 
                                     IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
-                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"http://assets.stickpng.com/images/580b57fcd9996e24bc43c4f9.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
-                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 20px;\" src=\"https://e7.pngegg.com/pngimages/871/200/png-clipart-check-mark-computer-icons-icon-design-complete-angle-logo.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"https://www.clipartmax.com/png/small/188-1882946_warning-icon.png\"></div></div>')
+                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
+                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
                                         WHEN glass_status.id = 3 THEN ''
                                         WHEN glass_status.id = 4 THEN ''
                                         WHEN glass_status.id = 5 THEN ''

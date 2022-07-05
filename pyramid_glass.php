@@ -496,43 +496,37 @@
 				alert('ერთდროულად მხოლოდ 1 შეკვეთის მინების გაცემაა შესაძლებელი');
 			}
 			else{
-				if(allAreEqual(status) && status[0] == 'დასრულებული'){
-					if(confirm("ნამდვილად გსურთ მინების გაცემა?")){
-						let params 			= new Object;
-						params.act 			= 'give_glasses';
-						params.ids 			= glass_id;
-						params.order_id 			= order_id[0];
-						$.ajax({
-							url: aJaxURL,
-							type: "POST",
-							data: params,
-							dataType: "json",
-							success: function(data){
-								if(typeof(data.error) == 'undefined'){
-									$("#get_excel").html(data.page)
-									$("#get_excel").dialog({
-										resizable: false,
-										height: 'auto',
-										width: 120,
-										modal: true,
-										buttons: {
-											'დახურვა': function() {
-												$(this).dialog("close");
-											}
+				if(confirm("ნამდვილად გსურთ მინების გაცემა?")){
+					let params 			= new Object;
+					params.act 			= 'give_glasses';
+					params.ids 			= glass_id;
+					params.order_id 			= order_id[0];
+					$.ajax({
+						url: aJaxURL,
+						type: "POST",
+						data: params,
+						dataType: "json",
+						success: function(data){
+							if(typeof(data.error) == 'undefined'){
+								$("#get_excel").html(data.page)
+								$("#get_excel").dialog({
+									resizable: false,
+									height: 'auto',
+									width: 120,
+									modal: true,
+									buttons: {
+										'დახურვა': function() {
+											$(this).dialog("close");
 										}
-									});
-								}
-								else{
-									alert(data.error);
-								}
-								$("#pyramid_glass").data("kendoGrid").dataSource.read();
+									}
+								});
 							}
-						});
-					}
-					
-				}
-				else{
-					alert("გასაცემი მინები უნდა იყოს დასრულებული");
+							else{
+								alert(data.error);
+							}
+							$("#pyramid_glass").data("kendoGrid").dataSource.read();
+						}
+					});
 				}
 			}
 		} 
