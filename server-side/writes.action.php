@@ -2085,7 +2085,7 @@ switch ($act){
         }
         else{
             $db->setQuery(" SELECT	products_glasses.id,
-                                    CONCAT(glass_options.name,' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') AS option,
+                                    CONCAT(glass_options.name) AS option,
                                     glass_type.name AS type,
                                     glass_colors.name AS color,
                                     CONCAT(products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ') AS param,
@@ -2111,11 +2111,11 @@ switch ($act){
     border-radius: 5px;\">რიგში</span>') AS glasses,
 
                                     IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
-                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
-                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
-                                        WHEN glass_status.id = 3 THEN ''
-                                        WHEN glass_status.id = 4 THEN ''
-                                        WHEN glass_status.id = 5 THEN ''
+                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
+                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
+                                        WHEN glass_status.id = 3 THEN CONCAT('<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+                                        WHEN glass_status.id = 4 THEN CONCAT('<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+                                        WHEN glass_status.id = 5 THEN CONCAT('<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
 
 
                                     END,'') AS acc
