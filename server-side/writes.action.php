@@ -3066,7 +3066,7 @@ function getCutOptions($option_id, $type_id, $color_id, $manuf_id){
     $db->setQuery("SELECT   id,
                             CONCAT('ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ, პირამიდა: ', warehouse.pyramid ) AS name
                     FROM    warehouse
-                    WHERE   actived = 1 AND qty > 0 AND glass_option_id = '$option_id' AND glass_type_id = '$type_id' AND glass_color_id = '$color_id' AND glass_manuf_id = '$manuf_id' ");
+                    WHERE   actived = 1 AND qty > 0 AND glass_option_id = '$option_id' AND glass_type_id = '$type_id' AND glass_color_id = '$color_id'");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
