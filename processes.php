@@ -178,16 +178,21 @@
 			cursor: pointer;
 		}
 
-	#del_list {
+		#del_list {
 			border: 1px solid black;
-			
+			width: fit-content;
 			padding: 7px;
-			font-size: 14px;
+			font-size: 18px;
 			color: #fff;
 			background-color: red;
 			cursor: pointer;
-            margin: 5px;
-			width: fit-content;
+			margin-left: 20px;
+			background: radial-gradient(#ff0005 0.3%, #a30707 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
+		#del_list:hover {
+			box-shadow: unset;
 		}
 		.print_shtrixkod{
 			color: blue;
@@ -195,26 +200,36 @@
 			font-size: 17px;
 		}
 		#cut_glass{
-			margin: 5px;
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
 			font-size: 18px;
 			color: #fff;
-			background-color: #ff00fb;
+			background-color: red;
 			cursor: pointer;
 			margin-left: 20px;
+			background: radial-gradient(#ff00fb 0.3%, #ff00fb 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+    	}
+
+		#cut_glass:hover{
+			box-shadow: unset;
     	}
 		#status_change{
-			margin: 5px;
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
 			font-size: 18px;
 			color: #fff;
-			background-color: #01a92d;
+			background-color: #2aad2e;
 			cursor: pointer;
-			margin-left: 20px;
+			background: radial-gradient(#31d319 0.3%, #2e8104 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
+		#status_change:hover{
+			box-shadow: unset;
 		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
