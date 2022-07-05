@@ -2244,14 +2244,7 @@ switch ($act){
                                 groups.name,
                                 ROW_NUMBER() OVER () AS sort_n,
                                 glasses_paths.price,
-                                CONCAT('<span style=\"padding:5px;', CASE
-                                    WHEN glass_status.id = 1 THEN 'background-color: red;'
-                                    WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-                                    WHEN glass_status.id = 3 THEN 'background-color: green;'
-                                    WHEN glass_status.id = 4 THEN 'background-color: red;'
-                                    WHEN glass_status.id = 5 THEN 'background-color: red;'
-                                END
-                                ,'\">', glass_status.name,'</span>') AS glasses
+                                CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') AS glasses
 
                         FROM    glasses_paths
                         JOIN    groups ON groups.id = glasses_paths.path_group_id
