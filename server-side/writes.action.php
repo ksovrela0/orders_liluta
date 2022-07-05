@@ -1988,14 +1988,7 @@ switch ($act){
                                         CONCAT('ID: ', warehouse.id, ' ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ პირამიდა: ', warehouse.pyramid) AS list,
                                         GROUP_CONCAT(CONCAT('ID: ', products_glasses.id, ' ზომები: ', products_glasses.glass_width, 'მმ X ',products_glasses.glass_height, 'მმ - ',glass_st.name,' - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\">დაბეჭდე</span>') SEPARATOR ', <br>') AS glasses,
                                         
-                                        CONCAT('<span style=\"padding:5px;', CASE
-                                                WHEN glass_status.id = 1 THEN 'background-color: red;'
-                                                WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-                                                WHEN glass_status.id = 3 THEN 'background-color: green;'
-                                                WHEN glass_status.id = 4 THEN 'background-color: red;'
-                                                WHEN glass_status.id = 5 THEN 'background-color: red;'
-                                        END
-                                        ,'\">', glass_status.name,'</span>') AS status,
+                                        CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') AS status,
                                         CASE
                                             WHEN glass_status.id = 1 THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
                                             WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" cut-id=\"',cut_glass.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" cut-id=\"',cut_glass.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
@@ -2030,16 +2023,12 @@ switch ($act){
                                     orders_product.lameqs_int,
                                     CONCAT(IFNULL(CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\">საერთო სურათი<br><br></a>'),''), '<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(products_glasses.picture,0),'\">მინის სურათი</a>') AS picture,
                                     CASE
-                                        WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = COUNT(DISTINCT products_glasses.id) THEN CONCAT('<span style=\"padding:5px;', CASE
-                                                            WHEN glass_status.id = 1 THEN 'background-color: red;'
-                                                            WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-                                                            WHEN glass_status.id = 3 THEN 'background-color: green;'
-                                                            WHEN glass_status.id = 4 THEN 'background-color: red;'
-                                                            WHEN glass_status.id = 5 THEN 'background-color: red;'
-                                                        END
-                                                        ,'\">', glass_status.name,'</span>')
+                                        WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = COUNT(DISTINCT products_glasses.id) THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
                                         
-                                        ELSE '<span style=\"padding:5px;background-color: red;\">რიგში</span>'
+                                        ELSE '<span style=\"padding: 5px;
+    color: white;
+    background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+    border-radius: 5px;\">რიგში</span>'
                                     END AS glasses2,
 
                                     CASE
@@ -2083,23 +2072,15 @@ switch ($act){
                                     
                                     
                                     IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
-                                    WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) != glasses_paths.path_group_id, '<span style=\"padding:5px;background-color: red;\">რიგში</span>',CONCAT('<span style=\"padding:5px;', CASE
-                                                                                                            WHEN glass_status.id = 1 THEN 'background-color: red;'
-                                                                                                            WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-                                                                                                            WHEN glass_status.id = 3 THEN 'background-color: green;'
-                                                                                                            WHEN glass_status.id = 4 THEN 'background-color: red;'
-                                                                                                            WHEN glass_status.id = 5 THEN 'background-color: red;'
-                                                                                                        END
-                                                                            ,'\">', glass_status.name,'</span>'))
-                                        ELSE CONCAT('<span style=\"padding:5px;', CASE
-                                        WHEN glass_status.id = 1 THEN 'background-color: red;'
-                                        WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-                                        WHEN glass_status.id = 3 THEN 'background-color: green;'
-                                        WHEN glass_status.id = 4 THEN 'background-color: red;'
-                                        WHEN glass_status.id = 5 THEN 'background-color: red;'
-                                    END
-                                    ,'\">', glass_status.name,'</span>')
-                                    END,'<span style=\"padding:5px;background-color: red;\">რიგში</span>') AS glasses,
+                                    WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) != glasses_paths.path_group_id, '<span style=\"padding: 5px;
+    color: white;
+    background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+    border-radius: 5px;\">რიგში</span>',CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>'))
+                                        ELSE CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
+                                    END,'<span style=\"padding: 5px;
+    color: white;
+    background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+    border-radius: 5px;\">რიგში</span>') AS glasses,
 
                                     IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
                                         WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
