@@ -50513,7 +50513,7 @@ input[type="search"]::-webkit-search-cancel-button {
     font-size: 12px;
   }
 
-  .status_1{
+  .status_1, .status_5,.status_4{
 	padding: 5px;
     color: white;
     background: radial-gradient(#ce1414 0.3%, #ee2828 90%);
@@ -50525,7 +50525,7 @@ input[type="search"]::-webkit-search-cancel-button {
     border-radius: 5px;
 	padding: 5px;
   }
-  .status_3{
+  .status_3, .status_6{
 	padding: 5px;
     color: white;
     background: radial-gradient(#31d319 0.3%, #2e8104 90%);

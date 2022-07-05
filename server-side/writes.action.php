@@ -2121,15 +2121,7 @@ switch ($act){
 
         $db->setQuery(" SELECT  orders_product.id,
                                 products.name,
-                                GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - <span style=\"color:#000;',
-                                CASE
-                                    WHEN glass_status.id = 1 THEN 'background-color: red;'
-                                    WHEN glass_status.id = 2 THEN 'background-color: yellow;'
-                                    WHEN glass_status.id = 3 THEN 'background-color: green;'
-                                    WHEN glass_status.id = 4 THEN 'background-color: red;'
-                                    WHEN glass_status.id = 5 THEN 'background-color: red;'
-                                END
-                                ,'\">', glass_status.name,'</span>') SEPARATOR ',<br>') AS glasses,
+                                GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') SEPARATOR ',<br>') AS glasses,
                                 CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\">სურათის გახსნა</a>') AS picture,
                                 CONCAT('<a style=\"color:blue;\" class=\"product_detail\" data-id=\"',orders_product.id,'\" href=\"#\">დეტალურად</a>') AS detailed
 

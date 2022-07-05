@@ -208,6 +208,7 @@
 		.k-grid td {
 			word-break: break-word;
 			font-size: 15px;
+			line-height: 31px;
 		}
 		
 		#sms_to_all {
