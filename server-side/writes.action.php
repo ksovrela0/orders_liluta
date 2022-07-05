@@ -349,12 +349,12 @@ switch ($act){
 
         $total = $db->getResultArray()['result'][0]['total'];
 
+        
 
-
-        if($total < $limit){
-            $data['error'] = 'ლისტის კოპირება ვერ მოხერხდა. საწყობში მსგავსი ლისტი გაქვთ '.$total.' ცალი';
-        }
-        else{
+        //if($total < $limit){
+        //    $data['error'] = 'ლისტის კოპირება ვერ მოხერხდა. საწყობში მსგავსი ლისტი გაქვთ '.$total.' ცალი';
+        //}
+        //else{
             $db->setQuery("SELECT *
                             FROM cut_atxod
                             WHERE actived = 1 AND cut_id = '$cut_id'");
@@ -396,9 +396,12 @@ switch ($act){
                     $j++;
                     $db->setQuery("INSERT INTO cut_glass SET status_id = 1, user_id = '$user_id', list_id = '$list_id'");
                     $db->execQuery();
-
-
                     $cut_new_id = $db->getLastId();
+                    $db->setQuery("UPDATE warehouse SET qty = qty - 1 WHERE id = '$list_id'");
+                    $db->execQuery(); 
+
+
+                    
                     foreach($atxods['result'] AS $atx){
                         $db->setQuery("INSERT INTO cut_atxod SET cut_id = '$cut_new_id', width='$atx[width]', height='$atx[height]'");
                         $db->execQuery();
@@ -416,7 +419,7 @@ switch ($act){
             }
 
             $data['error'] = 'სულ დაკოპირდა '.$j.' ლისტი!!!';
-        }
+        //}
         
         break;
     case 'change_status_list':
@@ -513,10 +516,23 @@ switch ($act){
         break;
     case 'delete_cut':
         $ids = $_REQUEST['ids'];
+        
 
         foreach($ids AS $id){
-            $db->setQuery("UPDATE cut_glass SET actived = 0 WHERE id = '$id'");
-            $db->execQuery();
+            
+            $db->setQuery("SELECT list_id,status_id FROM cut_glass WHERE id = '$id'");
+            $cut_glass = $db->getResultArray()['result'][0];
+
+            if($cut_glass['status_id'] == 1){
+                $db->setQuery("UPDATE cut_glass SET actived = 0 WHERE id = '$id' AND status_id = 1");
+                $db->execQuery();
+
+                $db->setQuery("UPDATE warehouse SET qty = qty + 1 WHERE id = '$cut_glass[list_id]'");
+                $db->execQuery();   
+    
+            }
+
+            
         }
         break;
     case 'check_glass_status':
@@ -580,6 +596,10 @@ switch ($act){
 
             $db->setQuery("INSERT INTO cut_glass SET id = '$cut_id', status_id = 1, user_id = '$user_id', list_id = '$list_id'");
             $db->execQuery();
+
+            $db->setQuery("UPDATE warehouse SET qty = qty-1 WHERE id = '$list_id'");
+            $db->execQuery();
+
             foreach($glass_ids AS $glass){
                 
                 $db->setQuery("INSERT INTO lists_to_cut SET cut_id = '$cut_id', list_id = '$list_id', glass_id = '$glass', status_id = 1");
