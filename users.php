@@ -317,7 +317,7 @@
                 LoadKendoTable_branches(obj_id);
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: "auto",
+					height: 500,
 					width: 900,
 					modal: true,
 					buttons: {
@@ -345,7 +345,7 @@
 				$("#user_group").chosen();
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: "auto",
+					height: 500,
 					width: 900,
 					modal: true,
 					buttons: {
