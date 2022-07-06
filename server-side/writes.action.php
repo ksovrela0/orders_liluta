@@ -2190,8 +2190,9 @@ switch ($act){
                                         JOIN        glass_colors ON glass_colors.id = warehouse.glass_color_id
                                         JOIN        glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
                                         WHERE 	    cut_glass.actived = 1
-
-                                        GROUP BY    cut_glass.id");
+                                        
+                                        GROUP BY    cut_glass.id
+                                        ORDER BY    glass_status.sort_n");
 
             
         }
@@ -2234,7 +2235,9 @@ switch ($act){
                             LEFT JOIN	glass_status ON glass_status.id = orders_product.status_id
                             
                             WHERE   orders_product.actived = 1 AND products_glasses.actived = 1 AND orders.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND orders_product.product_id = '$pr_id'
-                            GROUP BY orders_product.id");
+                            
+                            GROUP BY orders_product.id
+                            ORDER BY glass_status.sort_n");
         }
         else{
             $db->setQuery(" SELECT * FROM (SELECT	products_glasses.id,
