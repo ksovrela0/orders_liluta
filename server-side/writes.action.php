@@ -725,7 +725,7 @@ switch ($act){
             foreach($apyr AS $at){
                 $pyr_data = explode('-', $at);
 
-                $db->setQuery("UPDATE cut_atxod SET pyramid = '$pyr_data[0]' WHERE id = '$pyr_data[1]'");
+                $db->setQuery("UPDATE cut_atxod SET pyramid = '$pyr_data[0]', status_id = 3 WHERE id = '$pyr_data[1]'");
                 $db->execQuery();
 
 
