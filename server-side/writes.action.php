@@ -44,7 +44,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
                                 CONCAT(products_glasses.glass_width,'მმ', products_glasses.glass_height,'მმ') AS si
                         FROM    lists_to_cut
                         JOIN    products_glasses ON products_glasses.id = lists_to_cut.glass_id AND products_glasses.actived = 1
-                        WHERE   lists_to_cut.cut_id IN ($cut_id) AND lists_to_cut.actived = 1 AND lists_to_cut.status_id != 4");
+                        WHERE   lists_to_cut.cut_id IN ($cut_id) AND lists_to_cut.actived = 1 AND lists_to_cut.status_id NOT IN (4,3)");
         $glass_ids = $db->getResultArray()['result'];
 
 
@@ -128,7 +128,7 @@ function getProcError($proc_id){
                             CONCAT(products_glasses.glass_width,'მმ', products_glasses.glass_height,'მმ') AS si
                     FROM    lists_to_cut
                     JOIN    products_glasses ON products_glasses.id = lists_to_cut.glass_id AND products_glasses.actived = 1
-                    WHERE   lists_to_cut.cut_id IN ($cut_id) AND lists_to_cut.actived = 1 AND lists_to_cut.status_id != 4");
+                    WHERE   lists_to_cut.cut_id IN ($cut_id) AND lists_to_cut.actived = 1 AND lists_to_cut.status_id  NOT IN (4,3)");
     $glass_ids = $db->getResultArray()['result'];
 
 
