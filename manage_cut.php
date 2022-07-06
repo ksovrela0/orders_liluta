@@ -349,7 +349,14 @@
 						</select>
 					</div>
 
-					<div class="col-sm-4" style="display:flex;justify-content: flex-start;align-items: end;">
+					<div class="col-sm-2">
+						<label>აირჩიეთ დამკვეთი</label>
+						<select id="selected_glass_client">
+							<?php getClients(0); ?>
+						</select>
+					</div>
+
+					<div class="col-sm-12" style="margin-top:20px;display:flex;justify-content: flex-start;align-items: end;">
 						<div id="filter">ფილტრი</div>
 						<div id="cut_glass">ჭრაზე გაშვება</div>
 					</div>
@@ -703,7 +710,7 @@
     }
 	$( document ).ready(function() {
 		loadBlocks();
-		$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id,#selected_glass_sizes").chosen();
+		$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id,#selected_glass_sizes,#selected_glass_client").chosen();
 	});
 	function save_category(){
 		let params 			= new Object;
@@ -922,8 +929,9 @@
         params.option_id = $("#selected_glass_cat_id").val();
         params.color_id = $("#selected_glass_color_id").val();
 		params.size = $("#selected_glass_sizes").val();
+		params.client = $("#selected_glass_client").val();
 
-		var search = "&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id+"&size="+params.size;
+		var search = "&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id+"&size="+params.size+"&client="+params.client;
         loadBlocks(search);
 	});
 
@@ -958,6 +966,25 @@
 </html>
 
 <?php
+function getClients($id){
+	GLOBAL $db;
+	$data = '';
+    $db->setQuery("SELECT   id,
+                            client_name AS 'name'
+                    FROM    orders
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
 function getSizeOpt($id){
 	GLOBAL $db;
     $data = '';

@@ -2267,6 +2267,8 @@ switch ($act){
         $manuf_id   = $_REQUEST['manuf_id'];
         $color_id   = $_REQUEST['color_id'];
 
+        $client   = $_REQUEST['client'];
+
         $size   = explode('-',$_REQUEST['size']);
 
         $where = '';
@@ -2279,6 +2281,10 @@ switch ($act){
         }
         if($color_id != ''){
             $where .= " AND products_glasses.glass_color_id = '$color_id'";
+        }
+
+        if($client != ''){
+            $where .= " AND orders.id = '$client'";
         }
 
         if($size[0] != ''){
