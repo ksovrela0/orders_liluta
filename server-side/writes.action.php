@@ -2237,7 +2237,7 @@ switch ($act){
                             GROUP BY orders_product.id");
         }
         else{
-            $db->setQuery(" SELECT	products_glasses.id,
+            $db->setQuery(" SELECT * FROM (SELECT	products_glasses.id,
                                     orders.client_name,
                                     CONCAT(glass_options.name) AS option,
                                     glass_type.name AS type,
@@ -2272,7 +2272,12 @@ switch ($act){
                                         WHEN glass_status.id = 5 THEN CONCAT('<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
 
 
-                                    END,'') AS acc
+                                    END,'') AS acc,
+
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
+                                    WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) != glasses_paths.path_group_id, 3,glass_status.sort_n)
+                                        ELSE glass_status.sort_n
+                                    END,3) AS sort_n
                                     
                                     
                             FROM 		products_glasses
@@ -2288,7 +2293,8 @@ switch ($act){
                             WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND glasses_paths.actived = 1
 
                             GROUP BY products_glasses.id
-                            ORDER BY glasses_paths.status_id ASC");
+                            ORDER BY glasses_paths.status_id ASC) AS ttt
+                            ORDER BY ttt.sort_n");
         }
         
         $result = $db->getKendoList($columnCount, $cols);
