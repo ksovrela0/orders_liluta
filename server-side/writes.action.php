@@ -2100,7 +2100,7 @@ switch ($act){
         if($path_id == 2){
             $db->setQuery("SELECT 		cut_glass.id,
                                         CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ პირამიდა: ', warehouse.pyramid) AS list,
-                                        GROUP_CONCAT(CONCAT('ID: ', products_glasses.id, ' ზომები: ', products_glasses.glass_width, 'მმ X ',products_glasses.glass_height, 'მმ - ',orders.client_name,' - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>') AS glasses,
+                                        GROUP_CONCAT(CONCAT('ID: ', products_glasses.id, ' ზომები: ', products_glasses.glass_width, 'მმ X ',products_glasses.glass_height, 'მმ - ',glass_st.name,' - ', orders.client_name,' - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>') AS glasses,
                                         
                                         CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') AS status,
                                         CASE
