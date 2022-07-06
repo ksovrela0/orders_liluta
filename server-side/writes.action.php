@@ -51,7 +51,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
         $db->setQuery(" SELECT  id,
                                 CONCAT(width,'მმ', height,'მმ') AS si
                         FROM    cut_atxod
-                        WHERE   actived = 1 AND cut_id = '$cut_id' AND status_id != 4");
+                        WHERE   actived = 1 AND cut_id = '$cut_id' AND status_id NOT IN (4,3)");
         $atxods = $db->getResultArray()['result'];
 
         $data = '   <fieldset class="fieldset">
@@ -137,7 +137,7 @@ function getProcError($proc_id){
                             width,
                             height
                     FROM    cut_atxod
-                    WHERE   actived = 1 AND cut_id = '$cut_id' AND status_id != 4");
+                    WHERE   actived = 1 AND cut_id = '$cut_id' AND status_id NOT IN (4,3)");
     $atxods = $db->getResultArray()['result'];
 
     $data = '   <fieldset class="fieldset">
