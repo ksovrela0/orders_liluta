@@ -447,8 +447,8 @@ switch ($act){
                 $db->setQuery("UPDATE lists_to_cut SET status_id = 4, pyramid = '$pyramid' WHERE id = '$cut_list_id'");
                 $db->execQuery();
 
-                $db->setQuery("UPDATE cut_glass SET status_id = 4 WHERE id = '$cut_id'");
-                $db->execQuery();
+                /* $db->setQuery("UPDATE cut_glass SET status_id = 4 WHERE id = '$cut_id'");
+                $db->execQuery(); */
             }
 
             if(count($gpyr) > 0){
