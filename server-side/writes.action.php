@@ -2099,8 +2099,8 @@ switch ($act){
         $path_id = $_REQUEST['path_id'];
         if($path_id == 2){
             $db->setQuery("SELECT 		cut_glass.id,
-                                        CONCAT('ID: ', warehouse.id, ' ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ პირამიდა: ', warehouse.pyramid) AS list,
-                                        GROUP_CONCAT(CONCAT('ID: ', products_glasses.id, ' ზომები: ', products_glasses.glass_width, 'მმ X ',products_glasses.glass_height, 'მმ - ',glass_st.name,' - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>') AS glasses,
+                                        CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ პირამიდა: ', warehouse.pyramid) AS list,
+                                        GROUP_CONCAT(CONCAT('ID: ', products_glasses.id, ' ზომები: ', products_glasses.glass_width, 'მმ X ',products_glasses.glass_height, 'მმ - ',glass_st.name,' - ',orders.client_name) SEPARATOR ', <br>') AS glasses,
                                         
                                         CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') AS status,
                                         CASE
@@ -2117,8 +2117,14 @@ switch ($act){
                                         JOIN		lists_to_cut ON lists_to_cut.cut_id = cut_glass.id
                                         JOIN		warehouse ON warehouse.id = lists_to_cut.list_id
                                         JOIN		products_glasses ON products_glasses.id = lists_to_cut.glass_id
+                                        JOIN        orders ON orders.id = products_glasses.order_id
                                         JOIN		glass_status ON glass_status.id = cut_glass.status_id
                                         JOIN        glass_status AS glass_st ON glass_st.id = products_glasses.status_id
+
+                                        JOIN        glass_options ON glass_options.id = warehouse.glass_option_id
+                                        JOIN        glass_type ON glass_type.id = warehouse.glass_type_id
+                                        JOIN        glass_colors ON glass_colors.id = warehouse.glass_color_id
+                                        JOIN        glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
                                         WHERE 	    cut_glass.actived = 1
 
                                         GROUP BY    cut_glass.id");
