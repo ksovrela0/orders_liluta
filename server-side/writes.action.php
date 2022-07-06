@@ -13,6 +13,7 @@ $db = new dbClass();
 $act = $_REQUEST['act'];
 
 $user_id = $_SESSION['USERID'];
+$user_gr = $_SESSION['GRPID'];
 $data = array();
 function getProcStart($id, $glass_id){
     $data = '   <fieldset class="fieldset">
@@ -464,7 +465,7 @@ switch ($act){
                 $new_width = $at_data[2];
                 $new_height = $at_data[3];
 
-                $db->setQuery("SELECT width, height FROM cut_atxod WHERE id = '$atxod_id'");
+                $db->setQuery("SELECT cut_id, width, height FROM cut_atxod WHERE id = '$atxod_id'");
                 $dims = $db->getResultArray()['result'][0];
 
                 $addUpd = '';
@@ -475,6 +476,36 @@ switch ($act){
 
                 $db->setQuery("UPDATE cut_atxod SET status_id = 4, pyramid = '$pyramid' $addUpd WHERE id = '$atxod_id'");
                 $db->execQuery();
+
+                $db->setQuery(" SELECT  warehouse.*
+                                FROM    cut_glass
+                                JOIN    warehouse ON warehouse.id = cut_glass.list_id
+                                WHERE   cut_glass.actived = 1 AND cut_glass.id = '$dims[cut_id]'");
+                $warehouse = $db->getResultArray()['result'][0];
+
+                if($dims['width'] != $new_width || $dims['height'] != $new_height){
+                    $dims['width'] = $new_width;
+                    $dims['height'] = $new_height;
+                }
+
+                if($pyramid != 0){
+                    $db->setQuery(" INSERT INTO warehouse
+                                    SET glass_option_id = '$warehouse[glass_option_id]',
+                                        glass_type_id = '$warehouse[glass_type_id]',
+                                        glass_color_id = '$warehouse[glass_color_id]',
+                                        glass_manuf_id = '$warehouse[glass_manuf_id]',
+                                        qty = 1,
+                                        glass_width = '$dims[width]',
+                                        glass_height = $dims[height],
+                                        sqr_price = '$warehouse[sqr_price]',
+                                        marja = '$warehouse[marja]',
+                                        gtype = 2,
+                                        owner = '$warehouse[owner]',
+                                        bringer = '$warehouse[bringer]',
+                                        pyramid = '$pyramid'");
+                    $db->execQuery();
+                }
+                
                 //გასაკეთებელია უნდა დაემატოს საწყობს
             }
         }
@@ -642,7 +673,15 @@ switch ($act){
         $glass_id = $_REQUEST['glass_id'];
         $path_id = $_REQUEST['path_id'];
         $proc_id = $_REQUEST['proc_id'];
-        $data = array('page' => getProcFinish($path_id, $glass_id, $proc_id));
+
+        if($proc_id == 5 AND !in_array($user_gr, array(14,13,12,5,1))){
+            $data['error'] = 'თქვენ არ გაქვთ წრთობის დასრულების უფლება';
+        }
+        else{
+            $data = array('page' => getProcFinish($path_id, $glass_id, $proc_id));
+        }
+
+        
 
         break;
 
@@ -688,6 +727,35 @@ switch ($act){
 
                 $db->setQuery("UPDATE cut_atxod SET pyramid = '$pyr_data[0]' WHERE id = '$pyr_data[1]'");
                 $db->execQuery();
+
+
+
+                $db->setQuery("SELECT cut_id, width, height FROM cut_atxod WHERE id = '$pyr_data[1]'");
+                $dims = $db->getResultArray()['result'][0];
+
+                $db->setQuery(" SELECT  warehouse.*
+                                FROM    cut_glass
+                                JOIN    warehouse ON warehouse.id = cut_glass.list_id
+                                WHERE   cut_glass.actived = 1 AND cut_glass.id = '$dims[cut_id]'");
+                $warehouse = $db->getResultArray()['result'][0];
+
+                if($pyr_data[0] != 0){
+                    $db->setQuery(" INSERT INTO warehouse
+                                    SET glass_option_id = '$warehouse[glass_option_id]',
+                                        glass_type_id = '$warehouse[glass_type_id]',
+                                        glass_color_id = '$warehouse[glass_color_id]',
+                                        glass_manuf_id = '$warehouse[glass_manuf_id]',
+                                        qty = 1,
+                                        glass_width = '$dims[width]',
+                                        glass_height = $dims[height],
+                                        sqr_price = '$warehouse[sqr_price]',
+                                        marja = '$warehouse[marja]',
+                                        gtype = 2,
+                                        owner = '$warehouse[owner]',
+                                        bringer = '$warehouse[bringer]',
+                                        pyramid = '$pyr_data[0]'");
+                    $db->execQuery();
+                }
                 //TODO აქედან უნდა ჩაემატოს საწყობსაც ატხოდი
             }
         }
@@ -808,8 +876,8 @@ switch ($act){
                         $glass_ids = $db->getResultArray()['result'][0]['glass_id'];
 
 
-                        /* $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($glass_ids) AND status_id != 4");
-                        $db->execQuery(); */
+                        $db->setQuery("UPDATE products_glasses SET status_id = 2 WHERE id IN ($glass_ids) AND status_id != 4");
+                        $db->execQuery();
 
                         $db->setQuery(" UPDATE orders 
                                         JOIN products_glasses ON products_glasses.id IN($glass_ids)
@@ -862,8 +930,8 @@ switch ($act){
                     $db->setQuery("UPDATE orders_product SET status_id = 2 WHERE id = '$prod_id' AND actived = 1");
                     $db->execQuery();
 
-                    /* $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE order_product_id = $prod_id AND actived = 1");
-                    $db->execQuery(); */
+                    $db->setQuery("UPDATE products_glasses SET status_id = 2 WHERE order_product_id = $prod_id AND actived = 1");
+                    $db->execQuery();
 
 
                     $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glasses_paths.id) AS path_ids,
@@ -910,19 +978,26 @@ switch ($act){
                 $db->setQuery("SELECT COUNT(*) AS cc FROM glasses_paths WHERE actived = 1 AND id = '$path_id' AND status_id = 1");
                 $isStarted = $db->getResultArray()['result'][0]['cc'];
                 if($isStarted > 0){
-                    $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE id = '$path_id'");
-                    $db->execQuery();
-        
-                    $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id = '$glass_id'");
-                    $db->execQuery();
-        
-                    $db->setQuery(" UPDATE orders 
-                                    JOIN products_glasses ON products_glasses.id = '$glass_id'
-                                    JOIN orders_product ON orders_product.id = products_glasses.order_product_id
-                                    SET orders.status_id = 2
-                                    
-                                    WHERE orders.id = orders_product.order_id");
-                    $db->execQuery();
+                    
+                    if($proc_id == 5 AND !in_array($user_gr, array(14,13,12,5,1))){
+                        $data['error'] = 'თქვენ არ გაქვთ წრთობის დაწყების უფლება';
+                    }
+                    else{
+                        $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE id = '$path_id'");
+                        $db->execQuery();
+            
+                        $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id = '$glass_id'");
+                        $db->execQuery();
+            
+                        $db->setQuery(" UPDATE orders 
+                                        JOIN products_glasses ON products_glasses.id = '$glass_id'
+                                        JOIN orders_product ON orders_product.id = products_glasses.order_product_id
+                                        SET orders.status_id = 2
+                                        
+                                        WHERE orders.id = orders_product.order_id");
+                        $db->execQuery();
+                    }
+                    
                 }
                 else{
                     $data['error'] = 'მინაზე მუშაობა უკვე დაწყებულია სხვის მიერ';
@@ -2059,10 +2134,7 @@ switch ($act){
                                     CASE
                                         WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = COUNT(DISTINCT products_glasses.id) THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
                                         
-                                        ELSE '<span style=\"padding: 5px;
-    color: white;
-    background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
-    border-radius: 5px;\">რიგში</span>'
+                                        ELSE '<span style=\"padding: 5px;color: white;background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);border-radius: 5px;\">რიგში</span>'
                                     END AS glasses2,
 
                                     CASE
@@ -2081,7 +2153,7 @@ switch ($act){
                             JOIN    orders ON orders.id = orders_product.order_id
                             JOIN    products ON products.id = orders_product.product_id
                             
-                            LEFT JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
+                            LEFT JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id AND products_glasses.status_id != 4
                             JOIN		glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1
                             LEFT JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
                             LEFT JOIN	glass_status ON glass_status.id = orders_product.status_id
@@ -2155,15 +2227,17 @@ switch ($act){
 
         $db->setQuery(" SELECT  orders_product.id,
                                 products.name,
-                                GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') SEPARATOR ',<br>') AS glasses,
+                                GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, '(',glass_manuf.name,') ',products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ ',glass_colors.name,' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') SEPARATOR ',<br>') AS glasses,
                                 CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\">სურათის გახსნა</a>') AS picture,
                                 CONCAT('<a style=\"color:blue;\" class=\"product_detail\" data-id=\"',orders_product.id,'\" href=\"#\">დეტალურად</a>') AS detailed
 
                         FROM    orders_product
                         JOIN    products ON products.id = orders_product.product_id
-                        LEFT JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
-                        LEFT JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
-                        LEFT JOIN	glass_status ON glass_status.id = products_glasses.status_id
+                        JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
+                        JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
+                        JOIN	glass_status ON glass_status.id = products_glasses.status_id
+                        JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                        JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
                         WHERE   orders_product.order_id = '$order_id' AND orders_product.actived = 1 AND products_glasses.actived = 1
                         GROUP BY orders_product.id");
         $result = $db->getKendoList($columnCount, $cols);

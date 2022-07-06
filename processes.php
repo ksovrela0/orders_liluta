@@ -521,6 +521,10 @@ $proc_data = $db->getResultArray()['result'][0];
 					},
 					dataType: "json",
 					success: function(data) {
+						if(typeof data.error != 'undefined'){
+							alert(data.error)
+							return false;
+						}
 						$('#proc_finish_page').html(data.page);
 							
 						$("#proc_finish_page").dialog({

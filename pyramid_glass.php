@@ -299,7 +299,7 @@
 	<!-- End Page -->
 	<!-- Back-to-top --><a href="#top" id="back-to-top" style="display: none;"><i class="fe fe-arrow-up"></i></a>
 	<!-- Jquery js-->
-	
+	<div title="სტატუსის ცვლილება" id="get_status_page"></div>
 	<div class="main-navbar-backdrop"></div>
 	<div title="Excel" id="get_excel">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
@@ -307,7 +307,6 @@
 	<script>
 	var aJaxURL = "server-side/objects.action.php";
 	$(document).on("dblclick", "#pyramid_glass tr.k-state-selected", function () {
-		return false;
 		var grid = $("#pyramid_glass").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
 		
@@ -319,17 +318,17 @@
 			url: aJaxURL,
 			type: "POST",
 			data: {
-				act: "get_edit_page",
+				act: "get_status_page",
 				id: dItem.id
 			},
 			dataType: "json",
 			success: function(data){
-				$('#get_edit_page').html(data.page);
-                $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_manuf_id").chosen();
-				$("#get_edit_page").dialog({
+				$('#get_status_page').html(data.page);
+                $("#status_id").chosen();
+				$("#get_status_page").dialog({
 					resizable: false,
 					height: 400,
-					width: 900,
+					width: 400,
 					modal: true,
 					buttons: {
 						"შენახვა": function() {
@@ -462,7 +461,7 @@
 									"ტელეფონი",
 									"გადახდილია?",
 									"პროცესი",
-                                    "სტატუსი"
+                                    "პროც.სტატუსი"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
@@ -704,17 +703,10 @@
 	});
 	function save_category(){
 		let params 			= new Object;
-		params.act 			= 'save_warehouse';
-		params.id 			= $("#warehouse_id").val();
-		params.glass_cat 	= $("#selected_glass_cat_id").val();
-		params.glass_type 	= $("#selected_glass_type_id").val();
-		params.glass_color	= $("#selected_glass_color_id").val();
-		params.glass_qty 		= $("#glass_qty").val();
-		params.glass_width 		= $("#glass_width").val();
-		params.glass_height 		= $("#glass_height").val();
-		params.sqr_price 	= $("#sqr_price").val();
-		params.pyramid 	= $("#pyramid").val();
-		params.glass_manuf 	= $("#selected_glass_manuf_id").val();
+		params.act 			= 'save_mina_status';
+		params.id 			= $("#glass_id").val();
+		params.status_id 	= $("#status_id").val();
+		
 		$.ajax({
 			url: aJaxURL,
 			type: "POST",
@@ -722,7 +714,7 @@
 			dataType: "json",
 			success: function(data){
 				$("#pyramid_glass").data("kendoGrid").dataSource.read();
-				$('#get_edit_page').dialog("close");
+				$('#get_status_page').dialog("close");
 			}
 		});
 		
