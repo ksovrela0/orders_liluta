@@ -523,9 +523,9 @@
 				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture:string", "action:string"];
-				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სურათი", "ქმედება"];
+				var columnsCount = 4;
+				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture_prod:string"];
+				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სურათი"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -581,7 +581,7 @@
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "proccess:string", "sort_n:string", "price_glass_proc:string", "stat:string"];
+				var columnsSQL = ["id2:string", "proccess:string", "sort_n:string", "price_glass_proc:string", "stat_path_or:string"];
 				var columnGeoNames = ["ID","პროცესი", "თანმიმდევრობა","ფასი", "სტატუსი"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1779,11 +1779,11 @@
 									height: 400,
 									width: 800,
 									modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+									position: {
+										my: "center",
+										at: "top",
+										of: window
+									},
 									buttons: {
 										"შენახვა": function() {
 											save_cut();

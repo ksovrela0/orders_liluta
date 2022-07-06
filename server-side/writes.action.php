@@ -57,7 +57,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
                         <legend>პირამიდა</legend>
                             <div class="row">';
                                 foreach($glass_ids AS $glass){
-                                    $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass[glass_id]' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n DESC LIMIT 1");
+                                    $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass[glass_id]' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n ASC LIMIT 1");
                                     $next_proc = $db->getResultArray()['result'][0]['name'];
                                     if($next_proc == ''){
                                         $next_proc = 'არ აქვს';
@@ -92,7 +92,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
     }
     else{
         $glass_id = $_REQUEST['glass_id'];
-        $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass_id' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n DESC LIMIT 1");
+        $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass_id' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n ASC LIMIT 1");
         $next_proc = $db->getResultArray()['result'][0]['name'];
         if($next_proc == ''){
             $next_proc = 'არ აქვს';
@@ -1835,6 +1835,12 @@ switch ($act){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 70);
 
 					}
+                    elseif($columns[$j] == "picture_prod"){
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 100);
+                    }
+                    elseif($columns[$j] == "stat_path_or"){
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 230);
+                    }
                     elseif($columns[$j] == "proccess2"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 300);
