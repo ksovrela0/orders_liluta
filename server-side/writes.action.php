@@ -1926,6 +1926,11 @@ switch ($act){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 150);
 
 					}
+                    elseif($columns[$j] == "orderer2"){
+
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
+
+					}
                     elseif($columns[$j] == "product_glasses"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 300);
@@ -2126,7 +2131,7 @@ switch ($act){
                 $pr_id = 3;
             }
             $db->setQuery(" SELECT  orders_product.id,
-                                    
+                                    orders.client_name,
                                     GROUP_CONCAT(DISTINCT CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - ', products_glasses.glass_width,'მმX',products_glasses.glass_height, 'მმ პირამიდა: ', IFNULL(IF(IFNULL((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1), 0) != glasses_paths.path_group_id, glasses_paths.pyramid,(SELECT path_2.pyramid FROM glasses_paths AS path_2 WHERE path_2.glass_id = products_glasses.id AND path_2.sort_n = glasses_paths.sort_n - 1 AND actived = 1)),''),' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ',<br>') AS glasses,
                                     orders_product.butili,
                                     orders_product.lameqs_int,
@@ -2163,6 +2168,7 @@ switch ($act){
         }
         else{
             $db->setQuery(" SELECT	products_glasses.id,
+                                    orders.client_name,
                                     CONCAT(glass_options.name) AS option,
                                     glass_type.name AS type,
                                     glass_colors.name AS color,

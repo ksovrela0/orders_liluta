@@ -5,7 +5,7 @@ GLOBAL $db;
 $db = new dbClass();
 $act = $_REQUEST['act'];
 $user_id = $_SESSION['USERID'];
-
+$user_gr = $_SESSION['GRPID'];
 switch ($act){
     case 'get_add_page':
         $id = $_REQUEST['id'];
@@ -157,14 +157,16 @@ switch ($act){
 		
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
-
+        if($user_gr == 11){
+            $where = "AND groups.id NOT IN (1,10,11,12,13,14,15)";
+        }
             $db->setQuery("SELECT users.id,
                                     CONCAT(users.firstname,' ', users.lastname),
                                     users.phone,
                                     users.pid,
                                     groups.name
                             FROM users
-                            JOIN groups ON groups.id = users.group_id
+                            JOIN groups ON groups.id = users.group_id $where
                             WHERE users.actived = 1");
 
         $result = $db->getKendoList($columnCount, $cols);
@@ -203,25 +205,30 @@ switch ($act){
 echo json_encode($data);
 
 function getPage($res = ''){
+    GLOBAL $user_gr;
+    if($user_gr == 11){
+        $hide = 'style="display:none;"';
+    }
+
     $data .= '
     
     
     <fieldset class="fieldset">
         <legend>ინფორმაცია</legend>
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$hide.'>
                 <label>სახელი</label>
                 <input value="'.$res['firstname'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="firstname" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$hide.'>
                 <label>გვარი</label>
                 <input value="'.$res['lastname'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="lastname" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$hide.'>
                 <label>ტელეფონი</label>
                 <input value="'.$res['phone'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="phone" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$hide.'>
                 <label>პირადი ნომერი</label>
                 <input value="'.$res['pid'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="pid" class="idle" autocomplete="off">
             </div>
@@ -231,11 +238,11 @@ function getPage($res = ''){
             </div>
             
 
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$hide.'>
                 <label>username</label>
                 <input value="'.$res['username'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="username" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$hide.'>
                 <label>პაროლი</label>
                 <input value="'.$res['password'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="password" class="idle" autocomplete="off">
             </div>
@@ -248,13 +255,18 @@ function getPage($res = ''){
     return $data;
 }
 function get_cat_1($id){
-    GLOBAL $db;
+    GLOBAL $db,$user_gr;
     $data = '';
+
+    if($user_gr == 11){
+        $where = "AND id NOT IN (1,10,11,12,13,14,15)";
+    }
     $db->setQuery("SELECT   id,
                             name AS 'name'
                     FROM    groups
-                    WHERE   actived = 1");
+                    WHERE   actived = 1 $where");
     $cats = $db->getResultArray();
+    $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
