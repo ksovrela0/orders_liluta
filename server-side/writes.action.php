@@ -61,7 +61,12 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
                                     $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass[glass_id]' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n ASC LIMIT 1");
                                     $next_proc = $db->getResultArray()['result'][0]['name'];
                                     if($next_proc == ''){
-                                        $next_proc = 'არ აქვს';
+                                        $db->setQuery("SELECT orders.client_name
+                                                        FROM orders
+                                                        JOIN products_glasses ON products_glasses.id = '$glass[glass_id]' AND products_glasses.actived = 1
+                                                        WHERE orders.actived = 1");
+                                        $order = $db->getResultArray()['result'][0]['client_name'];
+                                        $next_proc = 'დასრულებულია! დამკვეთი: '.$order;
                                     }
                                     $data .= '  <div class="col-sm-4" style="text-align: center;">
                                                     <label>მინა #'.$glass['glass_id'].' '.$glass['si'].'</label>
@@ -96,7 +101,22 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
         $db->setQuery("SELECT groups.name FROM glasses_paths JOIN groups ON groups.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass_id' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n ASC LIMIT 1");
         $next_proc = $db->getResultArray()['result'][0]['name'];
         if($next_proc == ''){
-            $next_proc = 'არ აქვს';
+            if($proc_id == 6 || $proc_id == 7){
+                $prod_id = $_REQUEST['prod_id'];
+                $db->setQuery("SELECT orders.client_name
+                                FROM orders
+                                JOIN orders_product ON orders_product.id = '$prod_id' AND orders_product.actived = 1
+                                WHERE orders.actived = 1");
+            }
+            else{
+                $db->setQuery("SELECT orders.client_name
+                                FROM orders
+                                JOIN products_glasses ON products_glasses.id = '$glass_id' AND products_glasses.actived = 1
+                                WHERE orders.actived = 1");
+            }
+            
+            $order = $db->getResultArray()['result'][0]['client_name'];
+            $next_proc = 'დასრულებულია! დამკვეთი: '.$order;
         }
         $data = '   <fieldset class="fieldset">
                     <legend>პირამიდა</legend>
@@ -105,6 +125,7 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
                                 <label>მიუთითეთ პირამიდის ნომერი</label>
                                 <br>
                                 <span style="font-size: 13px;font-weight: bold;">შემდეგი პროცესი: '.$next_proc.'</span>
+                                <br>
                                 <input type="tel" min="1" id="pyramid_num">
                             </div>
                         </div>
@@ -330,7 +351,10 @@ switch ($act){
         $db->setQuery(" SELECT  products_glasses.id,
                                 lists_to_cut.list_id,
                                 products_glasses.glass_width,
-                                products_glasses.glass_height
+                                products_glasses.glass_height,
+                                products_glasses.glass_option_id,
+                                products_glasses.glass_color_id,
+                                products_glasses.glass_manuf_id
                         FROM    lists_to_cut
                         JOIN    products_glasses ON products_glasses.id = lists_to_cut.glass_id
                         WHERE   lists_to_cut.actived = 1 AND lists_to_cut.cut_id = '$cut_id'");
@@ -372,7 +396,10 @@ switch ($act){
                                 FROM products_glasses
                                 WHERE products_glasses.actived = 1  
                                 AND products_glasses.glass_width = '$glass[glass_width]' 
-                                AND products_glasses.glass_height = '$glass[glass_height]' 
+                                AND products_glasses.glass_height = '$glass[glass_height]'
+                                AND products_glasses.glass_option_id = '$glass[glass_option_id]' 
+                                AND products_glasses.glass_color_id = '$glass[glass_color_id]' 
+                                AND products_glasses.glass_manuf_id = '$glass[glass_manuf_id]' 
                                 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (".implode(',', $glass_arr).") AND (SELECT COUNT(*) FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1) = 0 LIMIT $limit");
                 $exact_gl = $db->getResultArray();
     
@@ -982,7 +1009,44 @@ switch ($act){
                     if($proc_id == 5 AND !in_array($user_gr, array(14,13,12,5,1))){
                         $data['error'] = 'თქვენ არ გაქვთ წრთობის დაწყების უფლება';
                     }
+                    
                     else{
+                        if($proc_id == 3){
+                            $db->setQuery(" SELECT   COUNT(*) AS cc
+                                            FROM glasses_paths 
+                                            WHERE status_id = 2 AND actived = 1 AND path_group_id = 3");
+    
+                            $cc = $db->getResultArray()['result'][0]['cc'];
+    
+                            if($cc >= 10){
+                                $data['error'] = 'თქვენ არ გაქვთ 10-ზე მეტი კრონკის დაწყების უფლება';
+                                return;
+                            }
+                        }
+                        else if($proc_id == 4){
+                            $db->setQuery(" SELECT   COUNT(*) AS cc
+                                            FROM glasses_paths 
+                                            WHERE status_id = 2 AND actived = 1 AND path_group_id = 4");
+    
+                            $cc = $db->getResultArray()['result'][0]['cc'];
+                            
+                            if($cc >= 3){
+                                $data['error'] = 'თქვენ არ გაქვთ 3-ზე მეტი კრონკის დაწყების უფლება';
+                                return;
+                            }
+                        }
+                        else if($proc_id == 5){
+                            $db->setQuery(" SELECT   COUNT(*) AS cc
+                                            FROM glasses_paths 
+                                            WHERE status_id = 2 AND actived = 1 AND path_group_id = 5");
+    
+                            $cc = $db->getResultArray()['result'][0]['cc'];
+                            
+                            if($cc >= 30){
+                                $data['error'] = 'თქვენ არ გაქვთ 30-ზე მეტი კრონკის დაწყების უფლება';
+                                return;
+                            }
+                        }
                         $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE id = '$path_id'");
                         $db->execQuery();
             
@@ -3162,7 +3226,7 @@ function getCutOptions($option_id, $type_id, $color_id, $manuf_id){
     GLOBAL $db;
     $data = '';
     $db->setQuery("SELECT   warehouse.id,
-                            CONCAT(glass_manuf.name,' ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ, პირამიდა: ', warehouse.pyramid ) AS name
+                            CONCAT(glass_manuf.name,' ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ, პირამიდა: ', warehouse.pyramid, ' დარჩა: ',warehouse.qty ) AS name
                     FROM    warehouse
                     JOIN    glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
                     WHERE   warehouse.actived = 1 AND warehouse.qty > 0 AND warehouse.glass_option_id = '$option_id' AND warehouse.glass_type_id = '$type_id' AND warehouse.glass_color_id = '$color_id'");
