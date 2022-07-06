@@ -475,6 +475,13 @@ switch ($act){
                 $db->setQuery("UPDATE lists_to_cut SET status_id = 4, pyramid = '$pyramid' WHERE id = '$cut_list_id'");
                 $db->execQuery();
 
+                $db->setQuery("SELECT glass_id
+                                FROM lists_to_cut
+                                WHERE id = '$cut_list_id'");
+                $glass_id = $db->getResultArray()['result'][0]['glass_id'];
+
+                $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyramid' WHERE id = '$glass_id'");
+                $db->execQuery();
                 /* $db->setQuery("UPDATE cut_glass SET status_id = 4 WHERE id = '$cut_id'");
                 $db->execQuery(); */
             }
@@ -482,6 +489,9 @@ switch ($act){
             if(count($gpyr) > 0){
                 $db->setQuery("UPDATE lists_to_cut SET status_id = 4, pyramid = '$pyramid' WHERE id = '$cut_list_id'");
                 $db->execQuery();
+
+
+                
             }
 
 
@@ -745,6 +755,14 @@ switch ($act){
                 $db->setQuery("UPDATE lists_to_cut SET pyramid = '$pyr_data[0]', status_id = 3 WHERE id = '$pyr_data[1]'");
                 $db->execQuery();
 
+                $db->setQuery("SELECT glass_id
+                                FROM lists_to_cut
+                                WHERE id = '$pyr_data[1]'");
+                $glass_id = $db->getResultArray()['result'][0]['glass_id'];
+
+                $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyr_data[0]' WHERE id = '$glass_id'");
+                $db->execQuery();
+
                 $db->setQuery("UPDATE cut_glass SET status_id = 3 WHERE id = '$cut_id'");
                 $db->execQuery();
             }
@@ -827,6 +845,9 @@ switch ($act){
         }
         else{
             $db->setQuery("UPDATE glasses_paths SET pyramid = '$pyramid', user_id = '$user_id', status_id = 3 WHERE id = '$path_id'");
+            $db->execQuery();
+
+            $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyramid' WHERE id = '$glass_id'");
             $db->execQuery();
     
             $db->setQuery(" SELECT  path_next.id AS n_path
@@ -997,7 +1018,7 @@ switch ($act){
                 $db->setQuery("UPDATE glasses_paths SET glass_rate = '$glass_rate', user_id = '$user_id', status_id = 4, pyramid = '$pyramid' WHERE id = '$path_id'");
                 $db->execQuery();
     
-                $db->setQuery("UPDATE products_glasses SET status_id = 4 WHERE id = '$glass_id'");
+                $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyramid', status_id = 4 WHERE id = '$glass_id'");
                 $db->execQuery();
             }
             else{
@@ -2203,7 +2224,7 @@ switch ($act){
             }
             $db->setQuery(" SELECT  orders_product.id,
                                     orders.client_name,
-                                    GROUP_CONCAT(DISTINCT CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - ', products_glasses.glass_width,'მმX',products_glasses.glass_height, 'მმ პირამიდა: ', IFNULL(IF(IFNULL((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1), 0) != glasses_paths.path_group_id, glasses_paths.pyramid,(SELECT path_2.pyramid FROM glasses_paths AS path_2 WHERE path_2.glass_id = products_glasses.id AND path_2.sort_n = glasses_paths.sort_n - 1 AND actived = 1)),''),' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ',<br>') AS glasses,
+                                    GROUP_CONCAT(DISTINCT CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - ', products_glasses.glass_width,'მმX',products_glasses.glass_height, 'მმ პირამიდა: ', products_glasses.last_pyramid,' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ',<br>') AS glasses,
                                     orders_product.butili,
                                     orders_product.lameqs_int,
                                     CONCAT(IFNULL(CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\">საერთო სურათი<br><br></a>'),''), '<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(products_glasses.picture,0),'\">მინის სურათი</a>') AS picture,
@@ -2249,11 +2270,7 @@ switch ($act){
 
                                     CONCAT(CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\">საერთო სურათი<br><br></a>'), '<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(products_glasses.picture,0),'\">მინის სურათი</a>') AS picture,
                                     CONCAT('ნახვრეტი: 4, ჭრის რაოდენობა:5'),
-                                    CASE
-                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT gp1.pyramid FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1), IFNULL((SELECT pyramid FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1), (SELECT pyramid FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1))), lists_to_cut.pyramid), IF(lists_to_cut.status_id IN (1,2), 'არ დევს პირამიდაზე',lists_to_cut.pyramid))
-                                    
-                                    ELSE IFNULL((SELECT gp1.pyramid FROM glasses_paths AS gp2 JOIN glasses_paths AS gp1 ON gp1.sort_n = gp2.sort_n-1 AND gp1.glass_id = gp2.glass_id WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 LIMIT 1), IFNULL((SELECT pyramid FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1), (SELECT pyramid FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))
-                                END AS pyramid,
+                                    products_glasses.last_pyramid,
                                     
                                     
                                     IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE

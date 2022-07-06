@@ -706,6 +706,7 @@
 		params.act 			= 'save_mina_status';
 		params.id 			= $("#glass_id").val();
 		params.status_id 	= $("#status_id").val();
+		params.pyramid 	= $("#pyramid_num").val();
 		
 		$.ajax({
 			url: aJaxURL,
