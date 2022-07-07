@@ -1760,6 +1760,10 @@ switch ($act){
             if($proc_id == 2){
                 $price_total = (($width/1000) * ($height/1000))*$price;
             }
+            if($proc_id == 4){
+                //$price_total = (($width/1000) * ($height/1000))*$price;
+                $price_total = ($holes * 1) + ($cuts * 3);
+            }
 
             if($proc_id == 6 || $proc_id == 7){
                 $db->setQuery(" SELECT MAX(glass_height * glass_width) AS m_kv
@@ -1783,7 +1787,9 @@ switch ($act){
                                                 glass_id='$glass_id',
                                                 path_group_id='$path_group_id',
                                                 status_id='$path_status',
-                                                price = '$price_total'
+                                                price = '$price_total',
+                                                cuts = '$cuts',
+                                                holes = '$holes'
                             WHERE id='$id'");
             $db->execQuery();
             //$data['error'] = '';
@@ -2504,6 +2510,8 @@ function getPath($id){
                             glasses_paths.path_group_id,
                             glasses_paths.status_id,
                             glasses_paths.sort_n,
+                            glasses_paths.cuts,
+                            glasses_paths.holes,
                             groups.default_price
                     FROM    glasses_paths
                     JOIN    groups ON groups.id = glasses_paths.path_group_id 
@@ -2638,8 +2646,10 @@ function getGlassPage($id, $res = ''){
 
 function getPathPage($id, $res = ''){
     GLOBAL $db;
+    $show = 'style="display: none;"';
     if($res['path_group_id'] == 4){
         $hidd = 'style="display: none;"';
+        $show = 'style="display: block;"';
     }
     $data = '   <fieldset class="fieldset">
                     <legend>ინფორმაცია</legend>
@@ -2660,6 +2670,14 @@ function getPathPage($id, $res = ''){
                             <div class="col-sm-4" '.$hidd.'>
                                 <label>ფასი</label>
                                 <input style="width:99%;" type="text" id="price" value="'.$res['default_price'].'">
+                            </div>
+                            <div class="col-sm-4" '.$show.'>
+                                <label>ნახვრეტების რაოდენობა</label>
+                                <input style="width:99%;" type="text" id="holes_2" value="'.$res['holes'].'">
+                            </div>
+                            <div class="col-sm-4" '.$show.'>
+                                <label>ჭრის რაოდენობა</label>
+                                <input style="width:99%;" type="text" id="cuts_2" value="'.$res['cuts'].'">
                             </div>
                         </div>
                     </legend>

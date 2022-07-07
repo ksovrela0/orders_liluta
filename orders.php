@@ -1331,6 +1331,9 @@
 
 				params.width = $("#glass_width").val();
 				params.height = $("#glass_height").val();
+
+				params.cuts = $("#cuts_2").val();
+				params.holes = $("#holes_2").val();
 				
 
 
