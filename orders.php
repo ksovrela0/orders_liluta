@@ -981,7 +981,7 @@
 					var selectedItem = grid.dataItem(row);
 					writing_id.push(selectedItem.id2);
 				});
-				if(typeof writing_id == 'undefined') {
+				if(typeof writing_id == 'undefined' || writing_id.length == 0) {
 					alert('აირჩიეთ პროცესი!!!');
 				} else {
 					var ask = confirm("ნამდვილად გსურთ პროცესის წაშლა?");
@@ -996,6 +996,9 @@
 							},
 							dataType: "json",
 							success: function(data) {
+								if(typeof data.error != 'undefined'){
+									alert(data.error);
+								}
 								$("#path_div").data("kendoGrid").dataSource.read();
 							}
 						});

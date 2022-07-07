@@ -1027,7 +1027,7 @@ $proc_data = $db->getResultArray()['result'][0];
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_cut';
-				var actions = '<?php if($_SESSION['GRPID'] == 1){ echo '<div style="display:flex;"><div id="cut_glass">ლისტის კოპირება</div> <div id="del_list">ლისტის წაშლა</div></div> <div id="status_change">მოლოდინში გადაყვანა</div>'; } ?>';
+				var actions = '<?php if($_SESSION['GRPID'] == 1){ echo '<div style="display:flex;"><div id="cut_glass">ლისტის კოპირება</div> <div id="del_list">ლისტის წაშლა</div></div>'; } ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 5;
@@ -1610,6 +1610,9 @@ $proc_data = $db->getResultArray()['result'][0];
 							},
 							dataType: "json",
 							success: function(data) {
+								if(typeof data.error != 'undefined'){
+									alert(data.error)
+								}
 								$("#main_cut").data("kendoGrid").dataSource.read();
 							}
 						});
