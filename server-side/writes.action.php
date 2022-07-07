@@ -2164,6 +2164,7 @@ switch ($act){
                                     orders.client_pid,
                                     orders.client_phone,
                                     orders.client_addr,
+                                    (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_id = orders.id AND actived = 1 AND status_id IN (1,2,3)),
                                     orders.total,
                                     orders.avansi,
                                     orders.avans_plus,
@@ -2336,7 +2337,7 @@ switch ($act){
         $db->setQuery(" SELECT  orders_product.id,
                                 products.name,
                                 GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, '(',glass_manuf.name,') ',products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ ',glass_colors.name,' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') SEPARATOR ',<br>') AS glasses,
-                                CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\">სურათის გახსნა</a>') AS picture,
+                                (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3)),
                                 CONCAT('<a style=\"color:blue;\" class=\"product_detail\" data-id=\"',orders_product.id,'\" href=\"#\">დეტალურად</a>') AS detailed
 
                         FROM    orders_product
