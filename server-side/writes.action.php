@@ -80,11 +80,11 @@ function getProcFinish($path_id, $glass_id, $proc_id = 0){
                     </fieldset>
 
                     <fieldset class="fieldset">
-                        <legend>ატხოდი</legend>
+                        <legend>ათხოდი</legend>
                             <div class="row">';
                                 foreach($atxods AS $at){
                                     $data .= '  <div class="col-sm-4" style="text-align: center;">
-                                                    <label>ატხოდი: '.$at['si'].'</label>
+                                                    <label>ათხოდი: '.$at['si'].'</label>
                                                     <input type="tel" min="1" class="atxod_pyramids_m" data-id="'.$at['id'].'">
                                                 </div>';
                                 }
@@ -176,11 +176,11 @@ function getProcError($proc_id){
                 </fieldset>
 
                 <fieldset class="fieldset">
-                        <legend>ატხოდი</legend>
+                        <legend>ათხოდი</legend>
                             <div class="row">';
                                 foreach($atxods AS $at){
                                     $data .= '  <div class="col-sm-4" style="text-align: center;">
-                                                    <label>ატხოდი: '.$at['si'].' <input type="checkbox" class="atxod_error" data-id="'.$at['id'].'"></label>
+                                                    <label>ათხოდი: '.$at['si'].' <input type="checkbox" class="atxod_error" data-id="'.$at['id'].'"></label>
                                                     <input style="margin-bottom: 10px;" type="tel" min="1" class="atxod_pyramids" placeholder="პირამიდის #" data-id="'.$at['id'].'">
                                                     <div class="row">
                                                         <div class="col-sm-6"><input style="width:99%;" type="text" class="atxod_width" data-id="'.$at['id'].'" value="'.$at['width'].'"></div>
@@ -801,7 +801,7 @@ switch ($act){
                                         pyramid = '$pyr_data[0]'");
                     $db->execQuery();
                 }
-                //TODO აქედან უნდა ჩაემატოს საწყობსაც ატხოდი
+                //TODO აქედან უნდა ჩაემატოს საწყობსაც ათხოდი
             }
         }
         else if($proc_id == 6 || $proc_id == 7){
@@ -3002,7 +3002,7 @@ function getPage($id, $res = ''){
         <legend>ინფორმაცია</legend>
         <div class="row">
             <div class="col-sm-3">
-                <label>დასახელება</label>
+                <label>დამკვეთი</label>
                 <input value="'.$res['client_name'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_name" class="idle" autocomplete="off">
             </div>
 
