@@ -10,6 +10,8 @@ switch ($act){
     case 'get_count':
         $db->setQuery(" SELECT  groups.id, 
                                 name,
+                                IF(groups.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
+																(SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 3 AND glasses_paths.actived = 1 AND DATE(finish_datetime) = CURDATE()))AS cc_finished,
                                 IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 2), (SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1)) AS cc_active,
                                 
                                 
@@ -26,7 +28,7 @@ switch ($act){
 
         $data = array();
         foreach($processes AS $proc){
-            array_push($data, array("id" => $proc['id'], "title" => $proc['name'], "active" => $proc['cc_active'], "queue" => $proc['cc_queue']));
+            array_push($data, array("id" => $proc['id'], "title" => $proc['name'], "finished" => $proc['cc_finished'], "active" => $proc['cc_active'], "queue" => $proc['cc_queue']));
         }
 
         $db->setQuery("SELECT SUM(IF(lists_to_cut.id IS NULL, 1,0)) AS cc

@@ -752,7 +752,7 @@ switch ($act){
             foreach($gpyr AS $gl){
                 $pyr_data = explode('-', $gl);
 
-                $db->setQuery("UPDATE lists_to_cut SET pyramid = '$pyr_data[0]', status_id = 3 WHERE id = '$pyr_data[1]'");
+                $db->setQuery("UPDATE lists_to_cut SET pyramid = '$pyr_data[0]', status_id = 3, finish_datetime = NOW() WHERE id = '$pyr_data[1]'");
                 $db->execQuery();
 
                 $db->setQuery("SELECT glass_id
@@ -763,7 +763,7 @@ switch ($act){
                 $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyr_data[0]' WHERE id = '$glass_id'");
                 $db->execQuery();
 
-                $db->setQuery("UPDATE cut_glass SET status_id = 3 WHERE id = '$cut_id'");
+                $db->setQuery("UPDATE cut_glass SET status_id = 3, finish_datetime = NOW() WHERE id = '$cut_id'");
                 $db->execQuery();
             }
 
@@ -807,7 +807,7 @@ switch ($act){
         else if($proc_id == 6 || $proc_id == 7){
             $prod_id = $_REQUEST['prod_id'];
 
-            $db->setQuery("UPDATE orders_product SET status_id = 3 WHERE id = '$prod_id'");
+            $db->setQuery("UPDATE orders_product SET status_id = 3, finish_datetime = NOW() WHERE id = '$prod_id'");
             $db->execQuery();
 
             $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT glasses_paths.id) AS path_ids,
@@ -820,7 +820,7 @@ switch ($act){
             $path_ids = $result['path_ids'];
             $glass_ids = $result['glass_ids'];
 
-            $db->setQuery("UPDATE glasses_paths SET pyramid = '$pyramid', user_id = '$user_id', status_id = 3 WHERE id IN($path_ids)");
+            $db->setQuery("UPDATE glasses_paths SET pyramid = '$pyramid', user_id = '$user_id', status_id = 3, finish_datetime = NOW() WHERE id IN($path_ids)");
             $db->execQuery();
 
             $db->setQuery("UPDATE products_glasses SET status_id = 3 WHERE id IN ($glass_ids)");
@@ -844,7 +844,7 @@ switch ($act){
             }
         }
         else{
-            $db->setQuery("UPDATE glasses_paths SET pyramid = '$pyramid', user_id = '$user_id', status_id = 3 WHERE id = '$path_id'");
+            $db->setQuery("UPDATE glasses_paths SET pyramid = '$pyramid', user_id = '$user_id', status_id = 3, finish_datetime = NOW() WHERE id = '$path_id'");
             $db->execQuery();
 
             $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyramid' WHERE id = '$glass_id'");

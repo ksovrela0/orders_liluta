@@ -451,7 +451,7 @@ $(document).ready(function(){
 							$("#proccess_"+i.id).html(i.title+` <span style="color: red;">(`+i.queue+`)</span> `);
 						}
 						else{
-							$("#proccess_"+i.id).html(i.title+` <span style="color: #95952a;">(`+i.active+`)</span> <span style="color: red;">(`+i.queue+`)</span> `);
+							$("#proccess_"+i.id).html(i.title+` <span style="color: green;">(`+i.finished+`)</span> <span style="color: #95952a;">(`+i.active+`)</span> <span style="color: red;">(`+i.queue+`)</span> `);
 						}
 						
 					})

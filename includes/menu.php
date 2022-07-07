@@ -35,6 +35,8 @@ $user_gr = $_SESSION['GRPID'];
                         if($item['id'] == 15){
                             $db->setQuery(" SELECT  groups.id, 
                                                             name,
+                                                            IF(groups.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
+																(SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 3 AND glasses_paths.actived = 1 AND DATE(finish_datetime) = CURDATE()))AS cc_finished,
                                                             IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 2), (SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1)) AS cc_active,
                                                             
                                                             
@@ -54,7 +56,7 @@ $user_gr = $_SESSION['GRPID'];
                             }
                             
                             foreach($processes AS $group){
-                                $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_'.$group['id'].'">'.$group[name].' <span style="color: #95952a;">('.$group[cc_active].')</span> <span style="color: red;">('.$group[cc_queue].')</span> </span></a> </li>';
+                                $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_'.$group['id'].'">'.$group[name].' <span style="color: green;">('.$group[cc_finished].')</span> <span style="color: #95952a;">('.$group[cc_active].')</span> <span style="color: red;">('.$group[cc_queue].')</span> </span></a> </li>';
                             }
                         }
                     }
