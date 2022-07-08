@@ -224,6 +224,7 @@ switch ($act){
 
 FROM 		products_glasses
 JOIN 		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
+JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
 JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
 LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
 WHERE 	products_glasses.actived = 1
