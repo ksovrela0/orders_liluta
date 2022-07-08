@@ -348,7 +348,7 @@ GROUP BY products_glasses.id) AS ttt
 
 echo json_encode($data);
 function getStatusPage($res = ''){
-    if($res['status_id'] == 3 || $res['status_id'] == 6 || $res['status_id'] == 2){
+    if($res['status_id'] == 3 || $res['status_id'] == 6){
         $disable = 'disabled';
     }
     if($res['status_id'] == 6){
