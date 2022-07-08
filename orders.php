@@ -781,7 +781,7 @@
 							height: "auto",
 							width: 1100,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"შენახვა": function() {
 									save_product();
