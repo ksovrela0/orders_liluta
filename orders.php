@@ -614,7 +614,7 @@
 							height: "auto",
 							width: 600,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"დაწყება": function() {
 									if (confirm("ნამდვილად გსურთ სმს-ების გაგზავნის დაწყება?") == true) {
@@ -665,7 +665,7 @@
 							height: "auto",
 							width: 600,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"დაწყება": function() {
 									if (confirm("ნამდვილად გსურთ სმს-ების გაგზავნის დაწყება?") == true) {
@@ -735,7 +735,7 @@
 							height: "auto",
 							width: 1200,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"გადათვლა": function() {
 									$.ajax({
@@ -823,7 +823,7 @@
 							width: 1200,
 							height: 550,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"შენახვა": function() {
 									save_glass();
@@ -852,7 +852,7 @@
 							height: 400,
 							width: 900,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"შენახვა": function() {
 									save_path();
@@ -1065,7 +1065,7 @@
 							height: "auto",
 							width: 1200,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"გადათვლა": function() {
 									$.ajax({
@@ -1124,7 +1124,7 @@
 							width: 1200,
 							height: 550,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"შენახვა": function() {
 									save_glass();
@@ -1163,7 +1163,7 @@
 							height: "auto",
 							width: 1100,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"შენახვა": function() {
 									save_product();
@@ -1198,7 +1198,7 @@
 							height: 400,
 							width: 900,
 							modal: true,
-							position: "top",
+							/* position: "top", */
 							buttons: {
 								"შენახვა": function() {
 									save_path();
@@ -1491,7 +1491,7 @@
 									height: 300,
 									width: 500,
 									modal: true,
-									position: "top",
+									/* position: "top", */
 									buttons: {
 										"შენახვა": function() {
 											let params = new Object;
@@ -1761,7 +1761,7 @@
 									height: 400,
 									width: 800,
 									modal: true,
-									position: "top",
+									/* position: "top", */
 									buttons: {
 										"შენახვა": function() {
 											save_cut();
