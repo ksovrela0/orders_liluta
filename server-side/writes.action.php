@@ -2221,7 +2221,7 @@ switch ($act){
                                     orders.avans_plus,
                                     orders.total - (orders.avansi+orders.avans_plus) AS left_to_pay,
                                     CONCAT('<span class=\"ostatus_',order_status.id,'\">',order_status.name,'</span>') AS status,
-                                    CONCAT('<a target=\"_blank\" style=\"color:blue\" href=\"http://localhost/orders_liluta_upd/print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>')
+                                    CONCAT('<a target=\"_blank\" style=\"color:blue\" href=\"print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>')
 
                                     
                                         
