@@ -504,13 +504,13 @@
 				var actions = '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 11;
-				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
-				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დასახელება", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი"];
-				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var columnsCount = 12;
+				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "sum_sqrm:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
+				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დასახელება", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
@@ -524,9 +524,9 @@
 				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture:string", "action:string"];
-				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სურათი", "ქმედება"];
+				var columnsCount = 4;
+				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture_prod:string"];
+				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სულ კვ.მ"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -582,7 +582,7 @@
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "proccess:string", "sort_n:string", "price_glass_proc:string", "stat:string"];
+				var columnsSQL = ["id2:string", "proccess:string", "sort_n:string", "price_glass_proc:string", "stat_path_or:string"];
 				var columnGeoNames = ["ID","პროცესი", "თანმიმდევრობა","ფასი", "სტატუსი"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -615,11 +615,7 @@
 							height: "auto",
 							width: 600,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"დაწყება": function() {
 									if (confirm("ნამდვილად გსურთ სმს-ების გაგზავნის დაწყება?") == true) {
@@ -670,11 +666,7 @@
 							height: "auto",
 							width: 600,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"დაწყება": function() {
 									if (confirm("ნამდვილად გსურთ სმს-ების გაგზავნის დაწყება?") == true) {
@@ -744,11 +736,7 @@
 							height: "auto",
 							width: 1200,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"გადათვლა": function() {
 									$.ajax({
@@ -794,11 +782,7 @@
 							height: "auto",
 							width: 1100,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"შენახვა": function() {
 									save_product();
@@ -821,6 +805,14 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_glass_page').html(data.page);
+
+						$(".proccess[data-id='6'], .proccess[data-id='7']").css('display', 'none');
+						if($("#selected_product_id").val() == 2){
+							$(".proccess[data-id='7']").css('display', 'block');
+						}
+						else if($("#selected_product_id").val() == 3){
+							$(".proccess[data-id='6']").css('display', 'block');
+						}
 						var kendo = new kendoUI();
 						var pr = "&glass_id="+$("#glass_id").val();
 
@@ -832,11 +824,7 @@
 							width: 1200,
 							height: 550,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"შენახვა": function() {
 									save_glass();
@@ -865,11 +853,7 @@
 							height: 400,
 							width: 900,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"შენახვა": function() {
 									save_path();
@@ -956,6 +940,7 @@
 							data: {
 								act: "disable",
 								type: "product",
+								order_id: $("#writing_id").val(),
 								id: writing_id
 							},
 							dataType: "json",
@@ -986,6 +971,7 @@
 							data: {
 								act: "disable",
 								type: "glass",
+								order_id: $("#writing_id").val(),
 								id: writing_id
 							},
 							dataType: "json",
@@ -1006,7 +992,7 @@
 					var selectedItem = grid.dataItem(row);
 					writing_id.push(selectedItem.id2);
 				});
-				if(typeof writing_id == 'undefined') {
+				if(typeof writing_id == 'undefined' || writing_id.length == 0) {
 					alert('აირჩიეთ პროცესი!!!');
 				} else {
 					var ask = confirm("ნამდვილად გსურთ პროცესის წაშლა?");
@@ -1021,6 +1007,9 @@
 							},
 							dataType: "json",
 							success: function(data) {
+								if(typeof data.error != 'undefined'){
+									alert(data.error);
+								}
 								$("#path_div").data("kendoGrid").dataSource.read();
 							}
 						});
@@ -1077,11 +1066,7 @@
 							height: "auto",
 							width: 1200,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"გადათვლა": function() {
 									$.ajax({
@@ -1122,6 +1107,14 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_glass_page').html(data.page);
+						$(".proccess[data-id='6'], .proccess[data-id='7']").css('display', 'none');
+						if($("#selected_product_id").val() == 2){
+							$(".proccess[data-id='7']").css('display', 'block');
+						}
+						else if($("#selected_product_id").val() == 3){
+							$(".proccess[data-id='6']").css('display', 'block');
+						}
+
 						var kendo = new kendoUI();
 						var hid = "&glass_id="+dItem.id;
 						LoadKendoTable_path(hid);
@@ -1132,11 +1125,7 @@
 							width: 1200,
 							height: 550,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"შენახვა": function() {
 									save_glass();
@@ -1175,11 +1164,7 @@
 							height: "auto",
 							width: 1100,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"შენახვა": function() {
 									save_product();
@@ -1214,11 +1199,7 @@
 							height: 400,
 							width: 900,
 							modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+							position: "top",
 							buttons: {
 								"შენახვა": function() {
 									save_path();
@@ -1372,6 +1353,9 @@
 
 				params.width = $("#glass_width").val();
 				params.height = $("#glass_height").val();
+
+				params.cuts = $("#cuts_2").val();
+				params.holes = $("#holes_2").val();
 				
 
 
@@ -1428,6 +1412,7 @@
 								act: "copy",
 								type: "product",
 								id: writing_id,
+								order_id: $("#writing_id").val(),
 								qty: ask
 							},
 							dataType: "json",
@@ -1464,6 +1449,7 @@
 								act: "copy",
 								type: "glass",
 								id: writing_id,
+								order_id: $("#writing_id").val(),
 								qty: ask
 							},
 							dataType: "json",
@@ -1506,11 +1492,7 @@
 									height: 300,
 									width: 500,
 									modal: true,
-									position: {
-										my: "center",
-										at: "top",
-										of: window
-									},
+									position: "top",
 									buttons: {
 										"შენახვა": function() {
 											let params = new Object;
@@ -1780,11 +1762,7 @@
 									height: 400,
 									width: 800,
 									modal: true,
-							position: {
-            my: "center",
-            at: "top",
-            of: window
-        },
+									position: "top",
 									buttons: {
 										"შენახვა": function() {
 											save_cut();
