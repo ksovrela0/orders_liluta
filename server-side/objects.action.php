@@ -348,6 +348,12 @@ GROUP BY products_glasses.id) AS ttt
 
 echo json_encode($data);
 function getStatusPage($res = ''){
+    if($res['status_id'] == 3 || $res['status_id'] == 6 || $res['status_id'] == 2){
+        $disable = 'disabled';
+    }
+    if($res['status_id'] == 6){
+        $dis_inp = 'disabled';
+    }
     $data .= '
     
     <fieldset class="fieldset">
@@ -355,18 +361,18 @@ function getStatusPage($res = ''){
         <div class="row">
             <div class="col-sm-12">
                 <label>სტატუსის შეცვლა</label>
-                <select id="status_id">
+                <select id="status_id" '.$disable.'>
                     '.getGlassStatusOptions($res['status_id']).'
                 </select>
             </div>
             
             <div class="col-sm-12" style="margin-top:10px;">
                 <label>პირამიდა:</label>
-                <input type="tel" min="1" id="pyramid_num" value="'.$res['last_pyramid'].'">
+                <input type="number" min="1" id="pyramid_num" value="'.$res['last_pyramid'].'" '.$dis_inp.'>
             </div>
         </div>
     </fieldset>
-    <input type="hidden" id="glass_id" value="'.$res[id].'">
+    <input type="hidden" id="glass_id" value="'.$res['id'].'">
     ';
 
     return $data;
@@ -383,10 +389,19 @@ function getStatus($id){
 function getGlassStatusOptions($id){
     GLOBAL $db;
     $data = '';
+    if($id == 3){
+        $where = "(6)";
+    }
+    else if($id == 6){
+        $where = "(3)";
+    }
+    else{
+        $where = "(3,6)";
+    }
     $db->setQuery("SELECT   id,
                             name AS 'name'
                     FROM    glass_status
-                    WHERE actived = 1 AND id NOT IN (3,6)");
+                    WHERE actived = 1 AND id NOT IN $where");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
