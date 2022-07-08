@@ -505,3 +505,16 @@ $(document).on('click', '.main-header-notification', function(){
 		}
 	});
 })
+
+
+$(document).on('keyup', '.atxod_width,.atxod_height', function(e){
+	var num = parseInt($(this).val());
+
+	if(typeof $(this).attr('max') != 'undefined'){
+		if(num > $(this).attr('max')){
+			$(this).val($(this).attr('max'))
+/* 			if ( !(e.which == '46' || e.which == '8' || e.which == '13') ) // backspace/enter/del
+            	e.preventDefault(); */
+		}
+	}
+});

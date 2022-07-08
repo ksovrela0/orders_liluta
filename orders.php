@@ -804,6 +804,14 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_glass_page').html(data.page);
+
+						$(".proccess[data-id='6'], .proccess[data-id='7']").css('display', 'none');
+						if($("#selected_product_id").val() == 2){
+							$(".proccess[data-id='7']").css('display', 'block');
+						}
+						else if($("#selected_product_id").val() == 3){
+							$(".proccess[data-id='6']").css('display', 'block');
+						}
 						var kendo = new kendoUI();
 						var pr = "&glass_id="+$("#glass_id").val();
 
@@ -931,6 +939,7 @@
 							data: {
 								act: "disable",
 								type: "product",
+								order_id: $("#writing_id").val(),
 								id: writing_id
 							},
 							dataType: "json",
@@ -961,6 +970,7 @@
 							data: {
 								act: "disable",
 								type: "glass",
+								order_id: $("#writing_id").val(),
 								id: writing_id
 							},
 							dataType: "json",
@@ -1096,6 +1106,14 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_glass_page').html(data.page);
+						$(".proccess[data-id='6'], .proccess[data-id='7']").css('display', 'none');
+						if($("#selected_product_id").val() == 2){
+							$(".proccess[data-id='7']").css('display', 'block');
+						}
+						else if($("#selected_product_id").val() == 3){
+							$(".proccess[data-id='6']").css('display', 'block');
+						}
+
 						var kendo = new kendoUI();
 						var hid = "&glass_id="+dItem.id;
 						LoadKendoTable_path(hid);
@@ -1393,6 +1411,7 @@
 								act: "copy",
 								type: "product",
 								id: writing_id,
+								order_id: $("#writing_id").val(),
 								qty: ask
 							},
 							dataType: "json",
@@ -1429,6 +1448,7 @@
 								act: "copy",
 								type: "glass",
 								id: writing_id,
+								order_id: $("#writing_id").val(),
 								qty: ask
 							},
 							dataType: "json",
