@@ -1861,6 +1861,24 @@ switch ($act){
             foreach($ids AS $id){
                 $db->setQuery("UPDATE glasses_paths SET actived = 0 WHERE id = '$id' AND status_id = 1");
                 $db->execQuery();
+
+                $db->setQuery("SELECT glass_id
+                                FROM glasses_paths
+                                WHERE id = '$id'");
+                $gl_id = $db->getResultArray()['result'][0]['glass_id'];
+
+                $db->setQuery("SELECT id
+                                FROM glasses_paths
+                                WHERE actived = 1 AND glass_id = '$gl_id'
+                                ORDER BY sort_n ASC");
+
+                $upd_sort = $db->getResultArray()['result'];
+                $i = 1;
+                foreach($upd_sort AS $sort){
+                    $db->setQuery("UPDATE glasses_paths SET sort_n = '$i' WHERE id = '$sort[id]'");
+                    $db->execQuery();
+                    $i++;
+                }
     
             }
         }
