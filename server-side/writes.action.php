@@ -1691,7 +1691,7 @@ switch ($act){
                                                 glass_width='$glass_width',
                                                 glass_height='$glass_height',
                                                 glass_manuf_id = '$glass_manuf',
-                                                status_id='$glass_status',
+                                                status_id='1',
                                                 go_to_cut='$go_to_cut',
                                                 order_id = '$order_id'");
 
