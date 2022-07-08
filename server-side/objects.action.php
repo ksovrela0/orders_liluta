@@ -354,6 +354,10 @@ function getStatusPage($res = ''){
     if($res['status_id'] == 6){
         $dis_inp = 'disabled';
     }
+
+    if($res['last_pyramid'] == ''){
+        $dis_inp = 'disabled';
+    }
     $data .= '
     
     <fieldset class="fieldset">
