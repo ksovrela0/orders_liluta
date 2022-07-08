@@ -626,6 +626,7 @@ switch ($act){
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
                         JOIN    glass_status ON glass_status.id = products_glasses.status_id
                         JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+                        JOIN    orders ON orders.id = products_glasses.order_id AND orders.actived = 1
                         WHERE   products_glasses.glass_width = '$glass_width' 
                         AND     products_glasses.glass_height = '$glass_height' 
                         AND     products_glasses.glass_option_id = '$glass_option_id' 
