@@ -2475,7 +2475,7 @@ switch ($act){
                         JOIN    groups ON groups.id = glasses_paths.path_group_id
                         JOIN    glass_status ON glass_status.id = glasses_paths.status_id
                         WHERE   glasses_paths.actived = 1 AND glasses_paths.glass_id = '$glass_id'
-                        ORDER BY glasses_paths.id ASC");
+                        ORDER BY glasses_paths.sort_n ASC");
 
 
         $result = $db->getKendoList($columnCount, $cols);
