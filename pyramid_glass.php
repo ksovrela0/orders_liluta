@@ -301,7 +301,7 @@
 	<!-- Jquery js-->
 	<div title="სტატუსის ცვლილება" id="get_status_page"></div>
 	<div class="main-navbar-backdrop"></div>
-	<div title="Excel" id="get_excel">
+	<div title="ბეჭვდვა" id="get_excel">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
