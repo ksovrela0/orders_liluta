@@ -1844,6 +1844,13 @@
 				}
 			});
 			</script>
+
+			<style>
+				.ui-widget.ui-widget-content {
+					border: 1px solid #ccc;
+					top: 0!important;
+				}
+				</style>
 </body>
 
 </html>
