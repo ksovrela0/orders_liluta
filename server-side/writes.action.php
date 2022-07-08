@@ -2281,7 +2281,7 @@ switch ($act){
                 $pr_id = 3;
             }
             $db->setQuery(" SELECT  orders_product.id,
-                                    orders.client_name,
+                                    CONCAT(orders.client_name , ' (', orders.comment, ')'),
                                     GROUP_CONCAT(DISTINCT CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - <b>', products_glasses.glass_width,'მმX',products_glasses.glass_height, 'მმ</b> პირამიდა: ', products_glasses.last_pyramid,' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span> ',gl_st.name) SEPARATOR ',<br>') AS glasses,
                                     orders_product.butili,
                                     orders_product.lameqs_int,
@@ -2321,7 +2321,7 @@ switch ($act){
         }
         else{
             $db->setQuery(" SELECT * FROM (SELECT	products_glasses.id,
-                                    orders.client_name,
+                                    CONCAT(orders.client_name , ' ', orders.comment),
                                     CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')) AS option,
                                     glass_type.name AS type,
                                     glass_colors.name AS color,

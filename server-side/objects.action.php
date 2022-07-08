@@ -195,10 +195,10 @@ switch ($act){
 		$cols[]      =      $_REQUEST['cols'];
 
         $db->setQuery("SELECT * FROM (SELECT	products_glasses.id,
-        CONCAT(glass_options.name,' ',products_glasses.glass_width,'მმ', products_glasses.glass_height,'მმ') AS glass,
+        CONCAT(glass_options.name,' <b>',products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ</b>') AS glass,
         products_glasses.last_pyramid,
         orders.id AS order_id,
-        orders.client_name,
+        CONCAT(orders.client_name, ' ', orders.comment),
         orders.client_pid,
         orders.client_phone,
         IF(orders.total - (orders.avansi+orders.avans_plus) = 0,'კი','არა') AS payment,
