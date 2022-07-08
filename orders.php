@@ -1300,8 +1300,14 @@
 						data: params,
 						dataType: "json",
 						success: function(data) {
-							$("#product_div").data("kendoGrid").dataSource.read();
-							$('#get_product_page').dialog("close");
+							if(typeof data.error != 'undefined'){
+								alert(data.error)	
+							}
+							else{
+								$("#product_div").data("kendoGrid").dataSource.read();
+								$('#get_product_page').dialog("close");
+							}
+							
 						}
 					});
 				}

@@ -1048,6 +1048,7 @@ switch ($act){
     
                             if($cc >= 10){
                                 $data['error'] = 'თქვენ არ გაქვთ 10-ზე მეტი კრონკის დაწყების უფლება';
+                                echo json_encode($data);
                                 return;
                             }
                         }
@@ -1060,6 +1061,7 @@ switch ($act){
                             
                             if($cc >= 3){
                                 $data['error'] = 'თქვენ არ გაქვთ 3-ზე მეტი კრონკის დაწყების უფლება';
+                                echo json_encode($data);
                                 return;
                             }
                         }
@@ -1072,6 +1074,7 @@ switch ($act){
                             
                             if($cc >= 30){
                                 $data['error'] = 'თქვენ არ გაქვთ 30-ზე მეტი კრონკის დაწყების უფლება';
+                                echo json_encode($data);
                                 return;
                             }
                         }
@@ -1619,37 +1622,51 @@ switch ($act){
         $butil_size     = intval($_REQUEST['butil_size']);
         $firi_lameks    = $_REQUEST['firi_lameks'];
 
+
         $db->setQuery(" SELECT  COUNT(*) AS cc
-                        FROM    orders_product
-                        WHERE   id = '$id' AND actived = 1");
-        $isset = $db->getResultArray();
+                        FROM    products_glasses
+                        WHERE   actived = 1 AND order_product_id = '$id'");
 
-        if($isset['result'][0]['cc'] == 0){
-            $db->setQuery("INSERT INTO orders_product SET
-                                            id = '$id',
-                                            user_id='$user_id',
-                                            datetime=NOW(),
-                                            order_id='$order_id',
-                                            product_id='$selected_product_id',
-                                            butili = '$butil_size',
-                                            lameqs_int = '$firi_lameks'");
+        $cc = $db->getResultArray()['result'][0]['cc'];
 
-            $db->execQuery();
-            $data['error'] = '';
+        if($cc <= 1 && in_array($selected_product_id, array(2,3))){
+            $data['error'] = 'მინაპაკეტის/ლამექსის შესანახად აუცილებელია მინიმუმ 2 მინა';
         }
-
         else{
-            $db->setQuery("UPDATE orders_product SET user_id='$user_id',
-                                            order_id='$order_id',
-                                            product_id='$selected_product_id',
-                                            butili = '$butil_size',
-                                            lameqs_int = '$firi_lameks'
-                        WHERE id='$id'");
-            $db->execQuery();
-            $data['error'] = '';
+            $db->setQuery(" SELECT  COUNT(*) AS cc
+                            FROM    orders_product
+                            WHERE   id = '$id' AND actived = 1");
+            $isset = $db->getResultArray();
+
+            if($isset['result'][0]['cc'] == 0){
+                $db->setQuery("INSERT INTO orders_product SET
+                                                id = '$id',
+                                                user_id='$user_id',
+                                                datetime=NOW(),
+                                                order_id='$order_id',
+                                                product_id='$selected_product_id',
+                                                butili = '$butil_size',
+                                                lameqs_int = '$firi_lameks'");
+
+                $db->execQuery();
+                //$data['error'] = '';
+            }
+
+            else{
+                $db->setQuery("UPDATE orders_product SET user_id='$user_id',
+                                                order_id='$order_id',
+                                                product_id='$selected_product_id',
+                                                butili = '$butil_size',
+                                                lameqs_int = '$firi_lameks'
+                            WHERE id='$id'");
+                $db->execQuery();
+                //$data['error'] = '';
+            }
+
+            finish_order($order_id);
         }
 
-        finish_order($order_id);
+        
 
     break;
 
