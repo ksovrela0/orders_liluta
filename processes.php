@@ -1027,7 +1027,7 @@ $proc_data = $db->getResultArray()['result'][0];
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_cut';
-				var actions = '<?php if($_SESSION['GRPID'] == 1){ echo '<div style="display:flex;"><div id="cut_glass">ლისტის კოპირება</div> <div id="del_list">ლისტის წაშლა</div></div>'; } ?>';
+				var actions = '<?php if( in_array($_SESSION['GRPID'],array(1,12,13,11))){ echo '<div style="display:flex;"><div id="cut_glass">ლისტის კოპირება</div> <div id="del_list">ლისტის წაშლა</div></div>'; } ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 5;
