@@ -94,11 +94,18 @@ class kendoUI{
 			if(this.gridName == 'product_categories'){
 				var total = 0;
 				$("#product_categories tr[role='row'] td:nth-child(6)").each(function(i, x){
-					if(parseInt($(x).html()) <= 0){
-						$(x).parent().css("background-color","rgb(255 0 0 / 35%)")
+
+					var uid = $(x).parent().attr('data-uid');
+
+					var type = $("#product_categories tr[data-uid='"+uid+"'] td:nth-child(9)").html();
+
+					console.log(type)
+
+					if(parseInt($(x).html()) <= 0 && type != 'ათხოდი'){
+						$(x).parent().css("background-color","rgb(255 0 0 / 15%)")
 					}
-					if(parseInt($(x).html()) <= 10 && parseInt($(x).html()) > 0){
-						$(x).parent().css("background-color","rgb(251 255 0 / 35%)")
+					if(parseInt($(x).html()) <= 10 && parseInt($(x).html()) > 0 && type != 'ათხოდი'){
+						$(x).parent().css("background-color","rgb(251 255 0 / 15%)")
 					}
 					total += parseInt($(x).html());
 				})

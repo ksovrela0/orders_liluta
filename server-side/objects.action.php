@@ -300,7 +300,7 @@ GROUP BY products_glasses.id) AS ttt
                                         warehouse.qty,
                                         CONCAT('<b>',warehouse.glass_width,'</b> X <b>', warehouse.glass_height,'</b> მმ'),
                                         IFNULL(glass_bring.name, glass_bringer.name),
-                                        IF(warehouse.gtype = 1,'ლისტი', 'ატხოდი'),
+                                        IF(warehouse.gtype = 1,'ლისტი', 'ათხოდი'),
                                         CONCAT(warehouse.marja, '%'),
                                         warehouse.sqr_price,
                                         warehouse.pyramid
