@@ -2249,7 +2249,7 @@ switch ($act){
             $db->setQuery("SELECT 		cut_glass.id,
                                         CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', warehouse.pyramid) AS list,
                                         GROUP_CONCAT(CONCAT('ID: ', products_glasses.id,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'') ,' ზომები: <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ - ',glass_st.name,' - ', orders.client_name,' - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>') AS glasses,
-                                        (SELECT GROUP_CONCAT(CONCAT('<span style=\"background-color: orange;\"><b>',cut_atxod.width,'</b> X <b>', cut_atxod.height,'</b> მმ</span>') SEPARATOR ',<br>') FROM cut_atxod WHERE cut_atxod.cut_id = cut_glass.id AND cut_atxod.actived = 1) AS atx,
+                                        (SELECT GROUP_CONCAT(CONCAT('<b>',cut_atxod.width,'</b> X <b>', cut_atxod.height,'</b> მმ') SEPARATOR ',<br>') FROM cut_atxod WHERE cut_atxod.cut_id = cut_glass.id AND cut_atxod.actived = 1) AS atx,
                                         
                                         CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') AS status,
                                         CASE
