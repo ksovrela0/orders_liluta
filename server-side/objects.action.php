@@ -5,7 +5,7 @@ GLOBAL $db;
 $db = new dbClass();
 $act = $_REQUEST['act'];
 $user_id = $_SESSION['USERID'];
-
+$user_gr = $_SESSION['GRPID'];
 switch ($act){
     case 'get_add_page':
         $id = $_REQUEST['id'];
@@ -195,7 +195,7 @@ switch ($act){
 		$cols[]      =      $_REQUEST['cols'];
 
         $db->setQuery("SELECT * FROM (SELECT	products_glasses.id,
-        CONCAT(glass_options.name,' <b>',products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ</b>') AS glass,
+        CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ') AS glass,
         products_glasses.last_pyramid,
         orders.id AS order_id,
         CONCAT(orders.client_name, ' ', orders.comment),
@@ -298,7 +298,7 @@ GROUP BY products_glasses.id) AS ttt
                                         glass_type.name AS type,
                                         glass_colors.name AS color,
                                         warehouse.qty,
-                                        CONCAT(warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ' ),
+                                        CONCAT('<b>',warehouse.glass_width,'</b> X <b>', warehouse.glass_height,'</b> მმ'),
                                         IFNULL(glass_bring.name, glass_bringer.name),
                                         IF(warehouse.gtype = 1,'ლისტი', 'ატხოდი'),
                                         CONCAT(warehouse.marja, '%'),
@@ -349,6 +349,7 @@ GROUP BY products_glasses.id) AS ttt
 
 echo json_encode($data);
 function getStatusPage($res = ''){
+    GLOBAL $user_gr;
     if($res['status_id'] == 3 || $res['status_id'] == 6){
         $disable = 'disabled';
     }
@@ -357,6 +358,10 @@ function getStatusPage($res = ''){
     }
 
     if($res['last_pyramid'] == ''){
+        $dis_inp = 'disabled';
+    }
+
+    if(!in_array($user_gr,array(1,11))){
         $dis_inp = 'disabled';
     }
     $data .= '
