@@ -1030,9 +1030,9 @@ $proc_data = $db->getResultArray()['result'][0];
 				var actions = '<?php if( in_array($_SESSION['GRPID'],array(1,12,13,11))){ echo '<div style="display:flex;"><div id="cut_glass">ლისტის კოპირება</div> <div id="del_list">ლისტის წაშლა</div></div>'; } ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 5;
-				var columnsSQL = ["cut_id","list:string", "product_glasses:string", "product_status:string", "product_act:string"];
-				var columnGeoNames = ["ჭრის ID","ლისტი", "მინები", "სტატუსი", "ქმედება"];
+				var columnsCount = 6;
+				var columnsSQL = ["cut_id","list:string", "product_glasses:string", "atxodebi:string", "product_status:string", "product_act:string"];
+				var columnGeoNames = ["ჭრის ID","ლისტი", "მინები", "ათხოდები", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
