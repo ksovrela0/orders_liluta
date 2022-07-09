@@ -94,6 +94,12 @@ class kendoUI{
 			if(this.gridName == 'product_categories'){
 				var total = 0;
 				$("#product_categories tr[role='row'] td:nth-child(6)").each(function(i, x){
+					if(parseInt($(x).html()) <= 0){
+						$(x).parent().css("background-color","rgb(255 0 0 / 35%)")
+					}
+					if(parseInt($(x).html()) <= 10 && parseInt($(x).html()) > 0){
+						$(x).parent().css("background-color","rgb(251 255 0 / 35%)")
+					}
 					total += parseInt($(x).html());
 				})
 				$("#total_glass").html(total);
