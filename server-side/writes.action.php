@@ -456,7 +456,7 @@ switch ($act){
         $ids = $_REQUEST['ids'];
 
         foreach($ids AS $id){
-            $db->setQuery("UPDATE cut_glass SET status_id = 1 WHERE id = '$id'");
+            $db->setQuery("UPDATE cut_glass SET status_id = 1 WHERE id = '$id' AND status_id = 1");
             $db->execQuery();
         }
     break;
