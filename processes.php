@@ -972,16 +972,16 @@ $proc_data = $db->getResultArray()['result'][0];
 				<?php
 					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
 						echo 'LoadKendoTable_main2(hid);';
-						echo 'setInterval(function () {LoadKendoTable_main2(hid);}, 15000);';
+						echo 'setInterval(function () {$("#main_div_2").data("kendoGrid").dataSource.read();}, 15000);';
 					}
 					else if($proc_data['id'] == 2){
 						echo 'LoadKendoTable_main3(hid);';
-						echo 'setInterval(function () {LoadKendoTable_main3(hid);}, 15000);';
+						echo 'setInterval(function () {$("#main_cut").data("kendoGrid").dataSource.read();}, 15000);';
 						
 					}
 					else{
 						echo 'LoadKendoTable_main(hid);';
-						echo 'setInterval(function () {LoadKendoTable_main(hid);}, 15000);';
+						echo 'setInterval(function () {$("#main_div").data("kendoGrid").dataSource.read();}, 15000);';
 					}
 				?>
 
