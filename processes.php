@@ -971,13 +971,14 @@ $proc_data = $db->getResultArray()['result'][0];
 
 				<?php
 					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
-						echo 'LoadKendoTable_main2(hid);';
+						echo 'setInterval(function () {LoadKendoTable_main2(hid);}, 30000);';
 					}
 					else if($proc_data['id'] == 2){
-						echo 'LoadKendoTable_main3(hid);';
+						echo 'setInterval(function () {LoadKendoTable_main3(hid);}, 30000);';
+						
 					}
 					else{
-						echo 'LoadKendoTable_main(hid);';
+						echo 'setInterval(function () {LoadKendoTable_main(hid);}, 30000);';
 					}
 				?>
 
