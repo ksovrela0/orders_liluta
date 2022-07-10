@@ -702,98 +702,107 @@
 
 	$(document).on('click', '#proc_again', function(){
 		var pyramid = $("#pyramid_num").val();
-
-		if(pyramid == '' || pyramid == 0){
-			alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
-		}
-		else{
-			let params 			= new Object;
-			params.act 			= 'save_mina_status';
-			params.id 			= $("#glass_id").val();
-			params.type 		= 'proc_again';
-			params.pyramid 		= $("#pyramid_num").val();
-			
-			$.ajax({
-				url: aJaxURL,
-				type: "POST",
-				data: params,
-				dataType: "json",
-				success: function(data){
-					if(typeof data.error != 'undefined'){
-						alert(data.error)
+		var ask = prompt("ნამდვილად გსურთ ნამდვილად გსურთ პროცესის ხელახლა გატარება??");
+		if(ask){
+			if(pyramid == '' || pyramid == 0){
+				alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
+			}
+			else{
+				let params 			= new Object;
+				params.act 			= 'save_mina_status';
+				params.id 			= $("#glass_id").val();
+				params.type 		= 'proc_again';
+				params.pyramid 		= $("#pyramid_num").val();
+				
+				$.ajax({
+					url: aJaxURL,
+					type: "POST",
+					data: params,
+					dataType: "json",
+					success: function(data){
+						if(typeof data.error != 'undefined'){
+							alert(data.error)
+						}
+						else{
+							$("#pyramid_glass").data("kendoGrid").dataSource.read();
+							$('#get_status_page').dialog("close");
+						}
+						
 					}
-					else{
-						$("#pyramid_glass").data("kendoGrid").dataSource.read();
-						$('#get_status_page').dialog("close");
-					}
-					
-				}
-			});
+				});
+			}
 		}
+		
 	});
 
 	$(document).on('click', '#proc_next', function(){
 		var pyramid = $("#pyramid_num").val();
-
-		if(pyramid == '' || pyramid == 0){
-			alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
-		}
-		else{
-			let params 			= new Object;
-			params.act 			= 'save_mina_status';
-			params.id 			= $("#glass_id").val();
-			params.type 		= 'proc_next';
-			params.pyramid 		= $("#pyramid_num").val();
-			
-			$.ajax({
-				url: aJaxURL,
-				type: "POST",
-				data: params,
-				dataType: "json",
-				success: function(data){
-					if(typeof data.error != 'undefined'){
-						alert(data.error)
+		var ask = prompt("ნამდვილად გსურთ მინის შემდეგ პროცესზე გადაყვანა??");
+		if(ask){
+			if(pyramid == '' || pyramid == 0){
+				alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
+			}
+			else{
+				let params 			= new Object;
+				params.act 			= 'save_mina_status';
+				params.id 			= $("#glass_id").val();
+				params.type 		= 'proc_next';
+				params.pyramid 		= $("#pyramid_num").val();
+				
+				$.ajax({
+					url: aJaxURL,
+					type: "POST",
+					data: params,
+					dataType: "json",
+					success: function(data){
+						if(typeof data.error != 'undefined'){
+							alert(data.error)
+						}
+						else{
+							$("#pyramid_glass").data("kendoGrid").dataSource.read();
+							$('#get_status_page').dialog("close");
+						}
+						
 					}
-					else{
-						$("#pyramid_glass").data("kendoGrid").dataSource.read();
-						$('#get_status_page').dialog("close");
-					}
-					
-				}
-			});
+				});
+			}
 		}
+		
 	});
 
 	$(document).on('click', '#proc_start', function(){
 		var pyramid = $("#pyramid_num").val();
-
-		if(pyramid == '' || pyramid == 0){
-			alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
-		}
-		else{
-			let params 			= new Object;
-			params.act 			= 'save_mina_status';
-			params.id 			= $("#glass_id").val();
-			params.type 		= 'proc_start';
-			params.pyramid 		= $("#pyramid_num").val();
-			
-			$.ajax({
-				url: aJaxURL,
-				type: "POST",
-				data: params,
-				dataType: "json",
-				success: function(data){
-					if(typeof data.error != 'undefined'){
-						alert(data.error)
+		var ask = prompt("ნამდვილად გსურთ ჭრაზე ხელახლა გაშვება?");
+		if(ask){
+			if(pyramid == '' || pyramid == 0){
+				alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
+			}
+			else{
+				let params 			= new Object;
+				params.act 			= 'save_mina_status';
+				params.id 			= $("#glass_id").val();
+				params.type 		= 'proc_start';
+				params.pyramid 		= $("#pyramid_num").val();
+				
+				$.ajax({
+					url: aJaxURL,
+					type: "POST",
+					data: params,
+					dataType: "json",
+					success: function(data){
+						if(typeof data.error != 'undefined'){
+							alert(data.error)
+						}
+						else{
+							$("#pyramid_glass").data("kendoGrid").dataSource.read();
+							$('#get_status_page').dialog("close");
+						}
+						
 					}
-					else{
-						$("#pyramid_glass").data("kendoGrid").dataSource.read();
-						$('#get_status_page').dialog("close");
-					}
-					
-				}
-			});
+				});
+			}
 		}
+		
 	});
 
 	function save_category(){

@@ -245,7 +245,7 @@ switch ($act){
             $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id = '$id' AND status_id != 3");
             $cc = $db->getResultArray()['result'][0]['cc'];
 
-            if($cc > 0 ){
+            if($cc > 0){
                 $db->setQuery("SELECT * FROM products_glasses WHERE id = '$id'");
                 $glass = $db->getResultArray()['result'][0];
     
