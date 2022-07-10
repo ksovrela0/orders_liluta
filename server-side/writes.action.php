@@ -211,7 +211,7 @@ function getProcError($proc_id){
 
                         FROM    products_glasses
                         JOIN	orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
-                        JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1 AND glasses_paths.path_group_id = 7
+                        JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1 AND glasses_paths.path_group_id = '$proc_id'
                         WHERE   products_glasses.actived = 1 AND products_glasses.order_product_id = '$prod_id' AND products_glasses.status_id NOT IN (4)");
         $glass_ids = $db->getResultArray()['result'];
 
