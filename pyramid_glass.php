@@ -702,7 +702,7 @@
 
 	$(document).on('click', '#proc_again', function(){
 		var pyramid = $("#pyramid_num").val();
-		var ask = prompt("ნამდვილად გსურთ ნამდვილად გსურთ პროცესის ხელახლა გატარება??");
+		var ask = confirm("ნამდვილად გსურთ ნამდვილად გსურთ პროცესის ხელახლა გატარება??");
 		if(ask){
 			if(pyramid == '' || pyramid == 0){
 				alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
@@ -737,7 +737,7 @@
 
 	$(document).on('click', '#proc_next', function(){
 		var pyramid = $("#pyramid_num").val();
-		var ask = prompt("ნამდვილად გსურთ მინის შემდეგ პროცესზე გადაყვანა??");
+		var ask = confirm("ნამდვილად გსურთ მინის შემდეგ პროცესზე გადაყვანა??");
 		if(ask){
 			if(pyramid == '' || pyramid == 0){
 				alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
@@ -772,7 +772,7 @@
 
 	$(document).on('click', '#proc_start', function(){
 		var pyramid = $("#pyramid_num").val();
-		var ask = prompt("ნამდვილად გსურთ ჭრაზე ხელახლა გაშვება?");
+		var ask = confirm("ნამდვილად გსურთ ჭრაზე ხელახლა გაშვება?");
 		if(ask){
 			if(pyramid == '' || pyramid == 0){
 				alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
