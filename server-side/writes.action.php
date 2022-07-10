@@ -202,7 +202,7 @@ function getProcError($proc_id){
         }
         if($proc_id == 6){
             $word = 'ლამექსის';
-        }
+        }//es
 
         $db->setQuery(" SELECT  glasses_paths.id, 
                                 products_glasses.id AS glass_id,
