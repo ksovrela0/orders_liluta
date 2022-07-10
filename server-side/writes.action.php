@@ -3267,7 +3267,6 @@ function getWriting($id){
     $db->setQuery(" SELECT 	orders.id,
                             orders.datetime,
                             orders.datetime_finish,
-                            IFNULL(orders_product.add_info,'') AS add_info,
                             orders.client_name,
                             orders.client_pid,
                             orders.client_phone,
