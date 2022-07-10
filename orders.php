@@ -500,7 +500,7 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_div';
-				var actions = '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';
+				var actions = '<?php if($_SESSION['GRPID'] != 11) { echo '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';} ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 13;
@@ -775,7 +775,7 @@
 						var kendo = new kendoUI();
 						var pr = "&product_id="+$("#product_id").val();
 						LoadKendoTable_glass(pr);
-						$("#selected_product_id").chosen();
+						$("#selected_product_id,#glass_count").chosen();
 						$("#get_product_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -1157,7 +1157,7 @@
 						var kendo = new kendoUI();
 						var pr = "&product_id="+dItem.id2;
 						LoadKendoTable_glass(pr);
-						$("#selected_product_id").chosen();
+						$("#selected_product_id,#glass_count").chosen();
 						$("#get_product_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -1239,7 +1239,7 @@
 				params.client_phone = $("#client_phone").val();
 				params.client_addr = $("#client_addr").val();
 				params.order_date = $("#order_date").val();
-				params.add_info = $("#add_info").val();
+				
 				params.datetime_finish = $("#datetime_finish").val();
 				params.pay_total = $("#pay_total").val();
 				params.avansi = $("#avansi").val();
@@ -1285,9 +1285,11 @@
 				params.id = $("#product_id").val();
 				params.order_id = $("#writing_id").val();
 				params.selected_product_id = $("#selected_product_id").val();
+				params.add_info = $("#add_info").val();
 
 				params.butil_size = $("#butil_size").val();
 				params.firi_lameks = $("#firi_lameks").val();
+				params.glass_count = $("#glass_count").val();
 
 
 				var ready_to_save = 0;
@@ -1839,14 +1841,18 @@
 				if(prod_id == 2){
 					$("#only_minapaket").css('display', 'block');
 					$("#only_lameks").css('display', 'none');
+
+					$("#both_proc").css('display', 'block');
 				}
 				else if(prod_id == 3){
 					$("#only_minapaket").css('display', 'none');
 					$("#only_lameks").css('display', 'block');
+					$("#both_proc").css('display', 'block');
 				}
 				else{
 					$("#only_minapaket").css('display', 'none');
 					$("#only_lameks").css('display', 'none');
+					$("#both_proc").css('display', 'none');
 				}
 			});
 			</script>

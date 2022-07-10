@@ -200,10 +200,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">მინები პირამიდების მიხედვით</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">მინაპაკეტი/ლამექსი მართვა</h2>
 						<ol class="breadcrumb">
 							<li class="breadcrumb-item"><a href="#">შეკვეთები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">მინები პირამიდების მიხედვით</li>
+							<li class="breadcrumb-item active" aria-current="page">მინაპაკეტი/ლამექსი მართვა</li>
 						</ol>
 					</div>
 				</div>
@@ -441,26 +441,26 @@
 		var columnsCount    =	10;
 		var columnsSQL      = 	[
 									"id:string",
-									"glass:string",
+									"glasses_prod:string",
+                                    "prod_type:string",
 									"manuf:string",
                                     "shekv:string",
 									"type_glass:string",
 									"glass_color:string",
                                     "qty:string",
 									"ueeess:string",
-									"qty2:string",
 									"size:string"
 								];
 		var columnGeoNames  = 	[
-									"მინა ID", 
-                                    "ზომა",
+									"ID", 
+                                    "მინები",
+                                    "ტიპი",
 									"პირამიდა",
                                     "შეკვ.ID",
 									"დამკვეთი",
 									"პ/ნ ან ს/კ",
 									"ტელეფონი",
 									"გადახდილია?",
-									"პროცესი",
                                     "პროც.სტატუსი"
 								];
 
@@ -474,7 +474,7 @@
 		//KendoUI CLASS CONFIGS END
 			
 		const kendo = new kendoUI();
-		kendo.loadKendoUI(aJaxURL,'get_list_by_glass',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
+		kendo.loadKendoUI(aJaxURL,'get_list_by_prod',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
 
 	}
 
@@ -500,8 +500,8 @@
 			else{
 				if(confirm("ნამდვილად გსურთ მინების გაცემა?")){
 					let params 			= new Object;
-					params.act 			= 'give_glasses';
-					params.ids 			= glass_id;
+					params.act 			= 'give_glasses_prod';
+					params.prod_ids 			= glass_id;
 					params.order_id 			= order_id[0];
 					$.ajax({
 						url: aJaxURL,

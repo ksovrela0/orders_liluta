@@ -504,13 +504,13 @@
 				var actions = '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 12;
-				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "sum_sqrm:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
-				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დასახელება", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი"];
-				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var columnsCount = 13;
+				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "sum_sqrm:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string", "gacmin:string"];
+				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დასახელება", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი", "გაც.მინები"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
@@ -776,7 +776,7 @@
 						var kendo = new kendoUI();
 						var pr = "&product_id="+$("#product_id").val();
 						LoadKendoTable_glass(pr);
-						$("#selected_product_id").chosen();
+						$("#selected_product_id,#glass_count").chosen();
 						$("#get_product_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -1158,7 +1158,7 @@
 						var kendo = new kendoUI();
 						var pr = "&product_id="+dItem.id2;
 						LoadKendoTable_glass(pr);
-						$("#selected_product_id").chosen();
+						$("#selected_product_id,#glass_count").chosen();
 						$("#get_product_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -1289,6 +1289,7 @@
 
 				params.butil_size = $("#butil_size").val();
 				params.firi_lameks = $("#firi_lameks").val();
+				params.glass_count = $("#glass_count").val();
 
 
 				var ready_to_save = 0;
@@ -1840,14 +1841,18 @@
 				if(prod_id == 2){
 					$("#only_minapaket").css('display', 'block');
 					$("#only_lameks").css('display', 'none');
+
+					$("#both_proc").css('display', 'block');
 				}
 				else if(prod_id == 3){
 					$("#only_minapaket").css('display', 'none');
 					$("#only_lameks").css('display', 'block');
+					$("#both_proc").css('display', 'block');
 				}
 				else{
 					$("#only_minapaket").css('display', 'none');
 					$("#only_lameks").css('display', 'none');
+					$("#both_proc").css('display', 'none');
 				}
 			});
 			</script>

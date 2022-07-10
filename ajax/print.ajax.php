@@ -12,9 +12,10 @@ switch ($act){
         $db->setQuery(" SELECT products_glasses.id,
                                 CONCAT(products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ') AS size,
                                 orders.client_name,
-                                orders.comment
+                                orders_product.add_info AS comment
                         FROM products_glasses
                         JOIN orders ON orders.id = products_glasses.order_id AND orders.actived = 1
+                        JOIN orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
                         WHERE products_glasses.actived = 1 AND products_glasses.id IN ($glass_id)");
         $glasses = $db->getResultArray();
 

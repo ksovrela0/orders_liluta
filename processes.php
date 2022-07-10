@@ -448,6 +448,7 @@ $proc_data = $db->getResultArray()['result'][0];
 											data: url,
 											dataType: "json",
 											success: function(data) {
+												
 												$("#main_cut").data("kendoGrid").dataSource.read();
 												$('#proc_finish_page').dialog("close");
 											}
@@ -552,6 +553,9 @@ $proc_data = $db->getResultArray()['result'][0];
 											},
 											dataType: "json",
 											success: function(data) {
+												if(typeof data.error != 'undefined'){
+													alert(data.error);
+												}
 												$("#main_div").data("kendoGrid").dataSource.read();
 												$('#proc_finish_page').dialog("close");
 											}
@@ -705,24 +709,80 @@ $proc_data = $db->getResultArray()['result'][0];
 			}
 			else if(get_proc_id == 6 || get_proc_id == 7){
 				var prod_id = $(this).attr('prod-id');
-				var ask = prompt("ნამდვილად გსურთ მინის დახარვეზება? მიუთითეთ პირამიდის ნომერი!")
-				if (ask != '' && ask > 0) {
-					$.ajax({
-						url: "server-side/writes.action.php",
-						type: "POST",
-						data: {
-							act: "start_glass_proc",
-							prod_id: prod_id,
-							proc_id: get_proc_id,
-							glass_rate: 0,
-							pyramid: ask
-						},
-						dataType: "json",
-						success: function(data) {
-							$("#main_div_2").data("kendoGrid").dataSource.read();
-						}
-					});
-				}
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "start_glass_proc",
+						proc_id: get_proc_id,
+						prod_id: prod_id,
+						glass_rate: 0
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#proc_error_page').html(data.page);
+							
+						$("#proc_error_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 800,
+							modal: true,
+							buttons: {
+								"დახარვეზება": function() {
+									var ready_to_save = 0;
+									var url = new Object();
+									url.act = "error_glass_proc";
+									url['gpyr'] = [];
+									if(!$(".error_prod").is(":checked")){
+										$(".glass_error").each(function(i, x){
+										if($(x).is(":checked")){
+												if($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val() == ''){
+													alert("შეიყვანეთ პირამიდის ნომერი დახარვეზებული მინისთვის");
+													ready_to_save++;
+												}
+												else{
+													url['gpyr'].push($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(x).attr('data-id'));
+												}
+												
+											}
+											
+										})
+
+
+										if(url['gpyr'].length == 0){
+											alert("დასახარვეზებლად უნდა აირჩიოთ 1 მინა მაინც!!!");
+											ready_to_save++;
+										}
+									}
+									else{
+										url.prod_pyramids = $(".prod_pyramids").val();
+									}
+									
+
+									url.proc_id = get_proc_id;
+									url.prod_id = prod_id;
+
+									url.error_prod_all = $(".error_prod").is(":checked");
+									
+
+									if(ready_to_save == 0){
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: url,
+											dataType: "json",
+											success: function(data) {
+												$("#main_div_2").data("kendoGrid").dataSource.read();
+												$('#proc_error_page').dialog("close");
+											}
+										});
+									}
+								}
+							}
+						});
+					}
+				});
 			}
 			else{
 				var ask = prompt("ნამდვილად გსურთ მინის დახარვეზება? მიუთითეთ პირამიდის ნომერი!")
@@ -1654,6 +1714,23 @@ $proc_data = $db->getResultArray()['result'][0];
 					}
 				}
 			});
+
+			$(document).on('click', '.error_prod', function(){
+				var state = $(this).is(":checked");
+
+				if(state){
+					$(".glass_pyramids,.glass_error").prop('disabled', true)
+					$(".glass_pyramids").val('');
+					$(".glass_error").prop('checked', false)
+					$(".prod_pyramids").prop('disabled', false)
+
+				}
+				else{
+					$(".glass_pyramids,.glass_error").prop('disabled', false)
+					$(".prod_pyramids").prop('disabled', true)
+				}
+
+			})
 	</script>
 </body>
 
