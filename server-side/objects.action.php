@@ -206,7 +206,7 @@ switch ($act){
         }
         else if($type == 'proc_start'){
 
-            $db->setQuery("UPDATE products_glasses SET status_id = 4, display = 0 WHERE id = '$id'");
+            $db->setQuery("UPDATE products_glasses SET status_id = 4, display = 0 WHERE id = '$id' AND status_id != 3");
             $db->execQuery();
 
             $db->setQuery(" SELECT  cut_id, status_id
@@ -242,48 +242,57 @@ switch ($act){
             $qty        = 1;
 
 
+            $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id = '$id' AND status_id != 3");
+            $cc = $db->getResultArray()['result'][0]['cc'];
 
-            $db->setQuery("SELECT * FROM products_glasses WHERE id = '$id'");
-            $glass = $db->getResultArray()['result'][0];
-
-            $db->setQuery("SELECT * FROM glasses_paths WHERE glass_id = '$id' AND actived = 1");
-            $paths = $db->getResultArray()['result'];
-
-            for($i = 0; $i<$qty; $i++){
-                $db->setQuery("INSERT INTO products_glasses SET datetime = NOW(),
-                                                                user_id = '$glass[user_id]',
-                                                                order_product_id = '$glass[order_product_id]',
-                                                                order_id = '$glass[order_id]',
-                                                                glass_option_id = '$glass[glass_option_id]',
-                                                                glass_type_id = '$glass[glass_type_id]',
-                                                                glass_color_id = '$glass[glass_color_id]',
-                                                                glass_manuf_id = '$glass[glass_manuf_id]',
-                                                                glass_width = '$glass[glass_width]',
-                                                                glass_height = '$glass[glass_height]',
-                                                                picture = '$glass[picture]',
-                                                                go_to_cut = '$glass[go_to_cut]',
-                                                                status_id = 1");
-                $db->execQuery();
-
-                $newGlassID = $db->getLastId();
-                foreach($paths AS $path){
-
-                    $db->setQuery("INSERT INTO glasses_paths SET datetime = NOW(),
-                                                                    user_id = '$path[user_id]',
-                                                                    glass_id = '$newGlassID',
-                                                                    path_group_id = '$path[path_group_id]',
-                                                                    cuts = '$path[cuts]',
-                                                                    holes = '$path[holes]',
-                                                                    sort_n = '$path[sort_n]',
-                                                                    price = '$path[price]',
+            if($cc > 0 ){
+                $db->setQuery("SELECT * FROM products_glasses WHERE id = '$id'");
+                $glass = $db->getResultArray()['result'][0];
+    
+                $db->setQuery("SELECT * FROM glasses_paths WHERE glass_id = '$id' AND actived = 1");
+                $paths = $db->getResultArray()['result'];
+    
+                for($i = 0; $i<$qty; $i++){
+                    $db->setQuery("INSERT INTO products_glasses SET datetime = NOW(),
+                                                                    user_id = '$glass[user_id]',
+                                                                    order_product_id = '$glass[order_product_id]',
+                                                                    order_id = '$glass[order_id]',
+                                                                    glass_option_id = '$glass[glass_option_id]',
+                                                                    glass_type_id = '$glass[glass_type_id]',
+                                                                    glass_color_id = '$glass[glass_color_id]',
+                                                                    glass_manuf_id = '$glass[glass_manuf_id]',
+                                                                    glass_width = '$glass[glass_width]',
+                                                                    glass_height = '$glass[glass_height]',
+                                                                    picture = '$glass[picture]',
+                                                                    go_to_cut = '$glass[go_to_cut]',
                                                                     status_id = 1");
                     $db->execQuery();
-                    
+    
+                    $newGlassID = $db->getLastId();
+                    foreach($paths AS $path){
+    
+                        $db->setQuery("INSERT INTO glasses_paths SET datetime = NOW(),
+                                                                        user_id = '$path[user_id]',
+                                                                        glass_id = '$newGlassID',
+                                                                        path_group_id = '$path[path_group_id]',
+                                                                        cuts = '$path[cuts]',
+                                                                        holes = '$path[holes]',
+                                                                        sort_n = '$path[sort_n]',
+                                                                        price = '$path[price]',
+                                                                        status_id = 1");
+                        $db->execQuery();
+                        
+                    }
+    
                 }
-
+                
+                $data['status'] = 1;
             }
+            else{
+                $data['error'] = 'მინა დასრულებულია თქვენ ვერ დაჭრით მას თავიდან!!!';
+            }
+
             
-            $data['status'] = 1;
             
 
         }

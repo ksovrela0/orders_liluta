@@ -307,6 +307,7 @@
 	<script>
 	var aJaxURL = "server-side/objects.action.php";
 	$(document).on("dblclick", "#pyramid_glass tr.k-state-selected", function () {
+        return false;
 		var grid = $("#pyramid_glass").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
 		
