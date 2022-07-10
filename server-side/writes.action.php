@@ -265,6 +265,7 @@ switch ($act){
                                                                     glass_manuf_id = '$glass[glass_manuf_id]',
                                                                     glass_width = '$glass[glass_width]',
                                                                     glass_height = '$glass[glass_height]',
+                                                                    picture = '$glass[picture]',
                                                                     go_to_cut = '$glass[go_to_cut]',
                                                                     status_id = 1");
                     $db->execQuery();
@@ -308,7 +309,9 @@ switch ($act){
                                                                     product_id = '$product[product_id]',
                                                                     picture = '$product[picture]',
                                                                     butili = '$product[butili]',
-                                                                    lameqs_int = '$product[lameqs_int]'");
+                                                                    lameqs_int = '$product[lameqs_int]',
+                                                                    add_info = '$product[add_info]',
+                                                                    glass_count = '$product[glass_count]'");
                     $db->execQuery();
 
                     $newProductID = $db->getLastId();

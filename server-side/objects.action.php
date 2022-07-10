@@ -91,11 +91,204 @@ switch ($act){
     case 'save_mina_status':
         $id = $_REQUEST['id'];
 
-        $status = $_REQUEST['status_id'];
+        $type = $_REQUEST['type'];
         $pyramid = $_REQUEST['pyramid'];
 
-        $db->setQuery("UPDATE products_glasses SET status_id = '$status', last_pyramid = '$pyramid' WHERE id = '$id'");
-        $db->execQuery();
+        if($type == "proc_again"){
+            
+
+            $db->setQuery(" SELECT  cut_id, status_id
+                            FROM    lists_to_cut
+                            WHERE   actived = 1 AND glass_id = '$id' AND status_id NOT IN (3)");
+            
+            $cut_id = $db->getResultArray()['result'][0]['cut_id'];
+
+            if($cut_id != ''){
+                $data['error'] = 'ჭრის პროცესის თავიდან გავლა შეუძლებელია! ჭრის პროცესის თავიდან დასაწყებად დააჭირეთ "ხელახლა მოჭრა-ს"';
+            }
+            else{
+                $db->setQuery(" SELECT      id, path_group_id
+                                FROM        glasses_paths
+                                WHERE       actived = 1 AND glass_id = '$id' AND status_id IN (1,2,4)
+                                ORDER BY    sort_n
+                                LIMIT 1");
+
+                $glass_data = $db->getResultArray()['result'][0];
+
+                $path_id = $glass_data['id'];
+                $path_group_id = $glass_data['path_group_id'];
+
+                $db->setQuery("UPDATE products_glasses SET status_id = '2', last_pyramid = '$pyramid' WHERE id = '$id'");
+                $db->execQuery();
+
+                $db->setQuery("UPDATE glasses_paths SET status_id = 1, pyramid = '$pyramid' WHERE id = '$path_id'");
+                $db->execQuery();
+
+                if($path_group_id == 6 || $path_group_id == 7){
+                    $db->setQuery("SELECT order_product_id FROM products_glasses WHERE id = '$id'");
+                    $prod_id  = $db->getResultArray()['result'][0]['order_product_id'];
+
+                    $db->setQuery("UPDATE orders_product SET status_id = 1, pyramid = '$pyramid' WHERE id = '$prod_id'");
+                    $db->execQuery();
+
+                    /* $db->setQuery("UPDATE glasses_paths SET status_id = 1 WHERE glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id = '$prod_id') AND path_group_id = '$path_group_id' AND actived = 1");
+                    $db->execQuery(); */
+                }
+
+                $data['status'] = 1;
+            }
+        }
+        else if($type == 'proc_next'){
+            $db->setQuery(" SELECT  cut_id, status_id
+                            FROM    lists_to_cut
+                            WHERE   actived = 1 AND glass_id = '$id' AND status_id NOT IN (3)");
+            
+            $cut_data = $db->getResultArray()['result'][0];
+            $cut_id = $cut_data['cut_id'];
+            $status_id = $cut_data['status_id'];
+            if($cut_id != ''){
+                if($status_id == 4){
+                    $db->setQuery("UPDATE lists_to_cut SET status_id = 3, pyramid = '$pyramid', finish_datetime = NOW() WHERE glass_id = '$id'");
+                    $db->execQuery();
+
+                    $db->setQuery("UPDATE products_glasses SET status_id = '2', last_pyramid = '$pyramid' WHERE id = '$id'");
+                    $db->execQuery();
+                    $data['status'] = 1;
+                }
+                else{
+                    $data['error'] = 'თქვენ მიერ არჩეული მინა მოლოდინშია ან მიმდინარე, მისი შემდეგ პროცესზე გადაყვანა შეუძლებელია';
+                }
+            }
+            else{
+                $db->setQuery(" SELECT      id, path_group_id, status_id
+                                FROM        glasses_paths
+                                WHERE       actived = 1 AND glass_id = '$id' AND status_id IN (1,2,4)
+                                ORDER BY    sort_n
+                                LIMIT 2");
+
+                $glass_data = $db->getResultArray()['result'];
+
+                $path_id = $glass_data[0]['id'];
+                $path_group_id = $glass_data[0]['path_group_id'];
+                $path_status_id = $glass_data[0]['status_id'];
+                if($path_status_id == 4){
+                    if($path_group_id == 6 || $path_group_id == 7){
+                        $data['error'] = 'მინაპაკეტის/ლამექსის შემდეგ პროცესზე გადაყვანა შეუძლებელია. დააწყებინეთ პროცესი თავიდან';
+                    }
+                    else{
+                        $db->setQuery("UPDATE glasses_paths SET status_id = 3, pyramid = '$pyramid', finish_datetime = NOW() WHERE id = '$path_id'");
+                        $db->execQuery();
+    
+                        $db->setQuery("UPDATE products_glasses SET status_id = '2', last_pyramid = '$pyramid' WHERE id = '$id'");
+                        $db->execQuery();
+    
+                        $db->setQuery("SELECT order_id FROM products_glasses WHERE id = '$id'");
+                        $order_data = $db->getResultArray()['result'][0];
+    
+                        $order_id = $order_data['order_id'];
+                        if($glass_data[1]['id'] == ''){
+                            $db->setQuery("UPDATE products_glasses SET status_id = '3', last_pyramid = '$pyramid' WHERE id = '$id'");
+                            $db->execQuery();
+    
+                        }
+    
+                        finish_order($order_id);
+    
+                        $data['status'] = 1;
+                    }
+                    
+                }
+                else{
+                    $data['error'] = 'თქვენ მიერ არჩეული მინა მოლოდინშია ან მიმდინარე, მისი შემდეგ პროცესზე გადაყვანა შეუძლებელია';
+                }
+
+            }
+        }
+        else if($type == 'proc_start'){
+
+            $db->setQuery("UPDATE products_glasses SET status_id = 4, display = 0 WHERE id = '$id'");
+            $db->execQuery();
+
+            $db->setQuery(" SELECT  cut_id, status_id
+                            FROM    lists_to_cut
+                            WHERE   actived = 1 AND glass_id = '$id' AND status_id NOT IN (3)");
+            
+            $cut_data = $db->getResultArray()['result'][0];
+            $cut_id = $cut_data['cut_id'];
+            $status_id = $cut_data['status_id'];
+            if($cut_id != ''){
+                $db->setQuery("UPDATE lists_to_cut SET status_id = 4 WHERE glass_id = '$id'");
+                $db->execQuery();
+            }
+            else{
+                $db->setQuery(" SELECT      id, path_group_id, status_id
+                                FROM        glasses_paths
+                                WHERE       actived = 1 AND glass_id = '$id' AND status_id IN (1,2,4)
+                                ORDER BY    sort_n
+                                LIMIT 2");
+
+                $glass_data = $db->getResultArray()['result'];
+
+                $path_id = $glass_data[0]['id'];
+                $path_group_id = $glass_data[0]['path_group_id'];
+                $path_status_id = $glass_data[0]['status_id'];
+
+                $db->setQuery("UPDATE glasses_paths SET status_id = 4 WHERE id = '$path_id'");
+                $db->execQuery();
+            }
+
+
+
+            $qty        = 1;
+
+
+
+            $db->setQuery("SELECT * FROM products_glasses WHERE id = '$id'");
+            $glass = $db->getResultArray()['result'][0];
+
+            $db->setQuery("SELECT * FROM glasses_paths WHERE glass_id = '$id' AND actived = 1");
+            $paths = $db->getResultArray()['result'];
+
+            for($i = 0; $i<$qty; $i++){
+                $db->setQuery("INSERT INTO products_glasses SET datetime = NOW(),
+                                                                user_id = '$glass[user_id]',
+                                                                order_product_id = '$glass[order_product_id]',
+                                                                order_id = '$glass[order_id]',
+                                                                glass_option_id = '$glass[glass_option_id]',
+                                                                glass_type_id = '$glass[glass_type_id]',
+                                                                glass_color_id = '$glass[glass_color_id]',
+                                                                glass_manuf_id = '$glass[glass_manuf_id]',
+                                                                glass_width = '$glass[glass_width]',
+                                                                glass_height = '$glass[glass_height]',
+                                                                picture = '$glass[picture]',
+                                                                go_to_cut = '$glass[go_to_cut]',
+                                                                status_id = 1");
+                $db->execQuery();
+
+                $newGlassID = $db->getLastId();
+                foreach($paths AS $path){
+
+                    $db->setQuery("INSERT INTO glasses_paths SET datetime = NOW(),
+                                                                    user_id = '$path[user_id]',
+                                                                    glass_id = '$newGlassID',
+                                                                    path_group_id = '$path[path_group_id]',
+                                                                    cuts = '$path[cuts]',
+                                                                    holes = '$path[holes]',
+                                                                    sort_n = '$path[sort_n]',
+                                                                    price = '$path[price]',
+                                                                    status_id = 1");
+                    $db->execQuery();
+                    
+                }
+
+            }
+            
+            $data['status'] = 1;
+            
+
+        }
+
+        
     break;
     case 'get_columns':
         $columnCount = 		$_REQUEST['count'];
@@ -268,7 +461,7 @@ switch ($act){
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
-                        WHERE 	products_glasses.actived = 1
+                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1
 
                         GROUP BY products_glasses.id) AS ttt
                         ORDER BY ttt.sort_n DESC");
@@ -461,17 +654,18 @@ function getStatusPage($res = ''){
     <fieldset class="fieldset">
         <legend>ინფორმაცია</legend>
         <div class="row">
-            <div class="col-sm-12">
-                <label>სტატუსის შეცვლა</label>
-                <select id="status_id" '.$disable.'>
-                    '.getGlassStatusOptions($res['status_id']).'
-                </select>
-            </div>
-            
             <div class="col-sm-12" style="margin-top:10px;">
                 <label>პირამიდა:</label>
                 <input type="number" min="1" id="pyramid_num" value="'.$res['last_pyramid'].'" '.$dis_inp.'>
             </div>
+            <div class="col-sm-12" style="text-align: center;">
+                <label>სტატუსის შეცვლა</label><br>
+                <button id="proc_again" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>პროცესის თავიდან გავლა</button>
+                <button id="proc_next" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>შემდეგ პროცესზე გადასვლა</button>
+                <button id="proc_start" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>ხელახლა მოჭრა</button>
+            </div>
+            
+            
         </div>
     </fieldset>
     <input type="hidden" id="glass_id" value="'.$res['id'].'">
@@ -768,5 +962,25 @@ function getGlassManuf($id){
         }
     }
     return $data;
+}
+function finish_order($order_id){
+    GLOBAL $db;
+    $db->setQuery(" SELECT  COUNT(*) AS cc
+                    FROM    products_glasses
+                    WHERE   order_id = '$order_id' AND products_glasses.actived = 1 AND status_id NOT IN (3,4,6)");
+
+    $countNotCompleted = $db->getResultArray()['result'][0]['cc'];
+    if($countNotCompleted == 0){
+        $db->setQuery(" UPDATE  orders 
+                        SET     status_id = 4
+                        WHERE   id = '$order_id'");
+        $db->execQuery();
+    }
+    else{
+        $db->setQuery(" UPDATE  orders 
+                        SET     status_id = 2
+                        WHERE   id = '$order_id' AND status_id != 1");
+        $db->execQuery();
+    }
 }
 ?>
