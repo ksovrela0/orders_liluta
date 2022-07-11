@@ -2433,13 +2433,13 @@ switch ($act){
                                     orders_product.lameqs_int,
                                     CONCAT(IFNULL(CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>'),''), '<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(products_glasses.picture,0),'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a></a>') AS picture,
                                     CASE
-                                        WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.status_id != 4 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = orders_product.glass_count THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
+                                        WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.status_id != 4 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = orders_product.glass_count AND lists_to_cut.status_id = 3 THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
                                         WHEN orders_product.status_id = 4 THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
                                         ELSE '<span style=\"padding: 5px;color: white;background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);border-radius: 5px;\">რიგში</span>'
                                     END AS glasses2,
 
                                     CASE
-                                            WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.status_id != 4 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = orders_product.glass_count THEN CASE
+                                            WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.status_id != 4 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = orders_product.glass_count AND lists_to_cut.status_id = 3 THEN CASE
                                                         WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" prod-id=\"',orders_product.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" prod-id=\"',orders_product.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
                                                         WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" prod-id=\"',orders_product.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" prod-id=\"',orders_product.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div></div>')
                                                         WHEN glass_status.id = 3 THEN ''
@@ -2459,7 +2459,8 @@ switch ($act){
                             LEFT JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
                             LEFT JOIN	glass_status ON glass_status.id = orders_product.status_id
                             LEFT JOIN   glass_status AS gl_st ON gl_st.id = products_glasses.status_id
-                            
+                            LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+
                             WHERE   orders_product.actived = 1 AND products_glasses.actived = 1 AND orders.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND orders_product.product_id = '$pr_id'
                             
                             GROUP BY orders_product.id
