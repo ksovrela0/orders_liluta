@@ -111,6 +111,36 @@ class kendoUI{
 				})
 				$("#total_glass").html(total);
 			}
+
+			else if(this.gridName == 'product_div'){
+				var total_minapaket = 0;
+				var total_laqmeqs = 0;
+				var total_dush = 0;
+				var total_mina = 0;
+				$("#product_div tr[role='row'] td:nth-child(2)").each(function(i, x){
+
+					if($(x).html() == 'მინაპაკეტი'){
+						total_minapaket++;
+					}
+					if($(x).html() == 'ლამექსი'){
+						total_laqmeqs++;
+					}
+					if($(x).html() == 'დუშკაბინა'){
+						total_dush++;
+					}
+					if($(x).html() == 'მინა'){
+						total_mina++;
+					}
+				})
+
+
+				$("#minapaket_cc").html(total_minapaket);
+				$("#lameqs_cc").html(total_laqmeqs);
+				$("#dush_cc").html(total_dush);
+				$("#mina_cc").html(total_mina);
+
+				
+			}
 		}
 
 		var freeze = function (e){
