@@ -250,6 +250,18 @@ switch ($act){
             foreach($glass_id AS $glassID){
                 $db->setQuery("SELECT * FROM products_glasses WHERE id = '$glassID'");
                 $glass = $db->getResultArray()['result'][0];
+
+                $db->setQuery("SELECT glass_count, product_id FROM orders_product WHERE id = '$glass[order_product_id]' AND actived = 1");
+                $prod_data = $db->getResultArray()['result'][0];
+
+                if($prod_data['product_id'] == 2 || $prod_data['product_id'] == 3){
+                    $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE order_product_id = '$glass[order_product_id]' AND actived = 1 AND status_id != 4");
+                    $cc = $db->getResultArray()['result'][0]['cc'];
+
+                    if($cc >= $prod_data['glass_count']){
+                        continue;
+                    }
+                }
     
                 $db->setQuery("SELECT * FROM glasses_paths WHERE glass_id = '$glassID' AND actived = 1");
                 $paths = $db->getResultArray()['result'];
@@ -1678,7 +1690,7 @@ switch ($act){
                                                 avans_plus='$avans_plus'");
 
             $db->execQuery();
-            $data['error'] = '';
+            
         }
 
         else{
@@ -1694,7 +1706,7 @@ switch ($act){
                                                 avans_plus='$avans_plus'
                             WHERE id='$id'");
             $db->execQuery();
-            $data['error'] = '';
+            
         }
 
     break;
@@ -1740,7 +1752,7 @@ switch ($act){
                                                 add_info = '$add_info'");
 
                 $db->execQuery();
-                //$data['error'] = '';
+                //
             }
 
             else{
@@ -1753,7 +1765,7 @@ switch ($act){
                                                 add_info = '$add_info'
                             WHERE id='$id'");
                 $db->execQuery();
-                //$data['error'] = '';
+                //
             }
 
             finish_order($order_id);
@@ -1790,6 +1802,22 @@ switch ($act){
         $isset = $db->getResultArray();
 
         if($isset['result'][0]['cc'] == 0){
+            $db->setQuery("SELECT glass_count, product_id FROM orders_product WHERE id = '$product_id' AND actived = 1");
+            $prod_data = $db->getResultArray()['result'][0];
+
+            if($prod_data['product_id'] == 2 || $prod_data['product_id'] == 3){
+                $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE order_product_id = '$product_id' AND actived = 1 AND status_id != 4");
+                $cc = $db->getResultArray()['result'][0]['cc'];
+
+                if($cc >= $prod_data['glass_count']){
+                    $data['error'] = 'ამ პროდუქტში შეგიძლიათ დაამატოთ მაქსიმუმ '.$prod_data['glass_count'].' მინა';
+                    echo json_encode($data);
+                    return;
+                }
+            }
+
+            
+            
             $db->setQuery("INSERT INTO products_glasses SET
                                                 id = '$id',
                                                 user_id='$user_id',
@@ -1806,7 +1834,6 @@ switch ($act){
                                                 order_id = '$order_id'");
 
             $db->execQuery();
-            $data['error'] = '';
         }
 
         else{
@@ -1826,7 +1853,7 @@ switch ($act){
 
             
 
-            $data['error'] = '';
+            
         }
 
         finish_order($order_id);
@@ -1865,7 +1892,7 @@ switch ($act){
                                                 sort_n = '$sort_n'");
 
             $db->execQuery();
-            //$data['error'] = '';
+            //
         }
 
         else{
@@ -1916,7 +1943,7 @@ switch ($act){
                                                 holes = '$holes'
                             WHERE id='$id'");
             $db->execQuery();
-            //$data['error'] = '';
+            //
         }
 
     break;
@@ -2468,7 +2495,7 @@ switch ($act){
                             JOIN		glass_status ON glass_status.id = glasses_paths.status_id
                             LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
 
-                            WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND glasses_paths.actived = 1
+                            WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND glasses_paths.actived = 1 AND products_glasses.display = 1
 
                             GROUP BY products_glasses.id
                             ORDER BY glasses_paths.status_id ASC) AS ttt

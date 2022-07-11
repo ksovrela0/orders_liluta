@@ -1341,6 +1341,9 @@
 						data: params,
 						dataType: "json",
 						success: function(data) {
+							if(typeof data.error != 'undefined'){
+								alert(data.error)
+							}
 							$("#glasses_div").data("kendoGrid").dataSource.read();
 							$('#get_glass_page').dialog("close");
 						}

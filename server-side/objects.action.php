@@ -405,7 +405,7 @@ switch ($act){
                                 products.name,
                                 orders_product.pyramid,
                                 orders.id AS order_id,
-                                CONCAT(orders.client_name, ' ', orders.comment),
+                                CONCAT(orders.client_name, ' ', IFNULL(orders_product.add_info,'')),
                                 orders.client_pid,
                                 orders.client_phone,
                                 IF(orders.total - (orders.avansi+orders.avans_plus) = 0,'კი','არა') AS payment,
@@ -438,10 +438,10 @@ switch ($act){
 		$cols[]      =      $_REQUEST['cols'];
 
         $db->setQuery("SELECT * FROM (SELECT	products_glasses.id,
-                                CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ') AS glass,
+                                CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ', IF(products.id IN (2,3),CONCAT('<br>(',products.name,')'),'' )) AS glass,
                                 products_glasses.last_pyramid,
                                 orders.id AS order_id,
-                                CONCAT(orders.client_name, ' ', orders.comment),
+                                CONCAT(orders.client_name, ' ', IFNULL(orders_product.add_info,'')),
                                 orders.client_pid,
                                 orders.client_phone,
                                 IF(orders.total - (orders.avansi+orders.avans_plus) = 0,'კი','არა') AS payment,
@@ -468,6 +468,7 @@ switch ($act){
                         FROM 		products_glasses
                         JOIN 		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                        JOIN    products ON products.id = orders_product.product_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
                         WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1
@@ -532,9 +533,27 @@ switch ($act){
     case 'give_glasses':
         $glass_ids = $_REQUEST['ids'];
 
-        $ids = implode(',',$glass_ids);
+        
         $order_id = $_REQUEST['order_id'];
 
+        foreach($glass_ids AS $g_id){
+            $db->setQuery("SELECT   orders_product.product_id
+                            FROM products_glasses
+                            JOIN orders_product ON  orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                            WHERE products_glasses.id = '$g_id'");
+
+            $prod_id = $db->getResultArray()['result'][0]['product_id'];
+
+            if($prod_id == 2 || $prod_id == 3){
+
+                if (($key = array_search($g_id, $glass_ids)) !== false) {
+                    unset($glass_ids[$key]);
+                }
+
+            }
+        }
+
+        $ids = implode(',',$glass_ids);
 
         $to_give_count = count($glass_ids);
         $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id = 3");
