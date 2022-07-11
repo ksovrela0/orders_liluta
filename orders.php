@@ -100,7 +100,7 @@
 			box-shadow: 2px 1px black;
 		}
 		
-		#copy_writing, #copy_product, #copy_glass {
+		#copy_writing, #copy_product, #copy_glass,.copy_product {
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
@@ -113,7 +113,7 @@
 			box-shadow: 2px 1px black;
 		}
 
-		#copy_writing:hover, #copy_product:hover, #copy_glass:hover {
+		#copy_writing:hover, #copy_product:hover, #copy_glass:hover,.copy_product:hover {
 			box-shadow: unset;
 		}
 		
@@ -258,6 +258,14 @@
 		}
 		.open_close{
 			cursor: pointer;
+		}
+
+		.change_sizes{
+			cursor: pointer;
+			transition: 0.5s ease;
+		}
+		.change_sizes:hover{
+			font-size: 18px;
 		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
@@ -421,7 +429,7 @@
 	<div title="პროცესის ფასი" id="get_price_page"></div>
 
 	<div title="პროცესის ფასი" id="proc_start_page"></div>
-
+	<div title="ზომების ცვლილება" id="change_sizes"></div>
 	<div title="ჭრა!!!" id="get_cut_page"></div>
 		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
 	</div>
@@ -523,9 +531,9 @@
 				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 4;
-				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture_prod:string"];
-				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სულ კვ.მ"];
+				var columnsCount = 5;
+				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture_prod:string", "act_product:string"];
+				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სულ კვ.მ", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1420,6 +1428,33 @@
 					
 				}
 			}
+
+			$(document).on('click', '.copy_product', function(){
+
+				var ask = prompt("რამდენჯერ დაკოპირდეს პროდუქტი?");
+				
+				if(ask > 0){
+					var prod_id = [];
+					prod_id[0] = $(this).attr('prod-id');
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "copy",
+							type: "product",
+							id: prod_id,
+							order_id: $("#writing_id").val(),
+							qty: ask
+						},
+						dataType: "json",
+						success: function(data) {
+							$("#product_div").data("kendoGrid").dataSource.read();
+						}
+					});
+				}
+					
+				
+			});
 			
 			$(document).on('click', '#copy_product', function(){
 				var grid = $("#product_div").data("kendoGrid");
@@ -1881,6 +1916,62 @@
 					$("#only_lameks").css('display', 'none');
 					$("#both_proc").css('display', 'none');
 				}
+			});
+
+
+			$(document).on('click', '.change_sizes', function(){
+				var prod_id = $(this).attr('prod-id');
+				var glass_id = $(this).attr('glass-id');
+
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "change_sizes",
+						prod_id: prod_id,
+						glass_id: glass_id
+						
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#change_sizes').html(data.page);
+
+						$("#change_sizes").dialog({
+							resizable: false,
+							height: 250,
+							width: 400,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									$.ajax({
+										url: "server-side/writes.action.php",
+										type: "POST",
+										data: {
+											act: "change_sizes_save",
+											prod_id: prod_id,
+											glass_id: glass_id,
+											width: $("#glass_width_change").val(),
+											height: $("#glass_height_change").val()
+											
+										},
+										dataType: "json",
+										success: function(data) {
+											$("#product_div").data("kendoGrid").dataSource.read();
+											$('#change_sizes').dialog("close");
+										}
+									});
+									
+								},
+								'დახურვა': function() {
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
+								}
+							}
+						});
+					}
+				});
 			});
 			</script>
 </body>

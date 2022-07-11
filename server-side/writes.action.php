@@ -238,6 +238,23 @@ function getProcError($proc_id){
 }
 
 switch ($act){
+    case 'change_sizes':
+        $glass_id = $_REQUEST['glass_id'];
+        $prod_id = $_REQUEST['prod_id'];
+
+        $data = array('page' => change_sizes(getGlass($glass_id), $prod_id));
+    break;
+    case 'change_sizes_save':
+        $glass_id = $_REQUEST['glass_id'];
+        $prod_id = $_REQUEST['prod_id'];
+
+        $width = $_REQUEST['width'];
+        $height = $_REQUEST['height'];
+
+        $db->setQuery("UPDATE products_glasses SET glass_width='$width', glass_height='$height' WHERE order_product_id = '$prod_id' AND actived = 1");
+        $db->execQuery();
+
+    break;
     case 'copy':
         $type = $_REQUEST['type'];
         $ids = $_REQUEST['id'];
@@ -2167,6 +2184,9 @@ switch ($act){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
 
 					}
+                    elseif($columns[$j] == "act_product"){
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
+                    }
                     elseif($columns[$j] == "sort_n"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 70);
@@ -2514,9 +2534,9 @@ switch ($act){
 
         $db->setQuery(" SELECT  orders_product.id,
                                 products.name,
-                                GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, '(',glass_manuf.name,') <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ ',glass_colors.name,' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') SEPARATOR ',<br>') AS glasses,
+                                GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, '(',glass_manuf.name,') <span glass-id=\"',products_glasses.id,'\" prod-id=\"',orders_product.id,'\" class=\"change_sizes\"><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b></span> მმ ',glass_colors.name,' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') SEPARATOR ',<br>') AS glasses,
                                 (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3)),
-                                CONCAT('<a style=\"color:blue;\" class=\"product_detail\" data-id=\"',orders_product.id,'\" href=\"#\">დეტალურად</a>') AS detailed
+                                CONCAT('<div prod-id=\"',orders_product.id,'\" class=\"copy_product\">კოპირება</div>') AS detailed
 
                         FROM    orders_product
                         JOIN    products ON products.id = orders_product.product_id
@@ -3517,7 +3537,30 @@ function getAtxod($id){
 
     return $result['result'][0];
 }
+function change_sizes($res = '', $prod_id){
+    $data = '   <fieldset class="fieldset">
+                    <legend>ინფორმაცია</legend>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>ზომა (მმ) (სიმაღლეXსიგანე)</label>
+                                <div class="row">
+                                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_width_change" value="'.$res['glass_width'].'"></div>
+                                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_height_change" value="'.$res['glass_height'].'"></div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </legend>
+                </fieldset>
 
+                <input type="hidden" id="glass_id" value="'.$res['id'].'">
+                <input type="hidden" id="prod_id" value="'.$prod_id.'">
+                
+                
+                ';
+
+    return $data;
+}
 function atxodPage($res = ''){
 
     $data = '   <fieldset class="fieldset">
