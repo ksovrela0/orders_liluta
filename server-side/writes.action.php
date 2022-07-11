@@ -3553,8 +3553,8 @@ function change_sizes($res = '', $prod_id){
                     </legend>
                 </fieldset>
 
-                <input type="hidden" id="glass_id" value="'.$res['id'].'">
-                <input type="hidden" id="prod_id" value="'.$prod_id.'">
+                <input type="hidden" id="glass_id_new" value="'.$res['id'].'">
+                <input type="hidden" id="prod_id_new" value="'.$prod_id.'">
                 
                 
                 ';
