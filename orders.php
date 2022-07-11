@@ -642,7 +642,9 @@
                                     }
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -692,7 +694,9 @@
                                     }
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -755,7 +759,9 @@
 									save_order();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -787,7 +793,9 @@
 									save_product();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -829,7 +837,9 @@
 									save_glass();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -858,7 +868,9 @@
 									save_path();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1085,7 +1097,9 @@
 									save_order();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1130,7 +1144,9 @@
 									save_glass();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1169,7 +1185,9 @@
 									save_product();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1204,7 +1222,9 @@
 									save_path();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1566,7 +1586,9 @@
 												}
 										},
 										'დახურვა': function() {
-											$(this).dialog("close");
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 										}
 									}
 								});
@@ -1778,7 +1800,9 @@
 											save_cut();
 										},
 										'დახურვა': function() {
-											$(this).dialog("close");
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 										}
 									}
 								});

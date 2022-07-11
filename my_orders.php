@@ -501,7 +501,7 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_div';
-				var actions = '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';
+				var actions = '<?php if($_SESSION['GRPID'] != 11) { echo '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';} ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 13;
@@ -643,7 +643,9 @@
                                     }
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -693,7 +695,9 @@
                                     }
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -756,7 +760,9 @@
 									save_order();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -788,7 +794,9 @@
 									save_product();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -830,7 +838,9 @@
 									save_glass();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -859,7 +869,9 @@
 									save_path();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1086,7 +1098,9 @@
 									save_order();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1131,7 +1145,9 @@
 									save_glass();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1170,7 +1186,9 @@
 									save_product();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1205,7 +1223,9 @@
 									save_path();
 								},
 								'დახურვა': function() {
-									$(this).dialog("close");
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 								}
 							}
 						});
@@ -1240,7 +1260,7 @@
 				params.client_phone = $("#client_phone").val();
 				params.client_addr = $("#client_addr").val();
 				params.order_date = $("#order_date").val();
-				params.add_info = $("#add_info").val();
+				
 				params.datetime_finish = $("#datetime_finish").val();
 				params.pay_total = $("#pay_total").val();
 				params.avansi = $("#avansi").val();
@@ -1286,6 +1306,7 @@
 				params.id = $("#product_id").val();
 				params.order_id = $("#writing_id").val();
 				params.selected_product_id = $("#selected_product_id").val();
+				params.add_info = $("#add_info").val();
 
 				params.butil_size = $("#butil_size").val();
 				params.firi_lameks = $("#firi_lameks").val();
@@ -1341,6 +1362,9 @@
 						data: params,
 						dataType: "json",
 						success: function(data) {
+							if(typeof data.error != 'undefined'){
+								alert(data.error)
+							}
 							$("#glasses_div").data("kendoGrid").dataSource.read();
 							$('#get_glass_page').dialog("close");
 						}
@@ -1563,7 +1587,9 @@
 												}
 										},
 										'დახურვა': function() {
-											$(this).dialog("close");
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 										}
 									}
 								});
@@ -1775,7 +1801,9 @@
 											save_cut();
 										},
 										'დახურვა': function() {
-											$(this).dialog("close");
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
 										}
 									}
 								});
