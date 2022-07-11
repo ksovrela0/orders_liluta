@@ -672,10 +672,7 @@
 			ready++;
 		}
 
-		if(params.glass_qty == 0 || params.glass_qty == ''){
-			alert("თქვენ გამოტოვეთ რაოდენობა");
-			ready++;
-		}
+
 		if(params.glass_width == 0 || params.glass_width == ''){
 			alert("თქვენ გამოტოვეთ სიმაღლე");
 			ready++;
