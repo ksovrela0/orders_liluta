@@ -825,12 +825,20 @@ function getPage($res = ''){
     return $data;
 }
 
-function getGlassGtype(){
+function getGlassGtype($id){
     GLOBAL $db;
     $data = '';
+
+    if($id == 1){
+        $list = 'selected';
+    }
+    if($id == 2){
+        $atxod = 'selected';
+    }
+
     $data .= '<option value="0">აირჩიეთ</option>';
-    $data .= '<option value="1">ლისტი</option>';
-    $data .= '<option value="2">ატხოდი</option>';
+    $data .= '<option value="1" '.$list.'>ლისტი</option>';
+    $data .= '<option value="2" '.$atxod.'>ატხოდი</option>';
     return $data;
 }
 function getGlassbringer($id){
