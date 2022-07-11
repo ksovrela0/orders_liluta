@@ -3250,7 +3250,7 @@ function getPage($id, $res = ''){
 
             <div class="col-sm-3">
                 <label>ტელეფონი</label>
-                <input value="'.$res['client_phone'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_phone" class="idle" autocomplete="off">
+                <input value="'.$res['client_phone'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="client_phone" class="idle" autocomplete="off">
             </div>
 
             <div class="col-sm-3">
