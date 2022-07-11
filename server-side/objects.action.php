@@ -20,6 +20,14 @@ switch ($act){
 
         $data = array('page' => getStatusPage(getStatus($id)));
     break;
+    case 'change_pyramid':
+        $id = $_REQUEST['id'];
+        $pyramid = $_REQUEST['pyramid'];
+
+        $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyramid' WHERE id = '$id'");
+        $db->execQuery();
+        $data['status'] = 1;
+    break;
     case 'save_warehouse':
         $id             = $_REQUEST['id'];
         $glass_cat      = $_REQUEST['glass_cat'];

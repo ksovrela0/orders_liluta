@@ -331,6 +331,29 @@
 					width: 400,
 					modal: true,
 					buttons: {
+						'პირამიდის შეცვლა': function() {
+							let params 			= new Object;
+							params.act 			= 'change_pyramid';
+							params.id 			= $("#glass_id").val();
+							params.pyramid 		= $("#pyramid_num").val();
+							
+							$.ajax({
+								url: aJaxURL,
+								type: "POST",
+								data: params,
+								dataType: "json",
+								success: function(data){
+									if(typeof data.error != 'undefined'){
+										alert(data.error)
+									}
+									else{
+										$("#pyramid_glass").data("kendoGrid").dataSource.read();
+										$('#get_status_page').dialog("close");
+									}
+									
+								}
+							});
+						},
 						'დახურვა': function() {
 							$( this ).dialog( "close" );
 						}
