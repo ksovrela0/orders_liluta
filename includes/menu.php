@@ -5,7 +5,7 @@ GLOBAL $db;
 $db = new dbClass();
 $user_gr = $_SESSION['GRPID'];
 ?>
-<div class="main-sidebar main-sidebar-sticky side-menu ps">
+<div class="main-sidebar main-sidebar-hide main-sidebar-sticky side-menu ps">
     <div class="sidemenu-logo"> <a class="main-logo" href="index.php"> <img src="assets/img/brand/logo.png" class="header-brand-img desktop-logo" alt="logo"> <img src="assets/img/brand/icon.png" class="header-brand-img icon-logo" alt="logo"> <img src="assets/img/brand/logo-light.png" class="header-brand-img desktop-logo theme-logo" alt="logo"> <img src="assets/img/brand/icon-light.png" class="header-brand-img icon-logo theme-logo" alt="logo"> </a> </div>
     <div class="main-sidebar-body">
         <ul class="nav">

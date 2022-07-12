@@ -243,7 +243,7 @@ GLOBAL $db;
 $db->setQuery("SELECT id,name FROM groups WHERE id = '$id'");
 $proc_data = $db->getResultArray()['result'][0];
 ?>
-<body class="main-body">
+<body class="main-body main-sidebar-hide">
 	
 	<!-- Start Switcher -->
 	<?php include('includes/switcher.php'); ?>
