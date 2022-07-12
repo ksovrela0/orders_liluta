@@ -210,7 +210,7 @@
 				<!-- End Page Header -->
 				<!-- Row -->
 				<div class="row">
-					<div id="pyramid_glass"></div>
+					<div id="pyramid_glass" style="width:97%;"></div>
 				</div>
 				<!-- End Row -->
 			</div>
