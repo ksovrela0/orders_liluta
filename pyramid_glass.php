@@ -200,10 +200,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">მინები პირამიდების მიხედვით</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">მინების მართვა</h2>
 						<ol class="breadcrumb">
 							<li class="breadcrumb-item"><a href="#">შეკვეთები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">მინები პირამიდების მიხედვით</li>
+							<li class="breadcrumb-item active" aria-current="page">მინების მართვა</li>
 						</ol>
 					</div>
 				</div>
