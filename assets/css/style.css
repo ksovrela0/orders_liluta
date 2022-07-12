@@ -50551,4 +50551,10 @@ input[type="search"]::-webkit-search-cancel-button {
     border-radius: 5px;
     font-size: 15px;
   }
-  
+  .k-dropdown-operator.k-picker-md .k-input-button{
+	display:none;
+  }
+
+  .k-filtercell .k-filtercell-wrapper>.k-button, .k-filtercell>span>.k-button{
+	display:none;
+  }
