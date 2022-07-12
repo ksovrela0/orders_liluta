@@ -367,9 +367,9 @@ switch ($act){
                     elseif($columns[$j] == "glasses_prod"){
                         $g = array('field'=>$columns[$j], 'hidden' => false,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 600);
                     }
-                    elseif($columns[$j] == "id_pyr_glass"){
+                    /* elseif($columns[$j] == "id_pyr_glass"){
                         $g = array('field'=>$columns[$j], 'hidden' => false,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'dataSource' => array('transport' => array('read' => array('url' => 'server-side/objects.action.php?act=get_list_by_col', 'dataType' => 'json', 'data' => array('field'=>'products_glasses.id'))))));
-                    }
+                    } */
                     elseif($columns[$j] == "inc_date"){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
 					}else{
