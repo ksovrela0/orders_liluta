@@ -82,8 +82,9 @@ class kendoUI{
 					return data.data;
 				}
 			},
+			/* serverPaging: false, */
 			serverFiltering: false,
-			serverPaging: false
+			
 		});
 		
 		$("#"+this.gridName).empty();
@@ -198,7 +199,7 @@ class kendoUI{
 				persistSelection: true,
 				//height: 350,
 				sortable: true,
-				filterable: true,
+				filterable: {"mode": "row"},
 				pageable: {
 					refresh: true,
 					pageSizes: true,
