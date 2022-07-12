@@ -460,7 +460,7 @@
 		var itemPerPage     = 	20;
 		var columnsCount    =	10;
 		var columnsSQL      = 	[
-									"id:string",
+									"id_pyr_glass:string",
 									"glass:string",
 									"manuf:string",
                                     "shekv:string",

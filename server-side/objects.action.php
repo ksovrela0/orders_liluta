@@ -367,6 +367,9 @@ switch ($act){
                     elseif($columns[$j] == "glasses_prod"){
                         $g = array('field'=>$columns[$j], 'hidden' => false,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 600);
                     }
+                    elseif($columns[$j] == "id_pyr_glass"){
+                        $g = array('field'=>$columns[$j], 'hidden' => false,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'dataSource' => array('transport' => array('read' => array('url' => 'server-side/objects.action.php?act=get_list_by_col', 'dataType' => 'json', 'data' => array('field'=>'products_glasses.id'))))));
+                    }
                     elseif($columns[$j] == "inc_date"){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
 					}else{
@@ -441,9 +444,69 @@ switch ($act){
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
     break;
+    case 'get_list_by_col':
+        $field = $_REQUEST['field'];
+
+        
+
+        $db->setQuery("SELECT * FROM (SELECT	products_glasses.id AS id_pyr_glass,
+                                CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ', IF(products.id IN (2,3),CONCAT('<br>(',products.name,')'),'' )) AS glass,
+                                products_glasses.last_pyramid,
+                                orders.id AS order_id,
+                                CONCAT(orders.client_name, ' ', IFNULL(orders_product.add_info,'')),
+                                orders.client_pid,
+                                orders.client_phone,
+                                IF(orders.total - (orders.avansi+orders.avans_plus) = 0,'კი','არა') AS payment,
+                                IF((SELECT COUNT(*) FROM glasses_paths WHERE actived = 1 AND glass_id = products_glasses.id AND status_id IN (1,2,4,5,6)) = 0,'<span class=\"status_finished\">დასრულებული</span>',CASE
+                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1  WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id)),'ჭრა')
+                                    
+                                    ELSE IF(products_glasses.go_to_cut != 1,IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id)), '')
+                                END) AS procc,
+                                
+                                IF(products_glasses.status_id != 6,CASE
+                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.status_id,gp1.status_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = lists_to_cut.status_id)), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = lists_to_cut.status_id))
+                                    
+                                    ELSE IF(products_glasses.go_to_cut != 1,IFNULL(IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.status_id,gp1.status_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT CONCAT('<span class=\"status_',glass_status.id,'\">',name,'</span>') FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), lists_to_cut.status_id),'')
+                                END,'გაცემული') AS status,
+                                                                
+                                CASE
+                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.status_id,gp1.status_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT glass_status.sort_n FROM glass_status WHERE id = lists_to_cut.status_id)), (SELECT glass_status.sort_n FROM glass_status WHERE id = lists_to_cut.status_id))
+                                    
+                                    ELSE IF(products_glasses.go_to_cut != 1,IFNULL(IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.status_id,gp1.status_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), lists_to_cut.status_id),'')
+                                END AS sort_n
+                                
+                                
+
+                        FROM 		products_glasses
+                        JOIN 		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
+                        JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                        JOIN    products ON products.id = orders_product.product_id
+                        JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+                        LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1 $query
+
+                        GROUP BY products_glasses.id) AS ttt
+                        ORDER BY ttt.sort_n DESC");
+
+        $data = $db->getResultArray()['result'];
+    break;
     case 'get_list_by_glass':
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
+
+        $add = json_decode($_REQUEST['add'],true);
+        /* $add_limit = $add['pageSize'];
+        $add_page = ($add['page'] - 1) * $add_limit; */
+        
+        $cols_to_search = $add['filter']['filters'];
+
+        $query = '';
+        foreach($cols_to_search AS $col){
+            $col_name = explode('__',$col['field']);
+            //$query .= " AND $col_name[0].$col_name[1] LIKE '%$col[value]%'";
+
+            $query .= " AND products_glasses.id LIKE '%$col[value]%'";
+        }
 
         $db->setQuery("SELECT * FROM (SELECT	products_glasses.id,
                                 CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ', IF(products.id IN (2,3),CONCAT('<br>(',products.name,')'),'' )) AS glass,
@@ -479,7 +542,7 @@ switch ($act){
                         JOIN    products ON products.id = orders_product.product_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
-                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1
+                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1 $query
 
                         GROUP BY products_glasses.id) AS ttt
                         ORDER BY ttt.sort_n DESC");
