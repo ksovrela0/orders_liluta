@@ -1027,6 +1027,7 @@ $proc_data = $db->getResultArray()['result'][0];
 			$(document).ready(function() {
 				GetDate('start_date');
 				GetDate('end_date');
+				
 				var hid = "&path_id=<?php echo $id; ?>"
 
 				<?php
@@ -1044,7 +1045,8 @@ $proc_data = $db->getResultArray()['result'][0];
 						echo 'setInterval(function () {$("#main_div").data("kendoGrid").dataSource.read();}, 15000);';
 					}
 				?>
-
+				
+				
 			});
 
 			function LoadKendoTable_main(hidden) {
@@ -1065,6 +1067,9 @@ $proc_data = $db->getResultArray()['result'][0];
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
 				kendo.loadKendoUI(aJaxURL, 'get_list_proccess', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+				setTimeout(function(){
+					$( ".k-input-inner" ).eq(1).focus()
+				},1000)
 			}
 
 			function LoadKendoTable_main2(hidden) {
