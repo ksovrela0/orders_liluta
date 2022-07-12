@@ -498,15 +498,6 @@ switch ($act){
         /* $add_limit = $add['pageSize'];
         $add_page = ($add['page'] - 1) * $add_limit; */
         
-        $cols_to_search = $add['filter']['filters'];
-
-        $query = '';
-        foreach($cols_to_search AS $col){
-            $col_name = explode('__',$col['field']);
-            //$query .= " AND $col_name[0].$col_name[1] LIKE '%$col[value]%'";
-
-            $query .= " AND products_glasses.id LIKE '%$col[value]%'";
-        }
 
         $db->setQuery("SELECT * FROM (SELECT	products_glasses.id,
                                 CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ', IF(products.id IN (2,3),CONCAT('<br>(',products.name,')'),'' )) AS glass,
@@ -542,7 +533,7 @@ switch ($act){
                         JOIN    products ON products.id = orders_product.product_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
-                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1 $query
+                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1 AND products_glasses.status_id != 6
 
                         GROUP BY products_glasses.id) AS ttt
                         ORDER BY ttt.sort_n DESC");
