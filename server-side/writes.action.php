@@ -3124,6 +3124,7 @@ function getGlassOptions($id){
                     FROM    glass_options 
                     WHERE actived = 1");
     $cats = $db->getResultArray();
+    $data .= '<option value="">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
