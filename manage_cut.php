@@ -957,13 +957,19 @@
 						if(data.not_standard == 1){
 							styles = 'style="background-color:#ffeaa3;"';
 						}
+
+						var pic = '';
+
+						if(data.picture != '' && data.picture != null){
+							pic = '<a style="color:blue;" target="_blank" href="'+data.picture+'"><img style="width:35px;" src="assets/img/main.png"></a>';
+						}
 						$("#glasses_div").append(`
 						<div class="element_in_div" `+styles+` sort_n="`+x+`" glass_width="`+data.glass_width+`" glass_height="`+data.glass_height+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`" not_standard="`+data.not_standard+`">
 							<div style="font-size: 20px;">`+data.sizes+`</div>	
 							<div>`+data.name+`</div>
 							
 							<div>`+data.color+`</div>
-
+							`+pic+`
 							<div class="glass_cc">`+data.cc+`</div>
 						</div>`);
 					})

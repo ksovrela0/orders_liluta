@@ -2610,6 +2610,7 @@ switch ($act){
                                 products_glasses.glass_width,
                                 products_glasses.glass_height,
                                 products_glasses.not_standard,
+                                products_glasses.picture,
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
                                 glass_colors.name AS color,
