@@ -2154,121 +2154,121 @@ switch ($act){
                     $hid_array = array("id2","write_date","impuls_qty","glass_option_id","glass_type_id","glass_color_id","glass_manuf_id","name_product_22","type_22","color_22","proccess2_22","cut_list_22","infooo");
 					if($columns[$j] == "inc_status"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 153);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 153);
 
 					}elseif($columns[$j] == "audio_file"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 150);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 150);
 
 					}elseif($columns[$j] == "action_given"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => '5%');
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => '5%');
 
 					}elseif(in_array($columns[$j], $hid_array)){
 
-						$g = array('field'=>$columns[$j], 'hidden' => true,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 100);
+						$g = array('field'=>$columns[$j], 'hidden' => true,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 100);
 
 					}
                     elseif($columns[$j] == "inc_date"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 130);
 
 					}
                     elseif($columns[$j] == "glass_count"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 400);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 400);
 
 					}
                     elseif($columns[$j] == "name_product"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 130);
 
 					}
                     elseif($columns[$j] == "act_product"){
-                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 130);
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 130);
                     }
                     elseif($columns[$j] == "sort_n"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 70);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 70);
 
 					}
                     elseif($columns[$j] == "picture_prod"){
-                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 100);
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 100);
                     }
                     elseif($columns[$j] == "stat_path_or"){
-                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 230);
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 230);
                     }
                     elseif($columns[$j] == "proccess2"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 300);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 300);
 
 					}
                     elseif($columns[$j] == "list"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 150);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 150);
 
 					}
                     elseif($columns[$j] == "orderer2"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 80);
 
 					}
                     elseif($columns[$j] == "product_glasses"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 300);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 300);
 
 					}
                     elseif($columns[$j] == "product_pic"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 80);
 
 					}
                     elseif($columns[$j] == "product_act"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 80);
 
 					}
                     elseif($columns[$j] == "product_id"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 30);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 30);
 
 					}
                     elseif($columns[$j] == "butil" OR $columns[$j] == "glasses_grouped_cc"){
 
-						$g = array('field'=>$columns[$j],'hidden' => $hidebutil, 'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 40);
+						$g = array('field'=>$columns[$j],'hidden' => $hidebutil, 'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 40);
 
 					}
                     elseif($columns[$j] == "cut_id"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 40);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 40);
 
 					}
                     elseif($columns[$j] == "lameks"){
 
-						$g = array('field'=>$columns[$j],'hidden' => $hidefiri,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 50);
+						$g = array('field'=>$columns[$j],'hidden' => $hidefiri,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 50);
 
 					}
 
                     elseif($columns[$j] == "product_status"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 100);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 100);
 
 					}
                     else if($columns[$j] == "atxodebi"){
-                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 80);
                     }
                     
                     elseif($columns[$j] == "id"){
 
-						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true), 'width' => 80);
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 80);
 
 					}
                     elseif($columns[$j] == "total_to_pay" OR $columns[$j] == "avans" OR $columns[$j] == "add_money" OR $columns[$j] == "left_to_pay" OR $columns[$j] == "price_glass_proc"){
-                        $g = array('field'=>$columns[$j],'hidden' => $cexis_ufrosi,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true));
+                        $g = array('field'=>$columns[$j],'hidden' => $cexis_ufrosi,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')));
                     }
                     else{
 
-                    	$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true));
+                    	$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')));
 
 					}
 

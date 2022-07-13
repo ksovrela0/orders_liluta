@@ -199,7 +199,15 @@ class kendoUI{
 				persistSelection: true,
 				//height: 350,
 				sortable: true,
-				filterable: {"mode": "row"},
+				filterable: {
+					mode: "menu, row",
+					operators: {
+						string: {
+							contains: "Contains",
+							suggestionOperator: "contains"
+						}
+					}
+				},
 				pageable: {
 					refresh: true,
 					pageSizes: true,
