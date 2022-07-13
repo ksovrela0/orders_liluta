@@ -969,10 +969,11 @@
 function getClients($id){
 	GLOBAL $db;
 	$data = '';
-    $db->setQuery("SELECT   id,
+    $db->setQuery("SELECT   GROUP_CONCAT(id) AS id,
                             client_name AS 'name'
                     FROM    orders
-                    WHERE actived = 1");
+                    WHERE actived = 1
+					GROUP BY client_name");
     $cats = $db->getResultArray();
 	$data .= '<option value="">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){

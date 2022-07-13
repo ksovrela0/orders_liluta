@@ -2581,7 +2581,7 @@ switch ($act){
         }
 
         if($client != ''){
-            $where .= " AND orders.id = '$client'";
+            $where .= " AND orders.id IN ($client)";
         }
 
         if($size[0] != ''){
