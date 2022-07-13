@@ -1356,6 +1356,7 @@
 				params.glass_manuf = $("#selected_glass_manuf_id").val();
 				params.glass_width = $("#glass_width").val();
 				params.glass_height = $("#glass_height").val();
+				params.stand_glass = $("#stand_glass").is(':checked');
 				params.go_to_cut = $("#go_to_cut").is(':checked');
 
 

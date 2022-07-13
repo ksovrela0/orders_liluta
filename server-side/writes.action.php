@@ -1805,6 +1805,7 @@ switch ($act){
         $glass_width     = $_REQUEST['glass_width'];
         $glass_height      = $_REQUEST['glass_height'];
         $glass_manuf    = $_REQUEST['glass_manuf'];
+        $stand_glass    = $_REQUEST['stand_glass'];
 
         $go_to_cut    = $_REQUEST['go_to_cut'];
         if($go_to_cut == 'true'){
@@ -1812,6 +1813,14 @@ switch ($act){
         }
         else{
             $go_to_cut = 0;
+        }
+
+
+        if($stand_glass == 'true'){
+            $stand_glass = 1;
+        }
+        else{
+            $stand_glass = 0;
         }
         $order_id      = $_REQUEST['order_id'];
 
@@ -1848,6 +1857,7 @@ switch ($act){
                                                 glass_width='$glass_width',
                                                 glass_height='$glass_height',
                                                 glass_manuf_id = '$glass_manuf',
+                                                not_standard = '$stand_glass',
                                                 status_id='1',
                                                 go_to_cut='$go_to_cut',
                                                 order_id = '$order_id'");
@@ -1864,6 +1874,7 @@ switch ($act){
                                                 glass_width='$glass_width',
                                                 glass_height='$glass_height',
                                                 glass_manuf_id = '$glass_manuf',
+                                                not_standard = '$stand_glass',
                                                 status_id='$glass_status',
                                                 go_to_cut='$go_to_cut',
                                                 order_id = '$order_id'
