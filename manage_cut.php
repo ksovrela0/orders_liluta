@@ -531,8 +531,13 @@
 							return false;
 						}
 					}
+
+					var styles = ``;
+					if(data.not_standard == 1){
+						styles = 'style="background-color:#ffeaa3;"';
+					}
 					$("#list_area").append(`
-					<div class="element_in_list" sort_n="`+sort_n+`" glass-id="`+data.id+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
+					<div class="element_in_list" `+styles+` sort_n="`+sort_n+`" glass-id="`+data.id+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
 						<div style="font-size: 20px;">`+data.sizes+`</div>
 						<div>ID: `+data.id+`  `+data.name+`</div>
 						
@@ -947,8 +952,13 @@
 				if(typeof data != 'undefined' || data.length > 0){
 					data.forEach(function(data, x){
 						x = x+1;
+						
+						var styles = ``;
+						if(data.not_standard == 1){
+							styles = 'style="background-color:#ffeaa3;"';
+						}
 						$("#glasses_div").append(`
-						<div class="element_in_div" sort_n="`+x+`" glass_width="`+data.glass_width+`" glass_height="`+data.glass_height+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`">
+						<div class="element_in_div" `+styles+` sort_n="`+x+`" glass_width="`+data.glass_width+`" glass_height="`+data.glass_height+`" glass_option_id="`+data.glass_option_id+`" glass_type_id="`+data.glass_type_id+`" glass_color_id="`+data.glass_color_id+`" glass_manuf_id="`+data.glass_manuf_id+`" not_standard="`+data.not_standard+`">
 							<div style="font-size: 20px;">`+data.sizes+`</div>	
 							<div>`+data.name+`</div>
 							

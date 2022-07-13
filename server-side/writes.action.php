@@ -729,6 +729,7 @@ switch ($act){
         $glass_type_id = $_REQUEST['glass_type_id'];
         $glass_color_id = $_REQUEST['glass_color_id'];
         $glass_manuf_id = $_REQUEST['glass_manuf_id'];
+        $not_standard = $_REQUEST['not_standard'];
         $where = '';
         $ids = implode(',',$_REQUEST['ids']);
         if($ids != ''){
@@ -750,6 +751,7 @@ switch ($act){
                         AND     products_glasses.glass_option_id = '$glass_option_id' 
                         AND     products_glasses.glass_color_id = '$glass_color_id' 
                         AND     products_glasses.glass_manuf_id = '$glass_manuf_id'
+                        AND     products_glasses.not_standard = '$not_standard'
                         AND     products_glasses.status_id = 1
                         AND     products_glasses.actived = 1
                         AND     products_glasses.go_to_cut = 1
@@ -2596,6 +2598,7 @@ switch ($act){
                                 products_glasses.glass_manuf_id,
                                 products_glasses.glass_width,
                                 products_glasses.glass_height,
+                                products_glasses.not_standard,
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
                                 glass_colors.name AS color,
@@ -2611,7 +2614,7 @@ switch ($act){
                         JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
                         
                         WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) $where
-                        GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id
+                        GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, products_glasses.not_standard
                         ORDER BY products_glasses.id");
 
 
@@ -2742,7 +2745,8 @@ function getGlass($id){
                             glass_manuf_id,
                             status_id,
                             go_to_cut,
-                            picture
+                            picture,
+                            not_standard
                     FROM    products_glasses
                     WHERE   id = '$id'");
 
@@ -2759,6 +2763,9 @@ function getGlassPage($id, $res = ''){
 
     if($res['go_to_cut'] == '0'){
         $checked = '';
+    }
+    if($res['not_standard'] == '1'){
+        $checked_stand = 'checked';
     }
     $data = '   
         <div class="row">
@@ -2813,6 +2820,10 @@ function getGlassPage($id, $res = ''){
                             <div class="col-sm-6">
                                 <label style="display: flex;"><input type="checkbox" id="go_to_cut" '.$checked.'> <span style="margin-top: 2px;
                                 margin-left: 5px;">გაიაროს ჭრის პროცესი?</span></label>
+                            </div>
+                            <div class="col-sm-6">
+                                <label style="display: flex;"><input type="checkbox" id="stand_glass" '.$checked_stand.'> <span style="margin-top: 2px;
+                                margin-left: 5px;">არასტანდარტული მინა?</span></label>
                             </div>
                            
                         </div>
