@@ -1362,7 +1362,10 @@
 
 				var ready_to_save = 0;
 
-
+				if(params.glass_cat == ''){
+					ready_to_save++;
+					alert("შეიყვანეთ სისქე");
+				}
 				if(ready_to_save == 0) {
 					$.ajax({
 						url: "server-side/writes.action.php",
