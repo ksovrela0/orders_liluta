@@ -350,10 +350,11 @@
 					</div>
 
 					<div class="col-sm-2">
-						<label>აირჩიეთ დამკვეთი</label>
-						<select id="selected_glass_client">
+						<label>აირჩიეთ დამკვეთი <button class="select_all">Select all</button></label>
+						<select multiple  id="selected_glass_client">
 							<?php getClients(0); ?>
 						</select>
+						
 					</div>
 
 					<div class="col-sm-12" style="margin-top:20px;display:flex;justify-content: flex-start;align-items: end;">
@@ -960,6 +961,10 @@
 			}
 		})
 	}
+	$('.select_all').click(function(){
+		$('#selected_glass_client option').prop('selected', true);
+		$('#selected_glass_client').trigger('chosen:updated');
+	});
 	</script>
 </body>
 
@@ -975,7 +980,7 @@ function getClients($id){
                     WHERE actived = 1
 					GROUP BY client_name");
     $cats = $db->getResultArray();
-	$data .= '<option value="">აირჩიეთ</option>';
+	//$data .= '<option value="">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
             $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
