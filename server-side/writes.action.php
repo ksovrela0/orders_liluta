@@ -2399,12 +2399,29 @@ switch ($act){
 
         $order_id = $_REQUEST['order_id'];
         $path_id = $_REQUEST['path_id'];
+        
         if($path_id == 2){
 
-            $option_id = $_REQUEST['option_id'];
+
+            $option_id  = $_REQUEST['option_id'];
+            $manuf_id   = $_REQUEST['manuf_id'];
+            $color_id   = $_REQUEST['color_id'];
+
+            $client   = $_REQUEST['client'];
+            $where = '';
 
             if($option_id != ''){
-                $where = "AND warehouse.glass_option_id = '$option_id'";
+                $where .= " AND products_glasses.glass_option_id = '$option_id'";
+            }
+            if($manuf_id != ''){
+                $where .= " AND products_glasses.glass_manuf_id = '$manuf_id'";
+            }
+            if($color_id != ''){
+                $where .= " AND products_glasses.glass_color_id = '$color_id'";
+            }
+
+            if($client != ''){
+                $where .= " AND orders.id IN ($client)";
             }
 
             $db->setQuery("SELECT 		cut_glass.id,

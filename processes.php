@@ -293,15 +293,41 @@ $proc_data = $db->getResultArray()['result'][0];
 						echo '<div id="main_div_2" style="width:97%;"></div>';
 					}
 					else if($proc_data['id'] == 2){
-						echo '	<div class="col-sm-2" style="margin-bottom:20px;">
-									<label>აირჩიეთ შუშა</label>
-									<select id="selected_glass_cat_id">';
-										getGlassOptions(0);
-									echo '</select>
+						?>
+
+							<div class="row" style="margin-bottom: 17px;">
+								<div class="col-sm-2">
+									<label>აირჩიეთ მწარმოებელი</label>
+									<select id="selected_glass_manuf_id">
+										<?php getGlassManuf(0); ?>
+									</select>
 								</div>
+								<div class="col-sm-2">
+									<label>აირჩიეთ შუშა</label>
+									<select id="selected_glass_cat_id">
+										<?php getGlassOptions(0); ?>
+									</select>
+								</div>
+								<div class="col-sm-2">
+									<label>აირჩიეთ ფერი</label>
+									<select id="selected_glass_color_id">
+										<?php getGlassColorOptions(0); ?>
+									</select>
+								</div>
+
+								<div class="col-sm-4">
+									<label>აირჩიეთ დამკვეთი <button class="select_all">Select all</button></label>
+									<select multiple  id="selected_glass_client">
+										<?php getClients(0); ?>
+									</select>
+									
+								</div>
+
 								<div class="col-sm-2" style="margin-top:20px;">
 									<div id="filter">ფილტრი</div>
-								</div>';
+								</div>
+							</div>
+						<?php
 						echo '<div id="main_cut" style="width:97%;"></div>';
 					}
 					else{
@@ -1080,7 +1106,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					}
 				?>
 
-				$("#selected_glass_cat_id").chosen();
+$("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id,#selected_glass_sizes,#selected_glass_client").chosen();
 				
 				
 			});
@@ -1777,10 +1803,13 @@ $proc_data = $db->getResultArray()['result'][0];
 			$(document).on('click', '#filter', function(){
 				let params = new Object;
 
+				params.manuf_id = $("#selected_glass_manuf_id").val();
 				params.option_id = $("#selected_glass_cat_id").val();
+				params.color_id = $("#selected_glass_color_id").val();
+				params.size = $("#selected_glass_sizes").val();
+				params.client = $("#selected_glass_client").val();
 
-
-				var search = "&path_id=2&option_id="+params.option_id;
+				var search = "&path_id=2&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id+"&client="+params.client;
 				LoadKendoTable_main3(search)
 			});
 	</script>
@@ -1788,6 +1817,92 @@ $proc_data = $db->getResultArray()['result'][0];
 
 </html>
 <?php
+function getClients($id){
+	GLOBAL $db;
+	$data = '';
+    $db->setQuery("SELECT   GROUP_CONCAT(id) AS id,
+                            client_name AS 'name'
+                    FROM    orders
+                    WHERE actived = 1
+					GROUP BY client_name");
+    $cats = $db->getResultArray();
+	//$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+function getSizeOpt($id){
+	GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT  CONCAT(products_glasses.glass_width,'-',products_glasses.glass_height) AS id,
+	CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS name
+	
+	FROM    products_glasses
+	JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+	JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+	JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+	JOIN    glass_status ON glass_status.id = products_glasses.status_id
+	JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+	
+	WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) 
+	GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id
+	ORDER BY products_glasses.id");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+function getGlassColorOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_colors
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+function getGlassManuf($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_manuf
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
 function getGlassOptions($id){
     GLOBAL $db;
     $data = '';
@@ -1807,5 +1922,4 @@ function getGlassOptions($id){
     }
     echo $data;
 }
-
 ?>
