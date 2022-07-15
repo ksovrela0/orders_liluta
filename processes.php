@@ -315,7 +315,7 @@ $proc_data = $db->getResultArray()['result'][0];
 									</select>
 								</div>
 
-								<div class="col-sm-4">
+								<div class="col-sm-4" style="display:none;">
 									<label>აირჩიეთ დამკვეთი <button class="select_all">Select all</button></label>
 									<select multiple  id="selected_glass_client">
 										<?php getClients(0); ?>
