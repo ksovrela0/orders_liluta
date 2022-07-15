@@ -296,19 +296,19 @@ $proc_data = $db->getResultArray()['result'][0];
 						?>
 
 							<div class="row" style="margin-bottom: 17px;">
-								<div class="col-sm-2">
+								<div class="col-sm-3">
 									<label>აირჩიეთ მწარმოებელი</label>
 									<select id="selected_glass_manuf_id">
 										<?php getGlassManuf(0); ?>
 									</select>
 								</div>
-								<div class="col-sm-2">
+								<div class="col-sm-3">
 									<label>აირჩიეთ შუშა</label>
 									<select id="selected_glass_cat_id">
 										<?php getGlassOptions(0); ?>
 									</select>
 								</div>
-								<div class="col-sm-2">
+								<div class="col-sm-3">
 									<label>აირჩიეთ ფერი</label>
 									<select id="selected_glass_color_id">
 										<?php getGlassColorOptions(0); ?>
