@@ -231,6 +231,19 @@
 		#status_change:hover{
 			box-shadow: unset;
 		}
+		#filter{
+			border: 1px solid black;
+			width: fit-content;
+			padding: 7px;
+			font-size: 18px;
+			color: #fff;
+			background-color: red;
+			cursor: pointer;
+			margin-left: 20px;
+			background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -280,6 +293,15 @@ $proc_data = $db->getResultArray()['result'][0];
 						echo '<div id="main_div_2" style="width:97%;"></div>';
 					}
 					else if($proc_data['id'] == 2){
+						echo '	<div class="col-sm-2" style="margin-bottom:20px;">
+									<label>აირჩიეთ შუშა</label>
+									<select id="selected_glass_cat_id">';
+										getGlassOptions(0);
+									echo '</select>
+								</div>
+								<div class="col-sm-2" style="margin-top:20px;">
+									<div id="filter">ფილტრი</div>
+								</div>';
 						echo '<div id="main_cut" style="width:97%;"></div>';
 					}
 					else{
@@ -1057,6 +1079,8 @@ $proc_data = $db->getResultArray()['result'][0];
 						echo 'setInterval(function () {$("#main_div").data("kendoGrid").dataSource.read();}, 15000);';
 					}
 				?>
+
+				$("#selected_glass_cat_id").chosen();
 				
 				
 			});
@@ -1748,7 +1772,40 @@ $proc_data = $db->getResultArray()['result'][0];
 				}
 
 			})
+
+
+			$(document).on('click', '#filter', function(){
+				let params = new Object;
+
+				params.option_id = $("#selected_glass_cat_id").val();
+
+
+				var search = "&path_id=2&option_id="+params.option_id;
+				LoadKendoTable_main3(search)
+			});
 	</script>
 </body>
 
 </html>
+<?php
+function getGlassOptions($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    glass_options 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+
+?>

@@ -2400,6 +2400,13 @@ switch ($act){
         $order_id = $_REQUEST['order_id'];
         $path_id = $_REQUEST['path_id'];
         if($path_id == 2){
+
+            $option_id = $_REQUEST['option_id'];
+
+            if($option_id != ''){
+                $where = "AND warehouse.glass_option_id = '$option_id'";
+            }
+
             $db->setQuery("SELECT 		cut_glass.id,
                                         CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', warehouse.pyramid) AS list,
                                         REPLACE(GROUP_CONCAT(CONCAT('ID: ', products_glasses.id,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'') ,' ზომები: <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ - ',glass_st.name,' - ', orders.client_name,' - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>'), 'დახარვეზებული', '<span style=\"color:red;\">დახარვეზებული</span>') AS glasses,
@@ -2428,7 +2435,7 @@ switch ($act){
                                         JOIN        glass_type ON glass_type.id = warehouse.glass_type_id
                                         JOIN        glass_colors ON glass_colors.id = warehouse.glass_color_id
                                         JOIN        glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
-                                        WHERE 	    cut_glass.actived = 1
+                                        WHERE 	    cut_glass.actived = 1 $where
                                         
                                         GROUP BY    cut_glass.id
                                         ORDER BY    glass_status.sort_n");
