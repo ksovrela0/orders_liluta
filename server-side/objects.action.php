@@ -533,7 +533,7 @@ switch ($act){
                         JOIN    products ON products.id = orders_product.product_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
-                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1 AND lists_to_cut.id  IS NOT NULL
+                        WHERE 	products_glasses.actived = 1 AND products_glasses.display = 1
 
                         GROUP BY products_glasses.id) AS ttt
                         ORDER BY ttt.sort_n DESC");
