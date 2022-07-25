@@ -737,7 +737,8 @@ switch ($act){
         }
         $db->setQuery(" SELECT products_glasses.*,CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
-                                glass_colors.name AS color
+                                glass_colors.name AS color,
+                                orders.client_name
                         FROM    products_glasses 
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
@@ -2638,7 +2639,8 @@ switch ($act){
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
                                 glass_colors.name AS color,
-                                COUNT(*) AS cc
+                                COUNT(*) AS cc,
+                                GROUP_CONCAT(DISTINCT orders.client_name) as clients
 
                         FROM    products_glasses
                         JOIN		orders ON orders.id = products_glasses.order_id AND orders.actived = 1

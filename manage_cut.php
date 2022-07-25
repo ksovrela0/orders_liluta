@@ -526,7 +526,7 @@
 						
 					}
 					else{
-						if(glass_option_id != params.glass_option_id || glass_color_id != params.glass_color_id || glass_manuf_id != params.glass_manuf_id){
+						if(glass_option_id != params.glass_option_id || glass_color_id != params.glass_color_id){
 							alert("დასაჭრელად არჩეული მინები არ არიან ერთნაირი ფერის, მწარმოებლის ან სისქის, გთხოვთ აირჩიოთ მხოლოდ მსგავსი მინები");
 							return false;
 						}
@@ -552,6 +552,7 @@
 						`+pic+`
 						<div class="remove_from_list">X</div>
 						<div class="sort_n">`+sort_n+`</div>
+						<div>`+data.client_name+`</div>
 					</div>`);
 
 					$("#no_list").css('display', 'none');
@@ -973,6 +974,8 @@
 							
 							<div>`+data.color+`</div>
 							<div class="glass_cc">`+data.cc+`</div>
+							<div>`+data.clients+`</div>
+							<div class="sort_n">`+x+`</div>
 						</div>`);
 					})
 				}

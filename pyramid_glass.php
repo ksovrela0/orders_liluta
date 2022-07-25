@@ -319,7 +319,7 @@
 			type: "POST",
 			data: {
 				act: "get_status_page",
-				id: dItem.id
+				id: dItem.id_pyr_glass
 			},
 			dataType: "json",
 			success: function(data){
