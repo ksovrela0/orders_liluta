@@ -736,7 +736,7 @@ function getStatusPage($res = ''){
         $dis_inp = 'disabled';
     }
 
-    if(!in_array($user_gr,array(1,11))){
+    if(!in_array($user_gr,array(1,11,12,13))){
         $dis_inp = 'disabled';
     }
     $data .= '
