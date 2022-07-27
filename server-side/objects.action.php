@@ -254,6 +254,9 @@ switch ($act){
             $cc = $db->getResultArray()['result'][0]['cc'];
 
             if($cc > 0){
+
+                
+
                 $db->setQuery("SELECT * FROM products_glasses WHERE id = '$id'");
                 $glass = $db->getResultArray()['result'][0];
     
@@ -277,6 +280,9 @@ switch ($act){
                     $db->execQuery();
     
                     $newGlassID = $db->getLastId();
+
+                    $db->setQuery("UPDATE products_glasses SET new_id = '$newGlassID' WHERE id = '$id'");
+                    $db->execQuery();
                     foreach($paths AS $path){
     
                         $db->setQuery("INSERT INTO glasses_paths SET datetime = NOW(),

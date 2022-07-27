@@ -533,7 +533,7 @@
 				var itemPerPage = 100;
 				var columnsCount = 5;
 				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture_prod:string", "act_product:string"];
-				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სულ კვ.მ", "ქმედება"];
+				var columnGeoNames = ["ID", "დასახელება", "მინები", "სულ კვ.მ", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -745,7 +745,7 @@
 						$("#get_edit_page").dialog({
 							resizable: false,
 							height: "auto",
-							width: 1200,
+							width: 1400,
 							modal: true,
 							position: "top",
 							buttons: {
@@ -1083,7 +1083,7 @@
 						$("#get_edit_page").dialog({
 							resizable: false,
 							height: "auto",
-							width: 1200,
+							width: 1400,
 							modal: true,
 							position: "top",
 							buttons: {
