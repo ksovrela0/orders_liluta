@@ -506,7 +506,7 @@
 		var status = [];
 		selectedRows.each(function(index, row) {
 			var selectedItem = grid.dataItem(row);
-			glass_id.push(selectedItem.id);
+			glass_id.push(selectedItem.id_pyr_glass);
 			order_id.push(selectedItem.shekv);
 			status.push(selectedItem.size);
 		});
