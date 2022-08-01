@@ -721,7 +721,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user").chosen();
+						$("#resp_user,#clients").chosen();
 						$("#order_date,#datetime_finish").datetimepicker({
 							dateFormat: "yy-mm-dd",
 							timeFormat: "HH:mm:ss"
@@ -1053,7 +1053,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user").chosen();
+						$("#resp_user,#clients").chosen();
 						$("#order_date,#datetime_finish").datetimepicker({
 							dateFormat: "yy-mm-dd",
 							timeFormat: "HH:mm:ss"
@@ -1377,8 +1377,11 @@
 							if(typeof data.error != 'undefined'){
 								alert(data.error)
 							}
+							else{
+								$('#get_glass_page').dialog("close");
+							}
 							$("#glasses_div").data("kendoGrid").dataSource.read();
-							$('#get_glass_page').dialog("close");
+							
 						}
 					});
 				}
@@ -1978,6 +1981,26 @@
 					}
 				});
 			});
+			$(document).on('change', '#clients', function(){
+				var client_id = $(this).val();
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: "act=get_client&id="+client_id,
+					dataType: "json",
+					success: function(data){
+						$("#clients").val(0);
+						$('#clients').trigger('chosen:updated');
+
+
+						$("#client_name").val(data.client_name);
+						$("#client_pid").val(data.client_pid);
+						$("#client_phone").val(data.client_phone);
+						$("#client_addr").val(data.client_addr);
+					}
+				})
+			})
 			</script>
 </body>
 

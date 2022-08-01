@@ -1830,9 +1830,71 @@ switch ($act){
                         WHERE   id = '$id' AND actived = 1");
         $isset = $db->getResultArray();
 
+        $db->setQuery("SELECT glass_count, product_id FROM orders_product WHERE id = '$product_id' AND actived = 1");
+        $prod_data = $db->getResultArray()['result'][0];
+
+        if($prod_data['product_id'] == 3){
+            $db->setQuery("SELECT COUNT(*) AS cc
+                            FROM glasses_paths
+                            WHERE glass_id = '$id' AND actived = 1 AND path_group_id = 6");
+            $cc = $db->getResultArray()['result'][0]['cc'];
+
+            if($cc == 0){
+                $data['error'] = 'გთხოვთ დაამატოთ ლამექსის პროცესი';
+                echo json_encode($data);
+                return;
+            }
+        }
+
+        if($prod_data['product_id'] == 2){
+            $db->setQuery("SELECT COUNT(*) AS cc
+                            FROM glasses_paths
+                            WHERE glass_id = '$id' AND actived = 1 AND path_group_id = 7");
+            $cc = $db->getResultArray()['result'][0]['cc'];
+
+            if($cc == 0){
+                $db->setQuery("SELECT default_price
+                                FROM groups
+                                WHERE id = '7'");
+                $price = $db->getResultArray()['result'][0]['default_price'];
+
+                $db->setQuery(" SELECT MAX(glass_height * glass_width) AS m_kv
+                                FROM `products_glasses`
+                                
+                                WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$id' AND actived = 1)");
+                $max_kv = $db->getResultArray()['result'][0]['m_kv']/1000000;
+
+
+                $db->setQuery(" SELECT COUNT(*) AS cc
+                                FROM `products_glasses`
+                                
+                                WHERE actived = 1 AND order_product_id = (SELECT order_product_id FROM products_glasses WHERE id = '$id' AND actived = 1)");
+                $cc = $db->getResultArray()['result'][0]['cc'];
+                
+                $price_total = $max_kv * $price * $cc;
+    
+                
+    
+                $db->setQuery(" SELECT  MAX(sort_n) AS max_sort
+                                FROM    glasses_paths
+                                WHERE   actived = 1 AND glass_id = '$id'");
+                $sort_n = $db->getResultArray()['result'][0]['max_sort']+1;
+                $db->setQuery("INSERT INTO glasses_paths SET
+                                                    datetime=NOW(),
+                                                    glass_id='$id',
+                                                    path_group_id='7',
+                                                    status_id=1,
+                                                    price = '$price_total',
+                                                    sort_n = '$sort_n'");
+    
+                $db->execQuery();
+            }
+        }
+
+
+
         if($isset['result'][0]['cc'] == 0){
-            $db->setQuery("SELECT glass_count, product_id FROM orders_product WHERE id = '$product_id' AND actived = 1");
-            $prod_data = $db->getResultArray()['result'][0];
+            
 
             if($prod_data['product_id'] == 2 || $prod_data['product_id'] == 3){
                 $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE order_product_id = '$product_id' AND actived = 1 AND status_id != 4");
@@ -1843,6 +1905,8 @@ switch ($act){
                     echo json_encode($data);
                     return;
                 }
+
+                
             }
 
             
@@ -2053,7 +2117,45 @@ switch ($act){
         
 
     break;
+    case 'get_client':
+        $id = $_REQUEST['id'];
 
+
+        $db->setQuery("SELECT * FROM clients WHERE id = '$id'");
+
+        $data =  $db->getResultArray()['result'][0];
+        break;
+    case 'get_clients':
+
+        $glass_option = $_REQUEST['glass_option'];
+
+        if($glass_option == 0){
+            $where = '';
+        }
+        else{
+            $where = " AND products_glasses.glass_option_id = '$glass_option'";
+        }
+
+        $db->setQuery(" SELECT  GROUP_CONCAT(DISTINCT orders.id) AS id, orders.client_name AS 'name'
+                        FROM    products_glasses
+                        JOIN    orders ON orders.id = products_glasses.order_id
+                        WHERE   products_glasses.actived = 1 $where
+
+                        GROUP BY client_name");
+        $cats = $db->getResultArray();
+        $data['opts'] = '';
+        //$data .= '<option value="">აირჩიეთ</option>';
+        foreach($cats['result'] AS $cat){
+            if($cat[id] == $id){
+                $data['opts'] .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+            }
+            else{
+                $data['opts'] .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            }
+        }
+        
+    
+        break;
     case 'get_columns':
         $url = explode('?',$_SERVER["HTTP_REFERER"]);
         $url = explode('&', $url[1]);
@@ -2642,7 +2744,7 @@ switch ($act){
                                 products_glasses.not_standard,
                                 products_glasses.picture,
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
-                                CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
+                                CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
                                 glass_colors.name AS color,
                                 COUNT(*) AS cc,
                                 GROUP_CONCAT(DISTINCT orders.client_name) as clients
@@ -3207,6 +3309,25 @@ function getPathOptions($id){
     }
     return $data;
 }
+function getClients(){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            client_name AS name
+                    FROM    clients 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    $data .= '<option value="0">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    return $data;
+}
 function getRespUser($id){
     GLOBAL $db;
     $data = '';
@@ -3285,6 +3406,13 @@ function getPage($id, $res = ''){
                 <label>აირჩიეთ პასუხისმგებეელი პირი</label>
                 <select id="resp_user" '.$disable.'>
                     '.getRespUser($res['user_id']).'
+                </select>
+            </div>
+
+            <div class="col-sm-4">
+                <label>აირჩიეთ კლიენტი</label>
+                <select id="clients" '.$disable.'>
+                    '.getClients(0).'
                 </select>
             </div>
         </div>

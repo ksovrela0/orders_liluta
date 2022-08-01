@@ -986,6 +986,21 @@
 		$('#selected_glass_client option').prop('selected', true);
 		$('#selected_glass_client').trigger('chosen:updated');
 	});
+
+	$(document).on('change', '#selected_glass_cat_id', function(){
+		var glass_option = $(this).val();
+
+		$.ajax({
+			url: "server-side/writes.action.php",
+			type: "POST",
+			data: "act=get_clients&glass_option="+glass_option,
+			dataType: "json",
+			success: function(data){
+				$("#selected_glass_client").html(data.opts);
+				$('#selected_glass_client').trigger('chosen:updated');
+			}
+		})
+	})
 	</script>
 </body>
 
@@ -1016,7 +1031,7 @@ function getSizeOpt($id){
 	GLOBAL $db;
     $data = '';
     $db->setQuery("SELECT  CONCAT(products_glasses.glass_width,'-',products_glasses.glass_height) AS id,
-	CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS name
+	CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS name
 	
 	FROM    products_glasses
 	JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id

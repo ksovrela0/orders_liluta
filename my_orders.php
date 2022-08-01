@@ -1377,6 +1377,9 @@
 							if(typeof data.error != 'undefined'){
 								alert(data.error)
 							}
+							else{
+								$('#get_glass_page').dialog("close");
+							}
 							$("#glasses_div").data("kendoGrid").dataSource.read();
 							$('#get_glass_page').dialog("close");
 						}

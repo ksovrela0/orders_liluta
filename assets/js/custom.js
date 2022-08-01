@@ -476,7 +476,7 @@ $(document).ready(function(){
 									url = "?page="+i.page;
 								}
 								$(".main-notification-list").prepend(`	<a href="`+url+`">
-																			<div notif-id="`+i.id+`" class="media new">
+																			<div style="background-color:`+i.color+`" notif-id="`+i.id+`" class="media new">
 																				<div class="media-body">
 																					<p>`+i.text+`</p>
 																					<span>`+i.datetime+`</span> 

@@ -57,7 +57,7 @@
                         else{
                            echo '#';
                         }
-                        echo '"><div notif-id="'.$notification['id'].'" class="media ';
+                        echo '"><div style="background-color:'.$notification['color'].'" notif-id="'.$notification['id'].'" class="media ';
                         if($notification['seen'] == 0){
                            echo 'new';
                         }
