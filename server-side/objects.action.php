@@ -600,7 +600,6 @@ switch ($act){
     break;
     case 'give_glasses':
         $glass_ids = $_REQUEST['ids'];
-
         
         $order_id = $_REQUEST['order_id'];
 
@@ -624,6 +623,7 @@ switch ($act){
         $ids = implode(',',$glass_ids);
 
         $to_give_count = count($glass_ids);
+        
         $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id = 3");
         $cc_finished = $db->getResultArray()['result'][0]['cc'];
         if($cc_finished == $to_give_count){
