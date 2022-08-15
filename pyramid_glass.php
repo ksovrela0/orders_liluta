@@ -458,7 +458,7 @@
 		var actions         = 	'<?php if($_SESSION['GRPID'] != 11) { echo '<div id="new_glass">მინების გაცემა</div>';} ?>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	10;
+		var columnsCount    =	11;
 		var columnsSQL      = 	[
 									"id_pyr_glass:string",
 									"glass:string",
@@ -468,6 +468,7 @@
 									"glass_color:string",
                                     "qty:string",
 									"ueeess:string",
+									"ttttt:string",
 									"qty2:string",
 									"size:string"
 								];
@@ -480,15 +481,16 @@
 									"პ/ნ ან ს/კ",
 									"ტელეფონი",
 									"გადახდილია?",
+									"პროც.დასრ.თარ",
 									"პროცესი",
                                     "პროც.სტატუსი"
 								];
 
-		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
-		var selectors               =   [0,0,0,0,0,0,0,0,0,0]; 
+		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0]; 
+		var selectors               =   [0,0,0,0,0,0,0,0,0,0,0]; 
 
-		var locked                  =   [0,0,0,0,0,0,0,0,0,0];
-		var lockable                =   [0,0,0,0,0,0,0,0,0,0];
+		var locked                  =   [0,0,0,0,0,0,0,0,0,0,0];
+		var lockable                =   [0,0,0,0,0,0,0,0,0,0,0];
 
 		var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 		//KendoUI CLASS CONFIGS END

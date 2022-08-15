@@ -529,7 +529,7 @@ switch ($act){
         $ids = $_REQUEST['ids'];
 
         foreach($ids AS $id){
-            $db->setQuery("UPDATE cut_glass SET status_id = 1 WHERE id = '$id' AND status_id = 1");
+            $db->setQuery("UPDATE cut_glass SET status_id = 1 WHERE id = '$id' AND status_id NOT IN (3)");
             $db->execQuery();
         }
     break;
@@ -2529,7 +2529,7 @@ switch ($act){
 
             $db->setQuery("SELECT 		cut_glass.id,
                                         CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', warehouse.pyramid) AS list,
-                                        REPLACE(GROUP_CONCAT(CONCAT('ID: ', products_glasses.id,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'') ,' ზომები: <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ - ',glass_st.name,' - ', orders.client_name,' - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>'), 'დახარვეზებული', '<span style=\"color:red;\">დახარვეზებული</span>') AS glasses,
+                                        REPLACE(GROUP_CONCAT(CONCAT('ID: ', products_glasses.id,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'') ,' ზომები: <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ - ',glass_st.name,' - ', orders.client_name,' - პირ: <b>',IFNULL(products_glasses.last_pyramid,''),'</b> - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>'), 'დახარვეზებული', '<span style=\"color:red;\">დახარვეზებული</span>') AS glasses,
                                         (SELECT GROUP_CONCAT(CONCAT('<b>',cut_atxod.width,'</b> X <b>', cut_atxod.height,'</b> მმ') SEPARATOR ',<br>') FROM cut_atxod WHERE cut_atxod.cut_id = cut_glass.id AND cut_atxod.actived = 1) AS atx,
                                         
                                         CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>') AS status,
@@ -2569,10 +2569,10 @@ switch ($act){
             }
             $db->setQuery(" SELECT  orders_product.id,
                                     CONCAT(orders.client_name , ' ', IFNULL(orders_product.add_info,'')),
-                                    GROUP_CONCAT(DISTINCT CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', IFNULL(products_glasses.last_pyramid,''),' <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span> ',gl_st.name) SEPARATOR ',<br>') AS glasses,
+                                    GROUP_CONCAT(DISTINCT CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', IFNULL(products_glasses.last_pyramid,''),' - ',gl_st.name) SEPARATOR ',<br>') AS glasses,
                                     orders_product.butili,
                                     orders_product.lameqs_int,
-                                    CONCAT(IFNULL(CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>'),''), '<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(products_glasses.picture,0),'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a></a>') AS picture,
+                                    CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
                                     CASE
                                         WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.status_id != 4 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = orders_product.glass_count AND lists_to_cut.status_id = 3 THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
                                         WHEN orders_product.status_id = 4 THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
@@ -2615,7 +2615,7 @@ switch ($act){
                                     glass_colors.name AS color,
                                     CONCAT('<b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ') AS param,
 
-                                    CONCAT(CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(orders_product.picture,0),'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>'), '<a style=\"color:blue;\" target=\"_blank\" href=\"',IFNULL(products_glasses.picture,0),'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a></a>') AS picture,
+                                    CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
                                     CONCAT('ნახვრეტი: 4, ჭრის რაოდენობა:5'),
                                     products_glasses.last_pyramid,
                                     
@@ -2632,11 +2632,11 @@ switch ($act){
                                     border-radius: 5px;\">რიგში</span>') AS glasses,
 
                                     IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
-                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 ORDER BY sort_n LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
-                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
-                                        WHEN glass_status.id = 3 THEN CONCAT('<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
-                                        WHEN glass_status.id = 4 THEN CONCAT('<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
-                                        WHEN glass_status.id = 5 THEN CONCAT('<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 ORDER BY sort_n LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"',IF(glasses_paths.path_group_id != 5,'display:none;',''),'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
+                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"',IF(glasses_paths.path_group_id != 5,'display:none;',''),'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
+                                        WHEN glass_status.id = 3 THEN CONCAT('<span style=\"',IF(glasses_paths.path_group_id != 5,'display:none;',''),'\" data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+                                        WHEN glass_status.id = 4 THEN CONCAT('<span style=\"',IF(glasses_paths.path_group_id != 5,'display:none;',''),'\" data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+                                        WHEN glass_status.id = 5 THEN CONCAT('<span style=\"',IF(glasses_paths.path_group_id != 5,'display:none;',''),'\" data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
 
 
                                     END,'') AS acc,

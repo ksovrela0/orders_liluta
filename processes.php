@@ -606,7 +606,8 @@ $proc_data = $db->getResultArray()['result'][0];
 													$("#main_div").data("kendoGrid").dataSource.read();
 												}
 												else{
-													$("#main_div").data("kendoGrid").dataSource.filter({});
+													//$("#main_div").data("kendoGrid").dataSource.filter({});
+													$("#main_div").data("kendoGrid").dataSource.read();
 													setTimeout(function(){
 														$( ".k-input-inner" ).eq(1).focus()
 													},1000)
@@ -933,16 +934,17 @@ $proc_data = $db->getResultArray()['result'][0];
 						dataType: "json",
 						success: function(data) {
 							if(typeof(data.error) == 'undefined'){
-								$("#main_div").data("kendoGrid").dataSource.filter({});
+								//$("#main_div").data("kendoGrid").dataSource.filter({});
 								setTimeout(function(){
 									$( ".k-input-inner" ).eq(1).focus()
 								},1000)
 							}
 							else{
 								alert(data.error);
-								$("#main_div").data("kendoGrid").dataSource.read();
+								
 								
 							}
+							$("#main_div").data("kendoGrid").dataSource.read();
 							
 						}
 					});
