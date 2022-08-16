@@ -142,6 +142,33 @@ class kendoUI{
 
 				
 			}
+
+			else if(this.gridName == 'main_div'){
+				let total_to_pay = 0;
+				let total_avans = 0;
+				let total_zedm = 0;
+				let total_have_to_pay = 0;
+				$("#main_div tr[role='row'] td:nth-child(8)").each(function(i, x){
+					total_to_pay += parseFloat($(x).html());
+					$("#main_div .k-filter-row th:nth-child(8)").html(total_to_pay)
+				});
+
+				$("#main_div tr[role='row'] td:nth-child(9)").each(function(i, x){
+					total_avans += parseFloat($(x).html());
+					$("#main_div .k-filter-row th:nth-child(9)").html(total_avans)
+				});
+
+				$("#main_div tr[role='row'] td:nth-child(10)").each(function(i, x){
+					total_zedm += parseFloat($(x).html());
+					$("#main_div .k-filter-row th:nth-child(10)").html(total_zedm)
+				});
+
+				$("#main_div tr[role='row'] td:nth-child(11)").each(function(i, x){
+					total_have_to_pay += parseFloat($(x).html());
+					$("#main_div .k-filter-row th:nth-child(11)").html(total_have_to_pay)
+				});
+
+			}
 		}
 
 		var freeze = function (e){
