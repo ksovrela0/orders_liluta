@@ -238,12 +238,27 @@ function getProcError($proc_id){
 }
 
 switch ($act){
+    case 'change_damk':
+        $prod_id = $_REQUEST['prod_id'];
+
+        $data = array('page' => change_damk(getProduct($prod_id), $prod_id));
+    break;
+    case 'change_damk_save':
+        $prod_id = $_REQUEST['prod_id'];
+
+        $damkveti = $_REQUEST['damkveti'];
+
+        $db->setQuery("UPDATE orders_product SET add_info='$damkveti' WHERE id = '$prod_id' AND actived = 1");
+        $db->execQuery();
+
+    break;
     case 'change_sizes':
         $glass_id = $_REQUEST['glass_id'];
         $prod_id = $_REQUEST['prod_id'];
 
         $data = array('page' => change_sizes(getGlass($glass_id), $prod_id));
     break;
+    
     case 'change_sizes_save':
         $glass_id = $_REQUEST['glass_id'];
         $prod_id = $_REQUEST['prod_id'];
@@ -789,6 +804,8 @@ switch ($act){
             $db->setQuery("INSERT INTO cut_glass SET id = '$cut_id', status_id = 1, user_id = '$user_id', list_id = '$list_id'");
             $db->execQuery();
 
+            $cutGlassId = $db->getLastId();
+
             $db->setQuery("UPDATE warehouse SET qty = qty-1 WHERE id = '$list_id'");
             $db->execQuery();
 
@@ -799,6 +816,7 @@ switch ($act){
             }
 
             $data['status'] = 'OK';
+            $data['cut_id'] = $cutGlassId;
         }
         else{
             $data['error'] = 'ერთერთი ან რომელიმე მინა უკვე მზადების პროცესშია, თქვენ ვერ დაიწყებთ ჭრის პროცესს';
@@ -2314,6 +2332,9 @@ switch ($act){
                     elseif($columns[$j] == "stat_path_or"){
                         $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 230);
                     }
+                    elseif($columns[$j] == "dasaxeleba"){
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 100);
+                    }
                     elseif($columns[$j] == "proccess2"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 300);
@@ -2676,6 +2697,7 @@ switch ($act){
 
         $db->setQuery(" SELECT  orders_product.id,
         products.name,
+        CONCAT('<span glass-id=\"',products_glasses.id,'\" prod-id=\"',orders_product.id,'\" class=\"change_damk\"><b>',orders_product.add_info,'</b></span>'),
         GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, '(',glass_manuf.name,') <span glass-id=\"',products_glasses.id,'\" prod-id=\"',orders_product.id,'\" class=\"change_sizes\"><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b></span> მმ ',glass_colors.name,' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span> ', IF((SELECT COUNT(*) FROM glasses_paths WHERE actived = 1 AND glass_id = products_glasses.id AND status_id IN (1,2,4,5,6)) = 0,'<span class=\"status_finished\">დასრულებული</span>',CASE
                             WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1  WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id)),'ჭრა')
                             
@@ -3721,6 +3743,26 @@ function getAtxod($id){
 
 
     return $result['result'][0];
+}
+function change_damk($res = '', $prod_id){
+    $data = '   <fieldset class="fieldset">
+                    <legend>ინფორმაცია</legend>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>დამკვეთი</label>
+                                <input value="'.$res['add_info'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="add_info_new" class="idle" autocomplete="off">
+                            </div>
+                            
+                        </div>
+                    </legend>
+                </fieldset>
+
+                <input type="hidden" id="prod_id_new" value="'.$prod_id.'">
+                
+                
+                ';
+
+    return $data;
 }
 function change_sizes($res = '', $prod_id){
     $data = '   <fieldset class="fieldset">

@@ -838,6 +838,29 @@
 					$(".element_in_list").remove();
 					$("#no_list").css('display', 'block');
 
+					var copyCount = prompt("თუ გსურთ ლისტის კოპირება შეიყვანეთ დასაკოპირებელი ლისტების რაოდენობა");
+					if (copyCount != '' && copyCount > 0) {
+						let id_arr = [];
+						id_arr[0] = data.cut_id;
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "copy_cut",
+								ids: id_arr,
+								limit: copyCount
+							},
+							dataType: "json",
+							success: function(data) {
+								if(typeof data.error != 'undefined'){
+									alert(data.error);
+								}
+
+								$("#filter").click();
+								
+							}
+						});
+					}
                 }else{
                     alert(data.error)
                 }

@@ -260,11 +260,11 @@
 			cursor: pointer;
 		}
 
-		.change_sizes{
+		.change_sizes,.change_damk{
 			cursor: pointer;
 			transition: 0.5s ease;
 		}
-		.change_sizes:hover{
+		.change_sizes:hover,.change_damk:hover{
 			font-size: 18px;
 		}
 	</style>
@@ -430,6 +430,7 @@
 
 	<div title="პროცესის ფასი" id="proc_start_page"></div>
 	<div title="ზომების ცვლილება" id="change_sizes"></div>
+	<div title="დამკვეთის ცვლილება" id="change_damk"></div>
 	<div title="ჭრა!!!" id="get_cut_page"></div>
 		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
 	</div>
@@ -531,9 +532,9 @@
 				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture_prod:string", "act_product:string"];
-				var columnGeoNames = ["ID", "დასახელება", "მინები", "სულ კვ.მ", "ქმედება"];
+				var columnsCount = 6;
+				var columnsSQL = ["id2:string", "name_product:string", "dasaxeleba:string", "glass_count:string", "picture_prod:string", "act_product:string"];
+				var columnGeoNames = ["ID", "პროდუქტი", "დამკვეთი", "მინები", "სულ კვ.მ", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1926,7 +1927,56 @@
 				}
 			});
 
+			$(document).on('click', '.change_damk', function(){
+				var prod_id = $(this).attr('prod-id');
 
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "change_damk",
+						prod_id: prod_id,
+						
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#change_damk').html(data.page);
+
+						$("#change_damk").dialog({
+							resizable: false,
+							height: 250,
+							width: 400,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									$.ajax({
+										url: "server-side/writes.action.php",
+										type: "POST",
+										data: {
+											act: "change_damk_save",
+											prod_id: prod_id,
+											damkveti: $("#add_info_new").val()
+											
+										},
+										dataType: "json",
+										success: function(data) {
+											$("#product_div").data("kendoGrid").dataSource.read();
+											$('#change_damk').dialog("close");
+										}
+									});
+									
+								},
+								'დახურვა': function() {
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
+								}
+							}
+						});
+					}
+				});
+			});
 			$(document).on('click', '.change_sizes', function(){
 				var prod_id = $(this).attr('prod-id');
 				var glass_id = $(this).attr('glass-id');
