@@ -260,11 +260,11 @@
 			cursor: pointer;
 		}
 
-		.change_sizes{
+		.change_sizes,.change_damk{
 			cursor: pointer;
 			transition: 0.5s ease;
 		}
-		.change_sizes:hover{
+		.change_sizes:hover,.change_damk:hover{
 			font-size: 18px;
 		}
 	</style>
@@ -430,6 +430,7 @@
 
 	<div title="პროცესის ფასი" id="proc_start_page"></div>
 	<div title="ზომების ცვლილება" id="change_sizes"></div>
+	<div title="დამკვეთის ცვლილება" id="change_damk"></div>
 	<div title="ჭრა!!!" id="get_cut_page"></div>
 		<!-- <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p> -->
 	</div>
@@ -514,7 +515,7 @@
 				var itemPerPage = 100;
 				var columnsCount = 13;
 				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "sum_sqrm:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string", "gacmin:string"];
-				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დასახელება", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი", "გაც.მინები"];
+				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დამკვეთი", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი", "გაც.მინები"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -532,9 +533,9 @@
 				var actions = '<div id="new_product">დამატება</div><div id="copy_product">კოპირება</div><div id="del_product"> წაშლა</div>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 5;
-				var columnsSQL = ["id2:string", "name_product:string", "glass_count:string", "picture_prod:string", "act_product:string"];
-				var columnGeoNames = ["ID", "დასახელება", "მინების რ-ბა", "სულ კვ.მ", "ქმედება"];
+				var columnsCount = 6;
+				var columnsSQL = ["id2:string", "name_product:string", "dasaxeleba:string", "glass_count:string", "picture_prod:string", "act_product:string"];
+				var columnGeoNames = ["ID", "პროდუქტი", "დამკვეთი", "მინები", "სულ კვ.მ", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -722,7 +723,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user").chosen();
+						$("#resp_user,#clients").chosen();
 						$("#order_date,#datetime_finish").datetimepicker({
 							dateFormat: "yy-mm-dd",
 							timeFormat: "HH:mm:ss"
@@ -746,7 +747,7 @@
 						$("#get_edit_page").dialog({
 							resizable: false,
 							height: "auto",
-							width: 1200,
+							width: 1400,
 							modal: true,
 							position: "top",
 							buttons: {
@@ -1054,7 +1055,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user").chosen();
+						$("#resp_user,#clients").chosen();
 						$("#order_date,#datetime_finish").datetimepicker({
 							dateFormat: "yy-mm-dd",
 							timeFormat: "HH:mm:ss"
@@ -1084,7 +1085,7 @@
 						$("#get_edit_page").dialog({
 							resizable: false,
 							height: "auto",
-							width: 1200,
+							width: 1400,
 							modal: true,
 							position: "top",
 							buttons: {
@@ -1367,6 +1368,7 @@
 					ready_to_save++;
 					alert("შეიყვანეთ სისქე");
 				}
+
 				if(ready_to_save == 0) {
 					$.ajax({
 						url: "server-side/writes.action.php",
@@ -1381,7 +1383,7 @@
 								$('#get_glass_page').dialog("close");
 							}
 							$("#glasses_div").data("kendoGrid").dataSource.read();
-							$('#get_glass_page').dialog("close");
+							
 						}
 					});
 				}
@@ -1926,7 +1928,56 @@
 				}
 			});
 
+			$(document).on('click', '.change_damk', function(){
+				var prod_id = $(this).attr('prod-id');
 
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "change_damk",
+						prod_id: prod_id,
+						
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#change_damk').html(data.page);
+
+						$("#change_damk").dialog({
+							resizable: false,
+							height: 250,
+							width: 400,
+							modal: true,
+							buttons: {
+								"შენახვა": function() {
+									$.ajax({
+										url: "server-side/writes.action.php",
+										type: "POST",
+										data: {
+											act: "change_damk_save",
+											prod_id: prod_id,
+											damkveti: $("#add_info_new").val()
+											
+										},
+										dataType: "json",
+										success: function(data) {
+											$("#product_div").data("kendoGrid").dataSource.read();
+											$('#change_damk').dialog("close");
+										}
+									});
+									
+								},
+								'დახურვა': function() {
+									if(confirm("ნამდვილად გსურთ დახურვა?")){
+										$(this).dialog("close");
+									}
+								}
+							}
+						});
+					}
+				});
+			});
 			$(document).on('click', '.change_sizes', function(){
 				var prod_id = $(this).attr('prod-id');
 				var glass_id = $(this).attr('glass-id');
@@ -1981,6 +2032,26 @@
 					}
 				});
 			});
+			$(document).on('change', '#clients', function(){
+				var client_id = $(this).val();
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: "act=get_client&id="+client_id,
+					dataType: "json",
+					success: function(data){
+						$("#clients").val(0);
+						$('#clients').trigger('chosen:updated');
+
+
+						$("#client_name").val(data.client_name);
+						$("#client_pid").val(data.client_pid);
+						$("#client_phone").val(data.client_phone);
+						$("#client_addr").val(data.client_addr);
+					}
+				})
+			})
 			</script>
 </body>
 
