@@ -2695,7 +2695,7 @@ switch ($act){
 
         $order_id = $_REQUEST['order_id'];
 
-        echo(" SELECT  orders_product.id,
+        $db->setQuery(" SELECT  orders_product.id,
         products.name,
         CONCAT('<span glass-id=\"',products_glasses.id,'\" prod-id=\"',orders_product.id,'\" class=\"change_damk\"><b>',orders_product.add_info,'</b></span>'),
         GROUP_CONCAT(CONCAT('№-',products_glasses.id,' ',glass_options.name, '(',glass_manuf.name,') <span glass-id=\"',products_glasses.id,'\" prod-id=\"',orders_product.id,'\" class=\"change_sizes\"><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b></span> მმ ',glass_colors.name,' - <span class=\"status_',glass_status.id,'\">',glass_status.name,'</span> ', IF((SELECT COUNT(*) FROM glasses_paths WHERE actived = 1 AND glass_id = products_glasses.id AND status_id IN (1,2,4,5,6)) = 0,'<span class=\"status_finished\">დასრულებული</span>',CASE
