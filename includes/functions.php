@@ -29,6 +29,8 @@
 <link href="assets/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 <link href="assets/plugins/jquery-ui/chosen.css" rel="stylesheet" type="text/css"/>
 
+
+
 <noscript>
 		<p>To display this page you need a browser that supports JavaScript.</p>
 	</noscript>
@@ -159,4 +161,10 @@
 <script type="text/javascript" language="javascript" src="assets/js/kendoUI/kendo.main.class.js?v=1.8"></script>
 <script type="text/javascript" language="javascript" src="assets/js/kendoUI/pako_deflate.min.js"></script>  
 <script type="text/javascript" language="javascript" src="assets/js/timepicker.js"></script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="assets/plugins/fancybox/jquery.fancybox-1.3.4.js?v=1.2"></script>
+<link rel="stylesheet" href="assets/plugins/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 

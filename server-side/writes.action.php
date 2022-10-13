@@ -1701,7 +1701,11 @@ switch ($act){
         $client_pid     = $_REQUEST['client_pid'];
         $client_addr    = $_REQUEST['client_addr'];
         $order_date     = $_REQUEST['order_date'];
-        $datetime_finish     = $_REQUEST['datetime_finish'];
+
+        $all_date = explode(' - ', $order_date);
+        $order_date = $all_date[0];
+
+        $datetime_finish     = $all_date[1];
         $pay_total      = $_REQUEST['pay_total'] == '' ? 0 : $_REQUEST['pay_total'];
         $avansi         = $_REQUEST['avansi'] == '' ? 0 : $_REQUEST['avansi'];
         $avans_plus     = $_REQUEST['avans_plus'] == '' ? 0 : $_REQUEST['avans_plus'];
@@ -2501,7 +2505,7 @@ switch ($act){
                                     orders.avans_plus,
                                     orders.total - (orders.avansi+orders.avans_plus) AS left_to_pay,
                                     CONCAT('<span class=\"ostatus_',order_status.id,'\">',order_status.name,'</span>') AS status,
-                                    IF((SELECT COUNT(*) FROM given_glasses WHERE order_id = orders.id) > 0, CONCAT('<a target=\"_blank\" style=\"color:blue\" href=\"print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>'), '')
+                                    IF((SELECT COUNT(*) FROM given_glasses WHERE order_id = orders.id) > 0, CONCAT('<a  style=\"color:blue\" href=\"print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>'), '')
 
                                     
                                         
@@ -2579,7 +2583,7 @@ switch ($act){
                                         WHERE 	    cut_glass.actived = 1 $where
                                         
                                         GROUP BY    cut_glass.id
-                                        ORDER BY    glass_status.sort_n");
+                                        ORDER BY    DATEDIFF(orders.datetime_finish,CURDATE()), glass_status.sort_n");
 
             
         }
@@ -2593,7 +2597,7 @@ switch ($act){
                                     GROUP_CONCAT(DISTINCT CONCAT('№-',products_glasses.id,' ',glass_options.name, ' - <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', IFNULL(products_glasses.last_pyramid,''),' - ',gl_st.name) SEPARATOR ',<br>') AS glasses,
                                     orders_product.butili,
                                     orders_product.lameqs_int,
-                                    CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
+                                    CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
                                     CASE
                                         WHEN (SELECT COUNT(*) FROM glasses_paths AS st_2 WHERE IFNULL((SELECT status_id FROM glasses_paths AS st_3 WHERE st_3.actived = 1 AND st_3.sort_n = st_2.sort_n-1 AND st_3.glass_id = st_2.glass_id),3) = 3 AND st_2.status_id != 4 AND st_2.path_group_id = glasses_paths.path_group_id AND st_2.actived = 1 AND st_2.glass_id IN (SELECT id FROM products_glasses WHERE actived = 1 AND order_product_id=orders_product.id)) = orders_product.glass_count AND lists_to_cut.status_id = 3 THEN CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
                                         WHEN orders_product.status_id = 4 THEN CONCAT('<span class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3,'','make_me_red '),'status_',glass_status.id,'\">',glass_status.name,'</span>')
@@ -2626,7 +2630,7 @@ switch ($act){
                             WHERE   orders_product.actived = 1 AND products_glasses.actived = 1 AND orders.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND orders_product.product_id = '$pr_id'
                             
                             GROUP BY orders_product.id
-                            ORDER BY glass_status.sort_n");
+                            ORDER BY DATEDIFF(orders.datetime_finish,CURDATE()), glass_status.sort_n");
         }
         else{
             $db->setQuery(" SELECT * FROM (SELECT	products_glasses.id,
@@ -2636,7 +2640,7 @@ switch ($act){
                                     glass_colors.name AS color,
                                     CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3,'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ') AS param,
 
-                                    CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
+                                    CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
                                     CONCAT('ნახვრეტი: 4, ჭრის რაოდენობა:5'),
                                     products_glasses.last_pyramid,
                                     
@@ -2665,7 +2669,8 @@ switch ($act){
                                     IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
                                     WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 ORDER BY sort_n LIMIT 1) != glasses_paths.path_group_id, 3,glass_status.sort_n)
                                         ELSE glass_status.sort_n
-                                    END,3) AS sort_n
+                                    END,3) AS sort_n,
+                                    DATEDIFF(orders.datetime_finish,CURDATE()) AS deadline
                                     
                                     
                             FROM 		products_glasses
@@ -2682,7 +2687,7 @@ switch ($act){
 
                             GROUP BY products_glasses.id
                             ORDER BY glasses_paths.status_id ASC) AS ttt
-                            ORDER BY ttt.sort_n");
+                            ORDER BY ttt.deadline, ttt.sort_n");
         }
         
         $result = $db->getKendoList($columnCount, $cols);
@@ -2702,7 +2707,7 @@ switch ($act){
                             WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1  WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id)),'ჭრა')
                             
                             ELSE IF(products_glasses.go_to_cut != 1,IFNULL(IFNULL((SELECT name FROM groups WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM groups WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM groups WHERE id = lists_to_cut.status_id)), '')
-                        END), ' ', IF(products_glasses.new_id != 0, CONCAT('NEW ID: <b>',products_glasses.new_id,'</b>'), ''), ' ', CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a style=\"color:blue;\" target=\"_blank\" href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>')))) SEPARATOR ',<br>') AS glasses,
+                        END), ' ', IF(products_glasses.new_id != 0, CONCAT('NEW ID: <b>',products_glasses.new_id,'</b>'), ''), ' ', CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>')))) SEPARATOR ',<br>') AS glasses,
         (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3)),
         CONCAT('<div prod-id=\"',orders_product.id,'\" class=\"copy_product\">კოპირება</div>') AS detailed
 
@@ -3418,6 +3423,10 @@ function getPage($id, $res = ''){
         $res['user_id'] = $user_id;
     }
 
+    $order_date = '';
+    if($res['datetime_finish'] != ''){
+        $order_date = $res['datetime'].' - '.$res['datetime_finish'];
+    }
     $data .= '
 
     
@@ -3463,18 +3472,15 @@ function getPage($id, $res = ''){
                 <input value="'.$res['client_addr'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_addr" class="idle" autocomplete="off">
             </div>
             
-            <div class="col-sm-12">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
-            <div class="col-sm-2">
+            <div class="col-sm-12">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
+            <div class="col-sm-4">
                 <label>შეკვეთის თარიღი</label>
-                <input value="'.$res['datetime'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="order_date" class="idle" autocomplete="off">
-            </div>
-            <div class="col-sm-2">
-                <label>დასრულების თარიღი</label>
-                <input value="'.$res['datetime_finish'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="datetime_finish" class="idle" autocomplete="off">
-            </div>
+                <input value="'.$order_date.'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="order_date" class="idle" autocomplete="off">
+            </div>';
             
+            $left_money = $res['total'] - ($res['avansi'] + $res['avans_plus']);
             
-            <div class="col-sm-2" '.$cexis_ufrosi.'>
+            $data .= '<div class="col-sm-2" '.$cexis_ufrosi.'>
                 <label>სულ გადასახდელი</label>
                 <input value="'.$res['total'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" step=".01" id="pay_total" class="idle" autocomplete="off">
             </div>
@@ -3486,7 +3492,11 @@ function getPage($id, $res = ''){
                 <label>დამატებული თანხა</label>
                 <input value="'.$res['avans_plus'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" step=".01" id="avans_plus" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-12">---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
+            <div class="col-sm-2" '.$cexis_ufrosi.'>
+                <label>დარჩენილი თანხა</label>
+                <input value="'.$left_money.'" data-nec="0" style="height: 18px; width: 95%;" type="number" step=".01" id="avans_plus" class="idle" autocomplete="off" disabled>
+            </div>
+            <div class="col-sm-12">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div class="col-sm-12">
                 <label>პროდუქცია | მინაპაკეტი: <b id="minapaket_cc">0</b> | ლამექსი: <b id="lameqs_cc">0</b> | დუშკაბინა: <b id="dush_cc">0</b> | მინა: <b id="mina_cc">0</b></label>
                 <div id="product_div"></div>

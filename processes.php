@@ -1111,7 +1111,7 @@ $proc_data = $db->getResultArray()['result'][0];
 						echo 'setInterval(function () {$("#main_div").data("kendoGrid").dataSource.read();}, 15000);';
 					}
 				?>
-
+				
 $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#selected_glass_status,#selected_glass_manuf_id,#selected_glass_sizes,#selected_glass_client").chosen();
 				
 				
@@ -1137,6 +1137,7 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				kendo.loadKendoUI(aJaxURL, 'get_list_proccess', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
 				setTimeout(function(){
 					$( ".k-input-inner" ).eq(1).focus()
+					$(".f_img").fancybox();
 				},1000)
 			}
 
