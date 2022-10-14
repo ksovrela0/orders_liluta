@@ -2583,7 +2583,7 @@ switch ($act){
                                         WHERE 	    cut_glass.actived = 1 $where
                                         
                                         GROUP BY    cut_glass.id
-                                        ORDER BY    DATEDIFF(orders.datetime_finish,CURDATE()), glass_status.sort_n");
+                                        ORDER BY    glass_status.sort_n, DATEDIFF(orders.datetime_finish,CURDATE())");
 
             
         }
@@ -2630,7 +2630,7 @@ switch ($act){
                             WHERE   orders_product.actived = 1 AND products_glasses.actived = 1 AND orders.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND orders_product.product_id = '$pr_id'
                             
                             GROUP BY orders_product.id
-                            ORDER BY DATEDIFF(orders.datetime_finish,CURDATE()), glass_status.sort_n");
+                            ORDER BY glass_status.sort_n, DATEDIFF(orders.datetime_finish,CURDATE())");
         }
         else{
             $db->setQuery(" SELECT * FROM (SELECT	products_glasses.id,
@@ -2687,7 +2687,7 @@ switch ($act){
 
                             GROUP BY products_glasses.id
                             ORDER BY glasses_paths.status_id ASC) AS ttt
-                            ORDER BY ttt.deadline, ttt.sort_n");
+                            ORDER BY ttt.sort_n, ttt.deadline ");
         }
         
         $result = $db->getKendoList($columnCount, $cols);
