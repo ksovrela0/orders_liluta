@@ -724,9 +724,11 @@
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
 						$("#resp_user,#clients").chosen();
-						$("#order_date,#datetime_finish").datetimepicker({
-							dateFormat: "yy-mm-dd",
-							timeFormat: "HH:mm:ss"
+						$("#order_date").daterangepicker({
+							timePicker: true,
+							locale: {
+								format: 'YYYY-MM-DD HH:mm:ss'
+							}
 						});
 						/* $(document).on('click', '#sex_set label', function() {
 							var sex_id = $(this).prev().val();
@@ -1056,9 +1058,11 @@
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
 						$("#resp_user,#clients").chosen();
-						$("#order_date,#datetime_finish").datetimepicker({
-							dateFormat: "yy-mm-dd",
-							timeFormat: "HH:mm:ss"
+						$("#order_date").daterangepicker({
+							timePicker: true,
+							locale: {
+								format: 'YYYY-MM-DD HH:mm:ss'
+							}
 						});
 						var kendo = new kendoUI();
 						/* var sex_id = $("input[name='sex_id']:checked").val();
@@ -1269,8 +1273,6 @@
 				params.client_phone = $("#client_phone").val();
 				params.client_addr = $("#client_addr").val();
 				params.order_date = $("#order_date").val();
-				
-				params.datetime_finish = $("#datetime_finish").val();
 				params.pay_total = $("#pay_total").val();
 				params.avansi = $("#avansi").val();
 				params.avans_plus = $("#avans_plus").val();
