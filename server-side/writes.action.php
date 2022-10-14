@@ -2504,7 +2504,7 @@ switch ($act){
                                     orders.avansi,
                                     orders.avans_plus,
                                     orders.total - (orders.avansi+orders.avans_plus) AS left_to_pay,
-                                    CONCAT('<span class=\"ostatus_',order_status.id,'\">',order_status.name,'</span>') AS status,
+                                    CONCAT('<span class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR order_status.id IN (4),'','make_me_red ')ostatus_',order_status.id,'\">',order_status.name,'</span>') AS status,
                                     IF((SELECT COUNT(*) FROM given_glasses WHERE order_id = orders.id) > 0, CONCAT('<a  style=\"color:blue\" href=\"print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>'), '')
 
                                     
