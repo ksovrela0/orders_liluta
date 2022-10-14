@@ -167,7 +167,7 @@ class kendoUI{
 					total_have_to_pay += parseFloat($(x).html());
 					$("#main_div .k-filter-row th:nth-child(11)").html(total_have_to_pay)
 				});
-
+				$(".f_img").fancybox();
 			}
 		}
 
