@@ -2512,7 +2512,7 @@ switch ($act){
                             FROM 	orders
                             JOIN	order_status ON order_status.id = orders.status_id
                             WHERE 	orders.actived = 1 $mine
-                            ORDER BY orders.id DESC");
+                            ORDER BY IF(DATEDIFF(orders.datetime_finish,CURDATE()),orders.id DESC");
 
 
 
