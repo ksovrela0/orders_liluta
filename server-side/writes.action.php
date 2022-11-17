@@ -3502,7 +3502,7 @@ function getPage($id, $res = ''){
             </div>
             <div class="col-sm-12">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div class="col-sm-12">
-                <label>პროდუქცია | მინაპაკეტი: <b id="minapaket_cc">0</b> | ლამექსი: <b id="lameqs_cc">0</b> | დუშკაბინა: <b id="dush_cc">0</b> | მინა: <b id="mina_cc">0</b></label>';
+                <label>პროდუქცია | მინაპაკეტი: <b id="minapaket_cc">0</b> | ლამექსი: <b id="lameqs_cc">0</b> | დუშკაბინა: <b id="dush_cc">0</b> | მინა: <b id="mina_cc">0</b></label><br>';
 
                 $db->setQuery("SELECT CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი</span>') AS glasses,
 
