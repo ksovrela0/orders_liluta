@@ -3520,7 +3520,7 @@ function getPage($id, $res = ''){
                                 
                                 
                                 WHERE   products_glasses.actived = 1 AND products_glasses.order_id = '$id'
-                                GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, IF(glasses_paths.id IS NULL,0,1)
+                                GROUP BY  products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, IF(glasses_paths.id IS NULL,0,1)
                                 ORDER BY products_glasses.id");
                 $combined = $db->getResultArray();
 
