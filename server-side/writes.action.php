@@ -3504,10 +3504,10 @@ function getPage($id, $res = ''){
             <div class="col-sm-12">
                 <label>პროდუქცია | მინაპაკეტი: <b id="minapaket_cc">0</b> | ლამექსი: <b id="lameqs_cc">0</b> | დუშკაბინა: <b id="dush_cc">0</b> | მინა: <b id="mina_cc">0</b></label><br>';
 
-                $db->setQuery("SELECT CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი</span>') AS glasses,
+                $db->setQuery("SELECT CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი</span>') AS glasses,
 
 
-                                        ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2)*COUNT(DISTINCT products_glasses.id) AS kvdrt
+                                        ROUND(SUM((products_glasses.glass_width * products_glasses.glass_height))/1000000,2) AS kvdrt
                                                                 
                                 FROM    products_glasses
                                 JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
@@ -3519,9 +3519,9 @@ function getPage($id, $res = ''){
                                 LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1 AND glasses_paths.path_group_id = 5
                                 
                                 
-                                WHERE   products_glasses.actived = 1 AND products_glasses.order_id = '$id'
-                                GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, IF(glasses_paths.id IS NULL,0,1)
-                                ORDER BY products_glasses.id");
+                                WHERE   products_glasses.actived = 1 AND products_glasses.order_id = '$id' AND glass_status.id IN (1,2,3,6)
+                                GROUP BY products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, IF(glasses_paths.id IS NULL,0,1)
+                                ORDER BY IF(glasses_paths.id IS NULL,0,1)");
                 $combined = $db->getResultArray();
 
                 foreach($combined['result'] AS $comb){
