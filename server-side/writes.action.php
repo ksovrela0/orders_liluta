@@ -3502,9 +3502,9 @@ function getPage($id, $res = ''){
             </div>
             <div class="col-sm-12">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</div>
             <div class="col-sm-12">
-                <label>პროდუქცია | მინაპაკეტი: <b id="minapaket_cc">0</b> | ლამექსი: <b id="lameqs_cc">0</b> | დუშკაბინა: <b id="dush_cc">0</b> | მინა: <b id="mina_cc">0</b></label><br>';
+                <label>პროდუქცია | მინაპაკეტი: <b id="minapaket_cc">0</b> | ლამექსი: <b id="lameqs_cc">0</b> | დუშკაბინა: <b id="dush_cc">0</b> | მინა: <b id="mina_cc">0</b></label><br><b>მინაპაკეტები:</b><br>';
 
-                $db->setQuery("SELECT CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი</span>') AS glasses,
+                /* $db->setQuery("SELECT CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი</span>') AS glasses,
 
 
                                         ROUND(SUM((products_glasses.glass_width * products_glasses.glass_height))/1000000,2) AS kvdrt
@@ -3525,6 +3525,98 @@ function getPage($id, $res = ''){
                 $combined = $db->getResultArray();
 
                 foreach($combined['result'] AS $comb){
+                    $data .= $comb['glasses'].': <b>'.$comb['kvdrt'].'</b> კვ.მ<br>';
+                } */
+
+                $db->setQuery("SELECT *,
+                                            COUNT(gr_prods.id) AS cc, 
+                                            SUM(gr_prods.kvdrt) AS total_kvdrt
+                                FROM (SELECT  orders_product.id,
+                                        products.name,
+                                        GROUP_CONCAT(CONCAT(products_glasses.glass_option_id,'-',products_glasses.glass_color_id,'-',products_glasses.glass_type_id,'-',products_glasses.glass_manuf_id,'-',products_glasses.glass_width,'-',products_glasses.glass_height)) AS glasses,
+                                                
+                                                CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი:',GROUP_CONCAT(CONCAT(' <b>',products_glasses.glass_width,'</b> X <b>',products_glasses.glass_height,'</b>') SEPARATOR ' მმ,'),' მმ</span>') AS title,
+                                        
+                                        CASE
+                                            WHEN products.id IN (1,4) THEN (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3,6))
+                                            
+                                            ELSE (SELECT ROUND(MAX(glass_width*glass_height)/1000000,2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3,6))
+                                        END AS kvdrt
+                                
+                                FROM    orders_product
+                                JOIN    products ON products.id = orders_product.product_id
+                                JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
+                                JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
+                                JOIN	glass_status ON glass_status.id = products_glasses.status_id
+                                JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                                JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+                                LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1 AND glasses_paths.path_group_id = 5
+                                JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+                                LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+                                WHERE   orders_product.order_id = '$id' AND orders_product.actived = 1 AND products_glasses.actived = 1 AND orders_product.product_id = 2
+                                GROUP BY orders_product.id) AS gr_prods
+                                GROUP BY gr_prods.glasses");
+                $combined = $db->getResultArray();
+                foreach($combined['result'] AS $comb){
+                    $data .= $comb['title'].': <b>'.$comb['total_kvdrt'].'</b> კვ.მ<br>';
+                }
+                $data .='
+                <b>ლამექსები:</b><br>';
+                $db->setQuery("SELECT *,
+                                            COUNT(gr_prods.id) AS cc, 
+                                            SUM(gr_prods.kvdrt) AS total_kvdrt
+                                FROM (SELECT  orders_product.id,
+                                        products.name,
+                                        GROUP_CONCAT(CONCAT(products_glasses.glass_option_id,'-',products_glasses.glass_color_id,'-',products_glasses.glass_type_id,'-',products_glasses.glass_manuf_id,'-',products_glasses.glass_width,'-',products_glasses.glass_height)) AS glasses,
+                                                
+                                                CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი:',GROUP_CONCAT(CONCAT(' <b>',products_glasses.glass_width,'</b> X <b>',products_glasses.glass_height,'</b>') SEPARATOR ' მმ,'),' მმ</span>') AS title,
+                                        
+                                        CASE
+                                            WHEN products.id IN (1,4) THEN (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3,6))
+                                            
+                                            ELSE (SELECT ROUND(MAX(glass_width*glass_height)/1000000,2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3,6))
+                                        END AS kvdrt
+                                
+                                FROM    orders_product
+                                JOIN    products ON products.id = orders_product.product_id
+                                JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
+                                JOIN	glass_options ON glass_options.id = products_glasses.glass_option_id
+                                JOIN	glass_status ON glass_status.id = products_glasses.status_id
+                                JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                                JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+                                LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1 AND glasses_paths.path_group_id = 5
+                                JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+                                LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+                                WHERE   orders_product.order_id = '$id' AND orders_product.actived = 1 AND products_glasses.actived = 1 AND orders_product.product_id = 3
+                                GROUP BY orders_product.id) AS gr_prods
+                                GROUP BY gr_prods.glasses");
+                $combined2 = $db->getResultArray();
+                foreach($combined2['result'] AS $comb){
+                    $data .= $comb['title'].': <b>'.$comb['total_kvdrt'].'</b> კვ.მ<br>';
+                }
+                $data .='
+                <b>სხვა:</b><br>';
+                $db->setQuery("SELECT CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი</span>') AS glasses,
+
+
+                                        ROUND(SUM((products_glasses.glass_width * products_glasses.glass_height))/1000000,2) AS kvdrt
+                                                                
+                                FROM    products_glasses
+                                JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+                                JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+                                JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                                JOIN    glass_status ON glass_status.id = products_glasses.status_id
+                                JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+                                JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.product_id NOT IN (2,3)
+                                LEFT JOIN	glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.actived = 1 AND glasses_paths.path_group_id = 5
+                                
+                                
+                                WHERE   products_glasses.actived = 1 AND products_glasses.order_id = '$id' AND glass_status.id IN (1,2,3,6)
+                                GROUP BY products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, IF(glasses_paths.id IS NULL,0,1)
+                                ORDER BY IF(glasses_paths.id IS NULL,0,1)");
+                $combined3 = $db->getResultArray();
+
+                foreach($combined3['result'] AS $comb){
                     $data .= $comb['glasses'].': <b>'.$comb['kvdrt'].'</b> კვ.მ<br>';
                 }
                 $data .='<div id="product_div"></div>
