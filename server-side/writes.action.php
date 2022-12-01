@@ -3530,12 +3530,13 @@ function getPage($id, $res = ''){
 
                 $db->setQuery("SELECT *,
                                             COUNT(gr_prods.id) AS cc, 
-                                            SUM(gr_prods.kvdrt) AS total_kvdrt
+                                            SUM(gr_prods.kvdrt) AS total_kvdrt,
+                                            REPLACE(gr_prods.title,':',CONCAT(' X ',COUNT(gr_prods.id),' ცალი:')) AS title2
                                 FROM (SELECT  orders_product.id,
                                         products.name,
                                         GROUP_CONCAT(CONCAT(products_glasses.glass_option_id,'-',products_glasses.glass_color_id,'-',products_glasses.glass_type_id,'-',products_glasses.glass_manuf_id,'-',products_glasses.glass_width,'-',products_glasses.glass_height)) AS glasses,
                                                 
-                                                CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),' X ',COUNT(DISTINCT products_glasses.id),' ცალი:',GROUP_CONCAT(CONCAT(' <b>',products_glasses.glass_width,'</b> X <b>',products_glasses.glass_height,'</b>') SEPARATOR ' მმ,'),' მმ</span>') AS title,
+                                                CONCAT('<span>',glass_options.name, '(',glass_manuf.name,') ', glass_type.name, ' ', glass_colors.name,IF(glasses_paths.id IS NULL,'',' (ნაწრთობი) '),':',GROUP_CONCAT(CONCAT(' <b>',products_glasses.glass_width,'</b> X <b>',products_glasses.glass_height,'</b>') SEPARATOR ' მმ,'),' მმ</span>') AS title,
                                         
                                         CASE
                                             WHEN products.id IN (1,4) THEN (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_product_id = orders_product.id AND actived = 1 AND status_id IN (1,2,3,6))
@@ -3558,7 +3559,7 @@ function getPage($id, $res = ''){
                                 GROUP BY gr_prods.glasses");
                 $combined = $db->getResultArray();
                 foreach($combined['result'] AS $comb){
-                    $data .= $comb['title'].': <b>'.$comb['total_kvdrt'].'</b> კვ.მ<br>';
+                    $data .= $comb['title2'].' <b> '.$comb['total_kvdrt'].'</b> კვ.მ<br>';
                 }
                 $data .='
                 <b>ლამექსები:</b><br>';
