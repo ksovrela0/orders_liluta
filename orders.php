@@ -1369,6 +1369,8 @@
 				params.stand_glass = $("#stand_glass").is(':checked');
 				params.go_to_cut = $("#go_to_cut").is(':checked');
 
+				params.glass_count = $("#glass_count").val();
+
 
 				var ready_to_save = 0;
 
