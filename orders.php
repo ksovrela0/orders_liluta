@@ -272,6 +272,7 @@
 			color: white;
 		}
 		.k-master-row:has(.make_me_red):hover {
+			background-color:#7dc9ff;
 			color: black;
 		}
 	</style>
