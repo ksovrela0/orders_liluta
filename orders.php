@@ -268,7 +268,7 @@
 			font-size: 18px;
 		}
 		.k-master-row:has(.make_me_red) {
-			background-color: red;
+			background-color: #ff9090;
 			color: white;
 		}
 		.k-master-row:has(.make_me_red):hover {
