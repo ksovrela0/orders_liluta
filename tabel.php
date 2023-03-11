@@ -490,12 +490,12 @@
                     /** Face Log  ( in  , out  ) times */
                     $db->setQuery("
                         SELECT 
-                            tf.card_no AS UserID,
+                            tf.userID AS UserID,
                             p.tbl_schedule_type_id as schedule_type,
                             tst.name as schedule_name,
-                            DAY(tf.auth_date) as day, 
-                            DATE_FORMAT(MIN(tf.auth_datetime),'%H:%i') as real_in,
-                            DATE_FORMAT(MAX(tf.auth_datetime),'%H:%i') as real_out,
+                            DAY(tf.authDate) as day, 
+                            DATE_FORMAT(MIN(tf.authDateTime),'%H:%i') as real_in,
+                            DATE_FORMAT(MAX(tf.authDateTime),'%H:%i') as real_out,
                             tst.plan_in,
                             tst.plan_out,
                             tst.working_minutes,
@@ -504,7 +504,7 @@
                             tst.check_wm,
                             tst.latecome,
                             tst.earlygo,
-                            ROUND(TIMESTAMPDIFF(second, MIN(tf.auth_datetime) ,MAX(tf.auth_datetime)) / 60) as working_hours,
+                            ROUND(TIMESTAMPDIFF(second, MIN(tf.authDateTime) ,MAX(tf.authDateTime)) / 60) as working_hours,
                             tst.break
                             
                             
@@ -514,21 +514,21 @@
                         LEFT JOIN
                             users as p
                                 ON
-                                    p.id = tf.card_no 
+                                    p.id = tf.userID 
                         LEFT JOIN
                             tbl_schedule_types as tst
                                 ON
                                     tst.id = p.tbl_schedule_type_id AND tst.deleted = 1 
                         WHERE 
-                            tf.auth_date >= '".$filteredDate."-01'  AND 
-                            tf.auth_date <= '$lastDate' AND
-                            tf.card_no = $setUser__ID
+                            tf.authDate >= '".$filteredDate."-01'  AND 
+                            tf.authDate <= '$lastDate' AND
+                            tf.userID = $setUser__ID
                         GROUP BY
-                            tf.card_no ,
-                            tf.auth_date
+                            tf.userID ,
+                            tf.authDate
                         ORDER BY 
-                            tf.card_no DESC,
-                            tf.auth_date
+                            tf.userID DESC,
+                            tf.authDate
                     ");
 
                     $attendance = $db->getResultArray()['result'];

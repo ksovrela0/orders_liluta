@@ -261,7 +261,7 @@ $id =$_REQUEST['id'];
 
 GLOBAL $db;
 
-$db->setQuery("SELECT id,name FROM groups WHERE id = '$id'");
+$db->setQuery("SELECT id,name FROM `groups` WHERE id = '$id'");
 $proc_data = $db->getResultArray()['result'][0];
 ?>
 <body class="main-body main-sidebar-hide">

@@ -8,21 +8,21 @@ $user_id = $_SESSION['USERID'];
 
 switch ($act){
     case 'get_count':
-        $db->setQuery(" SELECT  groups.id, 
+        $db->setQuery(" SELECT  `groups`.id, 
                                 name,
-                                IF(groups.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
-																(SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 3 AND glasses_paths.actived = 1 AND DATE(finish_datetime) = CURDATE()))AS cc_finished,
-                                IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 2), (SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1)) AS cc_active,
+                                IF(`groups`.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
+																(SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = `groups`.id AND glasses_paths.status_id = 3 AND glasses_paths.actived = 1 AND DATE(finish_datetime) = CURDATE()))AS cc_finished,
+                                IF(`groups`.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 2), (SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = `groups`.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1)) AS cc_active,
                                 
                                 
-                                IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 1),
+                                IF(`groups`.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 1),
                                 
-                                (SELECT COUNT(*) FROM `glasses_paths` JOIN orders ON orders.id = (SELECT order_id FROM products_glasses WHERE id = glasses_paths.glass_id) WHERE glasses_paths.actived = 1 AND path_group_id = groups.id AND glasses_paths.status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), IF((SELECT COUNT(*) FROM products_glasses WHERE id = glasses_paths.glass_id AND go_to_cut = 1 AND products_glasses.actived = 1) > 0,1,3)) = 3)
+                                (SELECT COUNT(*) FROM `glasses_paths` JOIN orders ON orders.id = (SELECT order_id FROM products_glasses WHERE id = glasses_paths.glass_id) WHERE glasses_paths.actived = 1 AND path_group_id = `groups`.id AND glasses_paths.status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), IF((SELECT COUNT(*) FROM products_glasses WHERE id = glasses_paths.glass_id AND go_to_cut = 1 AND products_glasses.actived = 1) > 0,1,3)) = 3)
                                 ) AS cc_queue
-                        FROM    groups
+                        FROM    `groups`
 
 
-                        WHERE groups.actived = 1 AND groups.id NOT IN (1);");
+                        WHERE `groups`.actived = 1 AND `groups`.id NOT IN (1);");
         $processes = $db->getResultArray()['result'];
 
 

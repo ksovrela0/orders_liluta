@@ -44,9 +44,9 @@ switch ($act){
 if(isset($_SESSION['USERID'])){
 	$db->setQuery(" SELECT  users.id,
 							users.group_id,
-							groups.welcome_page
+							`groups`.welcome_page
 					FROM    users
-					JOIN 	groups ON groups.id = users.group_id
+					JOIN 	`groups` ON `groups`.id = users.group_id
 					WHERE   users.actived = 1 AND users.id = '$_SESSION[USERID]'");
 	$USERDATA = $db->getResultArray();
 	$USERGR = $USERDATA['result'][0]['group_id'];
