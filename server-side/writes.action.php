@@ -892,6 +892,12 @@ switch ($act){
             $apyr = $_REQUEST['apyr'];
             $cut_id = $_REQUEST['cut_id'];
 
+            $db->setQuery("	SELECT	work_group_users.id, work_group_users.is_boss, work_group_users.work_group_id
+                            FROM 	work_group_users
+                            JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                            WHERE 	work_group_users.user_id = '$user_id' AND work_group_users.finished_work = 0 AND work_group_users.actived = 1");
+            $checkGroup = $db->getResultArray()['result'][0];
+
             foreach($gpyr AS $gl){
                 $pyr_data = explode('-', $gl);
 
@@ -905,6 +911,41 @@ switch ($act){
 
                 $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyr_data[0]' WHERE id = '$glass_id'");
                 $db->execQuery();
+
+                
+
+                if($checkGroup['work_group_id'] != ''){
+                    $db->setQuery(" SELECT	work_group_users.id, work_group_users.is_boss, work_group_users.work_group_id, work_group_users.salary_percent,work_group_users.finished_work
+                                    FROM 	work_group_users
+                                    JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                                    WHERE   work_group_users.finished_work = 0 AND work_group_users.actived = 1 AND work_group_users.work_group_id = '$checkGroup[work_group_id]'");
+                    $groupUsers = $db->getResultArray();
+
+
+                    $db->setQuery(" SELECT	IFNULL(SUM(work_group_users.salary_percent),0) AS sum_salary
+                                    FROM 	work_group_users
+                                    JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                                    WHERE   work_group_users.finished_work = 1 AND work_group_users.actived = 1 AND work_group_users.work_group_id = '$checkGroup[work_group_id]'");
+                    $finishedUsersSalary = $db->getResultArray()['result'][0]['sum_salary'];
+
+
+
+                    $db->setQuery(" SELECT  (glass_width*glass_height)/1000000 AS sqm
+                                    FROM    products_glasses
+                                    WHERE   products_glasses.id = '$glass_id'");
+                    $glass_sqm = round($db->getResultArray()['result'][0]['sqm'],4);
+
+
+                    foreach($groupUsers['result'] AS $gUsers){
+                        //$percentToConpensate = round(($finishedUsersSalary * $gUsers['salary_percent'])/100,2);
+
+                        $percentToConpensate = round($finishedUsersSalary * ($gUsers['salary_percent']+($finishedUsersSalary/$groupUsers['count']))/100,2);
+
+                        $countedSqm = round(($glass_sqm * ($gUsers['salary_percent']+$percentToConpensate))/100,4);
+                        $db->setQuery("UPDATE work_group_users SET finished_sqm = finished_sqm + $countedSqm WHERE id = $gUsers[id]");
+                        $db->execQuery();
+                    }
+                }
 
                 
             }
@@ -989,6 +1030,8 @@ switch ($act){
             }
         }
         else{
+
+
             $db->setQuery("UPDATE glasses_paths SET pyramid = '$pyramid', user_id = '$user_id', status_id = 3, finish_datetime = NOW() WHERE id = '$path_id'");
             $db->execQuery();
 
@@ -1021,6 +1064,41 @@ switch ($act){
                     $db->setQuery(" UPDATE  orders 
                                     SET     status_id = 4
                                     WHERE   id = '$order_id'");
+                    $db->execQuery();
+                }
+            }
+
+            $db->setQuery("	SELECT	work_group_users.id, work_group_users.is_boss, work_group_users.work_group_id
+							FROM 	work_group_users
+							JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+							WHERE 	work_group_users.user_id = '$user_id' AND work_group_users.finished_work = 0 AND work_group_users.actived = 1");
+			$checkGroup = $db->getResultArray()['result'][0];
+
+            if($checkGroup['work_group_id'] != ''){
+                $db->setQuery(" SELECT	work_group_users.id, work_group_users.is_boss, work_group_users.work_group_id, work_group_users.salary_percent
+                                FROM 	work_group_users
+                                JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                                WHERE   work_group_users.finished_work = 0 AND work_group_users.actived = 1 AND work_group_users.work_group_id = '$checkGroup[work_group_id]'");
+                $groupUsers = $db->getResultArray();
+
+                $db->setQuery(" SELECT	IFNULL(SUM(work_group_users.salary_percent),0) AS sum_salary
+                                FROM 	work_group_users
+                                JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                                WHERE   work_group_users.finished_work = 1 AND work_group_users.actived = 1 AND work_group_users.work_group_id = '$checkGroup[work_group_id]'");
+                $finishedUsersSalary = $db->getResultArray()['result'][0]['sum_salary'];
+
+
+                $db->setQuery(" SELECT  (glass_width*glass_height)/1000000 AS sqm
+                                FROM    products_glasses
+                                WHERE   products_glasses.id = '$glass_id'");
+                $glass_sqm = round($db->getResultArray()['result'][0]['sqm'],4);
+
+
+                foreach($groupUsers['result'] AS $gUsers){
+                    $percentToConpensate = round($finishedUsersSalary * ($gUsers['salary_percent']+($finishedUsersSalary/$groupUsers['count']))/100,2);
+
+                    $countedSqm = round(($glass_sqm * ($gUsers['salary_percent']+$percentToConpensate))/100,4);
+                    $db->setQuery("UPDATE work_group_users SET finished_sqm = finished_sqm + $countedSqm WHERE id = $gUsers[id]");
                     $db->execQuery();
                 }
             }

@@ -9,7 +9,7 @@ function isMobile() {
 $act = $_REQUEST['act'];
 $page = $_REQUEST['page'];
 GLOBAL $db;
-GLOBAL $authResult;
+GLOBAL $authResult,$auth_error;
 $db = new dbClass();
 switch ($act){
     case 'auth':
@@ -27,9 +27,31 @@ switch ($act){
             $authResult = 'NO';
         }
         else{
-            $_SESSION['USERID'] = $USERID;
-            $_SESSION['GRPID'] = $USERGR;
-            $_SESSION['OBJID'] = $USEROBJ;
+			$db->setQuery("	SELECT	work_group_users.id, work_group_users.is_boss
+							FROM 	work_group_users
+							JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+							WHERE 	work_group_users.user_id = '$USERID' AND work_group_users.finished_work = 0 AND work_group_users.actived = 1");
+			$checkGroup = $db->getResultArray()['result'][0];
+
+			if($checkGroup['id'] == ''){
+				$_SESSION['USERID'] = $USERID;
+				$_SESSION['GRPID'] = $USERGR;
+				$_SESSION['OBJID'] = $USEROBJ;
+			}
+			else{
+				if($checkGroup['is_boss'] == 1){
+					$_SESSION['USERID'] = $USERID;
+					$_SESSION['GRPID'] = $USERGR;
+					$_SESSION['OBJID'] = $USEROBJ;
+
+					
+				}
+				else{
+					$auth_error = 'თქვენ დღეს იმყოფებით სამუშაო ჯგუფში, ვერ გაივლით ავტორიზაციას';
+				}
+			}
+			
+            
         }
         
     break;

@@ -316,6 +316,9 @@
 								if($authResult == 'NO'){
 									echo '<p style="color:red;">არასწორი ლოგინი ან პაროლი!</p>';
 								}
+								if($auth_error != ''){
+									echo '<p style="color:red;">'.$auth_error.'</p>';
+								}
 							?><!-- <p class="mb-1"><a href="">Forgot password?</a></p> -->
 						</div>
 					</div>
