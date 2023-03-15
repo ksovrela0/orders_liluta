@@ -1290,7 +1290,7 @@ switch ($act){
                             $cc = $db->getResultArray()['result'][0]['cc'];
                             
                             if($cc >= 30){
-                                $data['error'] = 'თქვენ არ გაქვთ 30-ზე მეტი კრონკის დაწყების უფლება';
+                                $data['error'] = 'თქვენ არ გაქვთ 30-ზე მეტი წრთობის დაწყების უფლება';
                                 echo json_encode($data);
                                 return;
                             }
@@ -1530,7 +1530,50 @@ switch ($act){
         $data = array('page' => getPage($id, getWriting($id)));
 
     break;
+    case 'finish_few':
+        $codes_arr = $_REQUEST['codes'];
+        $codes = implode(',',$codes_arr);
 
+        $data = array('page' => getFinishFewP($codes_arr));
+        break;
+    case 'start_few':
+        $codes_arr = $_REQUEST['codes'];
+        $codes = implode(',',$codes_arr);
+
+        $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE glass_id IN ($codes) AND path_group_id = 5");
+        $db->execQuery();
+
+        /* $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($codes)");
+        $db->execQuery(); */
+
+        foreach($codes_arr AS $code){
+            $db->setQuery("SELECT id FROM glasses_paths WHERE glass_id= '$code' AND path_group_id = 5 AND actived = 1");
+            $path_id_few = $db->getResultArray()['result'][0]['id'];
+
+            if($path_id_new != ''){
+                $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id_few', status_id = 2 WHERE id = '$code'");
+                $db->execQuery();
+            }
+            
+
+        }
+
+
+        $db->setQuery(" UPDATE orders 
+                        JOIN products_glasses ON products_glasses.id IN ($codes)
+                        JOIN orders_product ON orders_product.id = products_glasses.order_product_id
+                        SET orders.status_id = 2
+                        
+                        WHERE orders.id = orders_product.order_id");
+        $db->execQuery();
+        
+        break;
+    case 'start_few_page':
+        $data = array('page' => getStartFew());
+        break;
+    case 'finish_few_page':
+        $data = array('page' => getFinishFew());
+        break;
     case 'copy_writing':
 
         $id = $_REQUEST['writing_id'];
@@ -3967,6 +4010,71 @@ function change_damk($res = '', $prod_id){
                 </fieldset>
 
                 <input type="hidden" id="prod_id_new" value="'.$prod_id.'">
+                
+                
+                ';
+
+    return $data;
+}
+function getFinishFewP($glass_ids){
+    GLOBAL $db;
+
+    $data = '   <fieldset class="fieldset">
+                    <legend>პირამიდა</legend>
+                        <div class="row">';
+                            foreach($glass_ids AS $glass){
+                                $db->setQuery("SELECT `groups`.name FROM glasses_paths JOIN `groups` ON `groups`.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n ASC LIMIT 1");
+                                $next_proc = $db->getResultArray()['result'][0]['name'];
+                                if($next_proc == ''){
+                                    $db->setQuery("SELECT orders.client_name
+                                                    FROM orders
+                                                    JOIN products_glasses ON products_glasses.order_id = orders.id AND products_glasses.id = '$glass' AND products_glasses.actived = 1
+                                                    WHERE orders.actived = 1");
+                                    $order = $db->getResultArray()['result'][0]['client_name'];
+                                    $next_proc = 'დასრულებულია! დამკვეთი: '.$order;
+                                }
+                                $data .= '  <div class="col-sm-4" style="text-align: center;">
+                                                <label>მინა #'.$glass.'</label>
+                                                <br>
+                                                <span style="font-size: 13px;font-weight: bold;">შემდეგი პროცესი: '.$next_proc.'</span>
+                                                <input type="tel" min="1" class="glass_pyramids_m" data-id="'.$glass.'">
+                                            </div>';
+                            }
+                        $data .= '</div>
+                    </legend>
+                </fieldset>
+
+                ';
+
+                return $data;
+}
+function getFinishFew(){
+    $data = '   <fieldset class="fieldset">
+                    <legend>კოდები</legend>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>ჩასვით მინების კოდები</label>
+                                <textarea id="few_codes_f" style="width:100%; height:450px;"></textarea>
+                            </div>
+                            
+                        </div>
+                    </legend>
+                </fieldset>';
+
+    return $data;
+}
+function getStartFew(){
+    $data = '   <fieldset class="fieldset">
+                    <legend>კოდები</legend>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>ჩასვით მინების კოდები</label>
+                                <textarea id="few_codes" style="width:100%; height:450px;"></textarea>
+                            </div>
+                            
+                        </div>
+                    </legend>
+                </fieldset>
                 
                 
                 ';

@@ -252,6 +252,35 @@
 		.k-master-row:has(.make_me_red):hover {
 			color: black;
 		}
+
+
+		#start_few{
+			border: 1px solid black;
+			width: fit-content;
+			padding: 7px;
+			font-size: 18px;
+			color: #fff;
+			background-color: red;
+			cursor: pointer;
+			margin-left: 20px;
+			background: radial-gradient(#ff00fb 0.3%, #ff00fb 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
+
+		#finish_few{
+			border: 1px solid black;
+			width: fit-content;
+			padding: 7px;
+			font-size: 18px;
+			color: #fff;
+			background-color: red;
+			cursor: pointer;
+			margin-left: 20px;
+			background: radial-gradient(#ff0000 0.3%, #ff0000 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -297,7 +326,13 @@ $proc_data = $db->getResultArray()['result'][0];
 				<!-- Row -->
 				<div class="row">
 				<?php
-					if($proc_data['id'] == 6 || $proc_data['id'] == 7){
+					if($proc_data['id'] == 5){
+						echo '
+						<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>
+						<div id="finish_few" style="margin-bottom: 10px;">რამდენიმე მინის დასრულება</div>
+						<div id="main_div" style="width:97%;"></div>';
+					}
+					else if($proc_data['id'] == 6 || $proc_data['id'] == 7){
 						echo '<div id="main_div_2" style="width:97%;"></div>';
 					}
 					else if($proc_data['id'] == 2){
@@ -437,9 +472,216 @@ $proc_data = $db->getResultArray()['result'][0];
 	<div title="პროცესის დაწყება" id="proc_start_page"></div>
 	<div title="პროცესის დასრულება" id="proc_finish_page"></div>
 	<div title="პროცესის დახარვეზება" id="proc_error_page"></div>
+	<div title="რამდენიმე მინის დაწყება" id="start_few_page"></div>
+	<div title="რამდენიმე მინის დასრულება" id="finish_few_page"></div>
+	<div title="რამდენიმე მინის დასრულება" id="finish_few_glasses_page"></div>
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
+		$(document).on('click', '#finish_few', function(){
+			$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "finish_few_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#finish_few_page').html(data.page);
+							
+						$("#finish_few_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 400,
+							modal: true,
+							buttons: {
+								"მინების დასრულება": function() {
+									if (confirm("ნამდვილად გსურთ დაასრულოთ პროცესი?") == true) {
+										let codes = $("#few_codes_f").val().trim().split("\n").map(Number);
+										let codes_s = codes.join(',');
+										if($("#few_codes_f").val() == ''){
+											alert("გთხოვთ ჩასვათ ერთი კოდი მაინც");
+										}
+										else{
+											$.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												data: {
+													act:"finish_few",
+													"codes": codes
+												},
+												dataType: "json",
+												success: function(data) {
+												
+													$('#finish_few_page').dialog("close");
+													$('#finish_few_glasses_page').html(data.page);
+
+													$("#finish_few_glasses_page").dialog({
+														resizable: false,
+														height: "auto",
+														width: 800,
+														modal: true,
+														buttons: {
+															"მინების დასრულება": function() {
+																var ready_to_save = 0;
+																var url = new Object();
+																url.act = "finish_few_glass";
+																url['gpyr'] = [];
+																$(".glass_pyramids_m").each(function(i, x){
+																	if($(x).val() == ''){
+																		ready_to_save++;
+																	}
+																	else{
+																		url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+																	}
+																	
+																})
+
+																url.proc_id = 5;
+
+																if(ready_to_save > 0){
+																	alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
+																}
+																else{
+																	$.ajax({
+																		url: "server-side/writes.action.php",
+																		type: "POST",
+																		data: url,
+																		dataType: "json",
+																		success: function(data) {
+																			$.ajax({
+																				url: "ajax/print.ajax.php",
+																				type: "POST",
+																				data: "act=print&glass_id="+codes_s,
+																				dataType: "json",
+																				success: function (data) {
+																					if(typeof data != 'undefined'){
+																						var a = window.open('', '', 'height=500, width=500');
+																						a.document.write(data.page);
+																						a.document.close();
+																						setTimeout(function(){
+																							a.print();
+																						}, 1000)
+																						
+																					}
+																					else{
+																						alert('დაფიქსირდა შეცდომა');
+																					}
+																				}
+																			});
+																			$("#main_div").data("kendoGrid").dataSource.read();
+																			$('#finish_few_glasses_page').dialog("close");
+																		}
+																	});
+																}
+															}
+														}
+													});
+
+												}
+											});
+										}
+										
+										
+									}
+									/* var ready_to_save = 0;
+									var url = new Object();
+									url.act = "finish_glass_proc";
+									url['gpyr'] = [];
+									url['apyr'] = [];
+									$(".glass_pyramids_m").each(function(i, x){
+										if($(x).val() == ''){
+											ready_to_save++;
+										}
+										else{
+											url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+										}
+										
+									})
+
+									$(".atxod_pyramids_m").each(function(i, x){
+										if($(x).val() == ''){
+											ready_to_save++;
+										}
+										else{
+											url['apyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+										}
+									})
+
+									url.proc_id = get_proc_id;
+									url.cut_id = cut_id;
+
+									if(ready_to_save > 0){
+										alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
+									}
+									else{
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: url,
+											dataType: "json",
+											success: function(data) {
+												
+												$("#main_cut").data("kendoGrid").dataSource.read();
+												$('#proc_finish_page').dialog("close");
+											}
+										});
+									} */
+								}
+							}
+						});
+					}
+				});
+		})
+		$(document).on('click', '#start_few', function(){
+			$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "start_few_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#start_few_page').html(data.page);
+							
+						$("#start_few_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 400,
+							modal: true,
+							buttons: {
+								"დაწყება": function() {
+									if (confirm("ნამდვილად გსურთ დაიწყოთ პროცესი?") == true) {
+										let codes = $("#few_codes").val().trim().split("\n").map(Number);
+										if($("#few_codes").val() == ''){
+											alert("გთხოვთ ჩასვათ ერთი კოდი მაინც");
+										}
+										else{
+											$.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												data: {
+													act:"start_few",
+													"codes": codes
+												},
+												dataType: "json",
+												success: function(data) {
+													
+													$("#main_div").data("kendoGrid").dataSource.read();
+													$('#start_few_page').dialog("close");
+												}
+											});
+										}
+										
+										
+									}
+									
+								}
+							}
+						});
+					}
+				});
+		})
 		$(document).on('click', '.finish_proc', function(){
 			var id = $(this).attr('data-id');
 			var path_id = $(this).attr('path-id');
