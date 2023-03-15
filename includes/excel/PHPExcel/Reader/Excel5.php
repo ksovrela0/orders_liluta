@@ -2205,7 +2205,7 @@ class PHPExcel_Reader_Excel5 extends PHPExcel_Reader_Abstract implements PHPExce
                         break;
                 }
 
-                // offset:  9; size: 1; Flags used for attribute groups
+                // offset:  9; size: 1; Flags used for attribute `groups`
 
                 // offset: 10; size: 4; Cell border lines and background area
                 // bit: 3-0; mask: 0x0000000F; left style

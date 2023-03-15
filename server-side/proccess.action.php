@@ -115,11 +115,11 @@ switch ($act){
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
 
-            $db->setQuery(" SELECT  groups.id,
-                                    groups.name,
+            $db->setQuery(" SELECT  `groups`.id,
+                                    `groups`.name,
                                     default_price
-                            FROM    groups
-                            WHERE   groups.actived = 1 AND groups.id IN (3,5,6,7,8,9)");
+                            FROM    `groups`
+                            WHERE   `groups`.actived = 1 AND `groups`.id IN (3,5,6,7,8,9)");
 
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
@@ -143,7 +143,7 @@ switch ($act){
             $db->execQuery();
         }
         else{
-            $db->setQuery(" UPDATE  groups 
+            $db->setQuery(" UPDATE  `groups` 
                             SET     `default_price` = '$def_price'
                             WHERE   id = '$id'");
             $db->execQuery();
@@ -177,12 +177,12 @@ function getPage($res = ''){
 function getObject($id){
     GLOBAL $db;
 
-    $db->setQuery(" SELECT      groups.id,
-                                groups.default_price,
-                                groups.name
+    $db->setQuery(" SELECT      `groups`.id,
+                                `groups`.default_price,
+                                `groups`.name
 
-                    FROM        groups
-                    WHERE       groups.id = '$id'");
+                    FROM        `groups`
+                    WHERE       `groups`.id = '$id'");
     $result = $db->getResultArray();
 
     return $result['result'][0];

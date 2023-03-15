@@ -162,6 +162,47 @@
 		cursor: default!important;
 		padding: 0!important;
 	}
+
+	.finish_work{
+        border: 1px solid black;
+        width: fit-content;
+        padding: 7px;
+        font-size: 18px;
+        color: #fff;
+        background-color: red;
+        cursor: pointer;
+        background: radial-gradient(#ce1414 0.3%, #dd299d 90%);
+        border-radius: 15px;
+        box-shadow: 2px 1px black;
+    }
+
+	.finish_work_g{
+        border: 1px solid black;
+        width: fit-content;
+        padding: 7px;
+        font-size: 18px;
+        color: #fff;
+        background-color: red;
+        cursor: pointer;
+        background: radial-gradient(#ce1414 0.3%, #dd299d 90%);
+        border-radius: 15px;
+        box-shadow: 2px 1px black;
+		margin-right: 10px;
+		margin-top:22px;
+    }
+	.copy_g{
+        border: 1px solid black;
+        width: fit-content;
+        padding: 7px;
+        font-size: 18px;
+        color: #fff;
+        background-color: red;
+        cursor: pointer;
+        margin-top: 22px;
+        background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+        border-radius: 15px;
+        box-shadow: 2px 1px black;
+    }
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -302,6 +343,68 @@
         }
         </style>
 	<script>
+		$(document).on('click', '.copy_g', function(){
+
+			var ask = prompt("რამდენჯერ დაკოპირდეს ჯგუფი?");
+
+			if(ask > 0){
+				var data_id = [];
+				data_id[0] = $(this).attr('data-id');
+				$.ajax({
+					url: "server-side/work_groups.action.php",
+					type: "POST",
+					data: {
+						act: "copy",
+						type: "group",
+						id: data_id,
+						qty: ask
+					},
+					dataType: "json",
+					success: function(data) {
+						$("#work_groups").data("kendoGrid").dataSource.read();
+					}
+				});
+			}
+			
+
+		});
+		$(document).on('click','.finish_work',function(){
+			var ask = confirm("ნამდვილად გსურთ დასრულება?")
+			if (ask) {
+				let id = $(this).attr('data-id');
+				$.ajax({
+					url: "server-side/work_groups.action.php",
+					type: "POST",
+					data: {
+						act: "finish_user",
+						id: id
+					},
+					dataType: "json",
+					success: function(data) {
+						$("#work_group_users").data("kendoGrid").dataSource.read();
+					}
+				});
+			}
+		})
+
+		$(document).on('click','.finish_work_g',function(){
+			var ask = confirm("ნამდვილად გსურთ დასრულება?")
+			if (ask) {
+				let id = $(this).attr('data-id');
+				$.ajax({
+					url: "server-side/work_groups.action.php",
+					type: "POST",
+					data: {
+						act: "finish_group",
+						id: id
+					},
+					dataType: "json",
+					success: function(data) {
+						$("#work_groups").data("kendoGrid").dataSource.read();
+					}
+				});
+			}
+		})
 function GetDate(iname) {
         $("#" + iname).datepicker({
             changeMonth: true,
@@ -498,21 +601,23 @@ function GetDate(iname) {
 		var actions         = 	'<div class="btn btn-list"><a id="button_add_u" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash_u" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	5;
+		var columnsCount    =	6;
 		var columnsSQL      = 	[
 									"id2:string",
 									"name:string",
 
 									"is_boss:string",
 									"percent:string",
-                                    "finished:string"
+                                    "finished:string",
+									"actions:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
 									"სახელი",
 									"უფროსი?",
 									"წილი",
-                                    "სტატუსი"
+                                    "სტატუსი",
+									"ქმედება"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
@@ -536,7 +641,7 @@ function GetDate(iname) {
 		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	6;
+		var columnsCount    =	7;
 		var columnsSQL      = 	[
 									"id:string",
 									"name:string",
@@ -544,6 +649,7 @@ function GetDate(iname) {
                                     "group_w_date:string",
                                     "users_in:string",
                                     "status:string",
+									"actions:string"
 								];
 		var columnGeoNames  = 	[
 									"ID", 
@@ -552,6 +658,7 @@ function GetDate(iname) {
                                     "მუშაობის თარიღი",
                                     "წევრები",
                                     "სტატუსი",
+									"ქმედება"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0]; 

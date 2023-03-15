@@ -16,7 +16,7 @@ $user_gr = $_SESSION['GRPID'];
                     $where = '';
                 }
                 else{
-                    $where = "AND groups.id = '$user_gr'";
+                    $where = "AND `groups`.id = '$user_gr'";
                 }
                 $db->setQuery(" SELECT 		menu_detail.id,
                                             menu_detail.icon,
@@ -33,23 +33,23 @@ $user_gr = $_SESSION['GRPID'];
                     if($item[url] == '#'){
                         $menu_li .= '<li class="nav-label">'.$item[name].'</li>';
                         if($item['id'] == 15){
-                            $db->setQuery(" SELECT  groups.id, 
+                            $db->setQuery(" SELECT  `groups`.id, 
                                                             name,
-                                                            IF(groups.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
-																(SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 3 AND glasses_paths.actived = 1 AND DATE(finish_datetime) = CURDATE()))AS cc_finished,
-                                                            IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 2), (SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = groups.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1)) AS cc_active,
+                                                            IF(`groups`.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
+																(SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = `groups`.id AND glasses_paths.status_id = 3 AND glasses_paths.actived = 1 AND DATE(finish_datetime) = CURDATE()))AS cc_finished,
+                                                            IF(`groups`.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 2), (SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = `groups`.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1)) AS cc_active,
                                                             
                                                             
-                                                            IF(groups.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 1),
+                                                            IF(`groups`.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 1),
                                                             
-                                                            (SELECT COUNT(*) FROM `glasses_paths`  JOIN orders ON orders.id = (SELECT order_id FROM products_glasses WHERE id = glasses_paths.glass_id) WHERE glasses_paths.actived = 1 AND path_group_id = groups.id AND glasses_paths.status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1 LIMIT 1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), IF((SELECT COUNT(*) FROM products_glasses WHERE id = glasses_paths.glass_id AND go_to_cut = 1 AND products_glasses.actived = 1) > 0,1,3)) = 3)
+                                                            (SELECT COUNT(*) FROM `glasses_paths`  JOIN orders ON orders.id = (SELECT order_id FROM products_glasses WHERE id = glasses_paths.glass_id) WHERE glasses_paths.actived = 1 AND path_group_id = `groups`.id AND glasses_paths.status_id = 1 AND IFNULL((SELECT status_id FROM glasses_paths AS path WHERE path.actived = 1 AND path.glass_id = glasses_paths.glass_id AND path.sort_n = glasses_paths.sort_n-1 LIMIT 1), 3) = 3 AND IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = glasses_paths.glass_id AND actived = 1), IF((SELECT COUNT(*) FROM products_glasses WHERE id = glasses_paths.glass_id AND go_to_cut = 1 AND products_glasses.actived = 1) > 0,1,3)) = 3)
 								) AS cc_queue
-                                            FROM    groups
+                                            FROM    `groups`
                                             
                                             
-                                            WHERE groups.actived = 1 AND groups.id IN (2,3,4,5,6,7,8,9) $where
+                                            WHERE `groups`.actived = 1 AND `groups`.id IN (2,3,4,5,6,7,8,9) $where
                                             
-                                            GROUP BY groups.id");
+                                            GROUP BY `groups`.id");
                             $processes = $db->getResultArray()['result'];
                             if($user_gr == 13 || $user_gr == 12 || $user_gr == 1){
                                 $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=manage_cut"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_999">ჭრის მართვა <span style="color: red;">(0)</span></span></a> </li>';

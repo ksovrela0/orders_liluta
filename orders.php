@@ -268,12 +268,15 @@
 			font-size: 18px;
 		}
 		.k-master-row:has(.make_me_red) {
-			background-color: #ff9090;
-			color: white;
+			background-color: #d5d1eb;
+			color: #000;
 		}
 		.k-master-row:has(.make_me_red):hover {
-			background-color:#7dc9ff;
+			background-color:#96a2d6;
 			color: black;
+		}
+		.k-grid tbody tr:not(.k-detail-row).k-hover, .k-grid tbody tr:not(.k-detail-row).k-state-hover, .k-grid tbody tr:not(.k-detail-row):hover{
+			background-color:#96a2d6;
 		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->

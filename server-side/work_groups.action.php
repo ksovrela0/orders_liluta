@@ -150,6 +150,43 @@ switch ($act){
         //$data = '[{"gg":"sd","ads":"213123"}]';
         
     break;
+    case 'copy':
+        $id = $_REQUEST['id'];
+
+        $qty        = $_REQUEST['qty'] -1;
+
+        //foreach($product_id AS $productID){
+        $db->setQuery("SELECT * FROM work_group WHERE id = '$id[0]'");
+        $product = $db->getResultArray()['result'][0];
+
+        $db->setQuery("SELECT * FROM work_group_users WHERE work_group_id = '$id[0]' AND actived = 1");
+        $glasses = $db->getResultArray()['result'];
+
+        for($i = 0; $i<$qty; $i++){
+            $db->setQuery("INSERT INTO work_group SET   name = '$product[name]',
+                                                        proc_id = '$product[proc_id]',
+                                                        work_date = '$product[work_date]',
+                                                        sqm_price = '$product[sqm_price]',
+                                                        actived = '$product[actived]'");
+            $db->execQuery();
+
+            $newProductID = $db->getLastId();
+
+            foreach($glasses AS $glass){
+
+
+                $db->setQuery("INSERT INTO work_group_users SET work_group_id = '$newProductID',
+                                                            user_id = '$glass[user_id]',
+                                                            is_boss = '$glass[is_boss]',
+                                                            salary_percent = '$glass[salary_percent]',
+                                                            actived = '$glass[actived]'");
+                $db->execQuery();
+                
+                
+            }
+        }
+        //}
+        break;
     case 'get_list':
         $id          =      $_REQUEST['hidden'];
 		
@@ -161,7 +198,8 @@ switch ($act){
                                     `proc`.name,
                                     work_group.work_date,
                                     GROUP_CONCAT(CONCAT(users.firstname,' ',users.lastname,' - ', IF(work_group_users.is_boss = 1,'<b>უფროსი</b> - ',''),work_group_users.salary_percent, '%') SEPARATOR '<br>') AS work_group,
-                                    IF(work_group.finished_work = 0, '<b>აქტიური</b>', '<b>დასრულებული</b>')
+                                    IF(work_group.finished_work = 0, '<b>აქტიური</b>', '<b>დასრულებული</b>'),
+                                    CONCAT(IF(work_group.finished_work = 0, CONCAT('<div style=\"display:flex;\"><div class=\"finish_work_g\" data-id=\"',work_group.id,'\">დასრულება</div>'),''), '<div class=\"copy_g\" data-id=\"',work_group.id,'\">კოპირება</div></div>')
 
                             FROM    work_group
                             JOIN    `groups` AS `proc` ON `proc`.id = work_group.proc_id AND `proc`.actived = 1
@@ -190,7 +228,8 @@ switch ($act){
                                     CONCAT(users.firstname, ' ', users.lastname),
                                     IF(work_group_users.is_boss = 1,'<b>კი</b>','არა'),
                                     work_group_users.salary_percent,
-                                    if(work_group_users.finished_work = 0,'<b>აქტიური</b>','დასრულებული')
+                                    if(work_group_users.finished_work = 0,'<b>აქტიური</b>','დასრულებული'),
+                                    IF(work_group_users.finished_work = 0, CONCAT('<div class=\"finish_work\" data-id=\"',work_group_users.id,'\">დასრულება</div>'),'')
 
                             FROM work_group_users
                             JOIN users ON users.id = work_group_users.user_id
@@ -214,6 +253,18 @@ switch ($act){
         }
         $data = array('page' => getPage($id, getWorkGroup($id)));
     break;
+    case 'finish_group':
+        $id = $_REQUEST['id'];
+
+        $db->setQuery("UPDATE work_group SET finished_work = 1, finished_datetime = NOW() WHERE id = '$id'");
+        $db->execQuery();
+        break;
+    case 'finish_user':
+            $id = $_REQUEST['id'];
+
+            $db->setQuery("UPDATE work_group_users SET finished_work = 1, finished_datetime = NOW() WHERE id = '$id'");
+            $db->execQuery();
+        break;
     case 'get_work_user':
         $id = $_REQUEST['id'];
         $data = array('page' => getPageUser($id, getWorkUser($id)));
@@ -317,6 +368,10 @@ function getPageUser($id = '', $res = ''){
                 <label>წილი</label>
                 <input value="'.$res['salary_percent'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="w_user_percent" class="idle" autocomplete="off">
             </div>
+            <div class="col-sm-4">
+                <label>წილი</label>
+                <input value="'.$res['salary_percent'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="w_user_percent" class="idle" autocomplete="off">
+            </div>
 
             
         </div>
@@ -333,11 +388,11 @@ function getPage($id = '', $res = ''){
     <fieldset class="fieldset">
         <legend>ინფორმაცია</legend>
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label>დასახელება</label>
                 <input value="'.$res['name'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="work_group_name" class="idle" autocomplete="off">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label>პროცესი</label>
                 <select id="proc_id">
                     <option value="0">აირჩიეთ</option>
@@ -345,11 +400,14 @@ function getPage($id = '', $res = ''){
                 </select>
             </div>
             
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label>თარიღი</label>
                 <input value="'.$res['work_date'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="work_date" class="idle" autocomplete="off">
             </div>
-
+            <div class="col-sm-3">
+                <label>კვ. ფასი</label>
+                <input value="'.$res['sqm_price'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="sqm_price" class="idle" autocomplete="off">
+            </div>
             
         </div>
     </fieldset>
@@ -395,7 +453,7 @@ function getProc($id){
 
     $db->setQuery("SELECT   id,
                             name AS 'name'
-                    FROM    groups
+                    FROM    `groups`
                     WHERE   id NOT IN (1,10,11,12,13,14,15)");
 
     $cats = $db->getResultArray();
@@ -418,7 +476,8 @@ function getWorkGroup($id){
     $db->setQuery(" SELECT 	work_group.id,
                             work_group.name,
                             work_group.proc_id,
-                            work_group.work_date
+                            work_group.work_date,
+                            work_group.sqm_price
                         
                             
                     FROM 	work_group

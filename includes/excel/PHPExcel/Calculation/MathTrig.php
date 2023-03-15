@@ -157,7 +157,7 @@ class PHPExcel_Calculation_MathTrig
      * COMBIN
      *
      * Returns the number of combinations for a given number of items. Use COMBIN to
-     *        determine the total possible number of groups for a given number of items.
+     *        determine the total possible number of `groups` for a given number of items.
      *
      * Excel Function:
      *        COMBIN(numObjs,numInSet)

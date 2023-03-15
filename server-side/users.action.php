@@ -158,15 +158,15 @@ switch ($act){
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
         if($user_gr == 11){
-            $where = "AND groups.id NOT IN (1,10,11,12,13,14,15)";
+            $where = "AND `groups`.id NOT IN (1,10,11,12,13,14,15)";
         }
             $db->setQuery("SELECT users.id,
                                     CONCAT(users.firstname,' ', users.lastname),
                                     users.phone,
                                     users.pid,
-                                    groups.name
+                                    `groups`.name
                             FROM users
-                            JOIN groups ON groups.id = users.group_id $where
+                            JOIN `groups` ON `groups`.id = users.group_id $where
                             WHERE users.actived = 1");
 
         $result = $db->getKendoList($columnCount, $cols);
@@ -263,7 +263,7 @@ function get_cat_1($id){
     }
     $db->setQuery("SELECT   id,
                             name AS 'name'
-                    FROM    groups
+                    FROM    `groups`
                     WHERE   actived = 1 $where");
     $cats = $db->getResultArray();
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';

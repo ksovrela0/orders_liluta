@@ -2481,7 +2481,7 @@ class PHPExcel_Calculation_Engineering
 
     /**
      *    getConversionGroups
-     *    Returns a list of the different conversion groups for UOM conversions
+     *    Returns a list of the different conversion `groups` for UOM conversions
      *
      *    @return    array
      */
@@ -2497,7 +2497,7 @@ class PHPExcel_Calculation_Engineering
 
     /**
      *    getConversionGroupUnits
-     *    Returns an array of units of measure, for a specified conversion group, or for all groups
+     *    Returns an array of units of measure, for a specified conversion group, or for all `groups`
      *
      *    @param    string    $group    The group whose units of measure you want to retrieve
      *    @return    array

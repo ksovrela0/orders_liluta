@@ -150,7 +150,7 @@ switch ($act){
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
         if($user_gr == 11){
-            $where = "AND groups.id NOT IN (1,10,11,12,13,14,15)";
+            $where = "AND `groups`.id NOT IN (1,10,11,12,13,14,15)";
         }
             $db->setQuery("SELECT clients.id,
                                     clients.client_name,
@@ -243,7 +243,7 @@ function get_cat_1($id){
     }
     $db->setQuery("SELECT   id,
                             name AS 'name'
-                    FROM    groups
+                    FROM    `groups`
                     WHERE   actived = 1 $where");
     $cats = $db->getResultArray();
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
