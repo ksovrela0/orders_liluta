@@ -1530,6 +1530,97 @@ switch ($act){
         $data = array('page' => getPage($id, getWriting($id)));
 
     break;
+    case 'finish_few_glass':
+        $gpyr = $_REQUEST['gpyr'];
+        $proc_id = $_REQUEST['proc_id'];
+
+        $db->setQuery("	SELECT	work_group_users.id, work_group_users.is_boss, work_group_users.work_group_id
+                        FROM 	work_group_users
+                        JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                        WHERE 	work_group_users.user_id = '$user_id' AND work_group_users.finished_work = 0 AND work_group_users.actived = 1");
+        $checkGroup = $db->getResultArray()['result'][0];
+
+        foreach($gpyr AS $gl){
+
+
+            $pyr_data = explode('-', $gl);
+
+            $pyramid = $pyr_data[0];
+            $glass_id = $pyr_data[1];
+            $db->setQuery("UPDATE glasses_paths SET pyramid = '$pyramid', user_id = '$user_id', status_id = 3, finish_datetime = NOW() WHERE glass_id = '$glass_id' AND path_group_id = '$proc_id' AND actived = 1");
+            $db->execQuery();
+
+            $db->setQuery("UPDATE products_glasses SET last_pyramid = '$pyramid' WHERE id = '$glass_id'");
+            $db->execQuery();
+    
+            $db->setQuery(" SELECT  path_next.id AS n_path
+                            FROM    glasses_paths
+                            JOIN    glasses_paths AS path_next ON path_next.sort_n = glasses_paths.sort_n + 1 AND path_next.glass_id = glasses_paths.glass_id AND path_next.actived = 1
+                            WHERE   glasses_paths.glass_id = '$glass_id' AND glasses_paths.path_group_id = '$proc_id' AND glasses_paths.actived = 1
+                            
+                            LIMIT 1");
+            $next_proc = $db->getResultArray()['result'][0]['n_path'];
+    
+            if($next_proc == ''){
+                $db->setQuery("UPDATE products_glasses SET status_id = 3 WHERE id = '$glass_id'");
+                $db->execQuery();
+    
+                $db->setQuery(" SELECT  order_id
+                                FROM    products_glasses
+                                WHERE   products_glasses.id = '$glass_id'");
+                $order_id = $db->getResultArray()['result'][0]['order_id'];
+    
+                $db->setQuery(" SELECT  COUNT(*) AS cc
+                                FROM    products_glasses
+                                WHERE   order_id = '$order_id' AND products_glasses.actived = 1 AND status_id NOT IN (3,4,6)");
+                
+                $countNotCompleted = $db->getResultArray()['result'][0]['cc'];
+                if($countNotCompleted == 0){
+                    $db->setQuery(" UPDATE  orders 
+                                    SET     status_id = 4
+                                    WHERE   id = '$order_id'");
+                    $db->execQuery();
+                }
+            }
+
+            
+
+            if($checkGroup['work_group_id'] != ''){
+                $db->setQuery(" SELECT	work_group_users.id, work_group_users.is_boss, work_group_users.work_group_id, work_group_users.salary_percent,work_group_users.finished_work
+                                FROM 	work_group_users
+                                JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                                WHERE   work_group_users.finished_work = 0 AND work_group_users.actived = 1 AND work_group_users.work_group_id = '$checkGroup[work_group_id]'");
+                $groupUsers = $db->getResultArray();
+
+
+                $db->setQuery(" SELECT	IFNULL(SUM(work_group_users.salary_percent),0) AS sum_salary
+                                FROM 	work_group_users
+                                JOIN 	work_group ON work_group.id = work_group_users.work_group_id AND work_group.finished_work = 0 AND work_group.actived = 1 AND work_group.work_date = CURDATE()
+                                WHERE   work_group_users.finished_work = 1 AND work_group_users.actived = 1 AND work_group_users.work_group_id = '$checkGroup[work_group_id]'");
+                $finishedUsersSalary = $db->getResultArray()['result'][0]['sum_salary'];
+
+
+
+                $db->setQuery(" SELECT  (glass_width*glass_height)/1000000 AS sqm
+                                FROM    products_glasses
+                                WHERE   products_glasses.id = '$glass_id'");
+                $glass_sqm = round($db->getResultArray()['result'][0]['sqm'],4);
+
+
+                foreach($groupUsers['result'] AS $gUsers){
+                    //$percentToConpensate = round(($finishedUsersSalary * $gUsers['salary_percent'])/100,2);
+
+                    $percentToConpensate = round($finishedUsersSalary * ($gUsers['salary_percent']+($finishedUsersSalary/$groupUsers['count']))/100,2);
+
+                    $countedSqm = round(($glass_sqm * ($gUsers['salary_percent']+$percentToConpensate))/100,4);
+                    $db->setQuery("UPDATE work_group_users SET finished_sqm = finished_sqm + $countedSqm WHERE id = $gUsers[id]");
+                    $db->execQuery();
+                }
+            }
+
+            
+        }
+        break;
     case 'finish_few':
         $codes_arr = $_REQUEST['codes'];
         $codes = implode(',',$codes_arr);
@@ -4026,15 +4117,19 @@ function getFinishFewP($glass_ids){
                                 $db->setQuery("SELECT `groups`.name FROM glasses_paths JOIN `groups` ON `groups`.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n ASC LIMIT 1");
                                 $next_proc = $db->getResultArray()['result'][0]['name'];
                                 if($next_proc == ''){
-                                    $db->setQuery("SELECT orders.client_name
+                                    $db->setQuery("SELECT orders.client_name, CONCAT(products_glasses.glass_width,'X',products_glasses.glass_height) AS dim
                                                     FROM orders
                                                     JOIN products_glasses ON products_glasses.order_id = orders.id AND products_glasses.id = '$glass' AND products_glasses.actived = 1
                                                     WHERE orders.actived = 1");
-                                    $order = $db->getResultArray()['result'][0]['client_name'];
-                                    $next_proc = 'დასრულებულია! დამკვეთი: '.$order;
+                                    $order = $db->getResultArray()['result'][0];
+                                    $next_proc = 'დასრულებულია! დამკვეთი: '.$order['client_name'];
                                 }
+
+
+                                $db->setQuery("SELECT CONCAT('<b>',products_glasses.glass_width,'</b> X <b>',products_glasses.glass_height,'</b>') AS dim FROM products_glasses WHERE id = '$glass'");
+                                $dims = $db->getResultArray()['result'][0]['dim'];
                                 $data .= '  <div class="col-sm-4" style="text-align: center;">
-                                                <label>მინა #'.$glass.'</label>
+                                                <label>მინა #'.$glass.' '.$dims.'</label>
                                                 <br>
                                                 <span style="font-size: 13px;font-weight: bold;">შემდეგი პროცესი: '.$next_proc.'</span>
                                                 <input type="tel" min="1" class="glass_pyramids_m" data-id="'.$glass.'">
