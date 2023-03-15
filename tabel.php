@@ -319,6 +319,15 @@
                         }
                     }
 
+                    
+
+                    if($_SESSION['GRPID'] == 13 || $_SESSION['GRPID'] == 10){
+                        $where = '';
+                    }
+                    else{
+                        $where = 'WHERE 
+                        p.id =  '.$setUser__ID;
+                    }
 
                     /** Work hours  & Person info */
                     $db->setQuery("
@@ -344,8 +353,7 @@
                     '' as trip_end_date
                     FROM
                     users as p 
-                    WHERE 
-                    p.id =  $setUser__ID
+                    $where
                         
                     ");
 
@@ -353,7 +361,7 @@
 
                     $workTimeArray = array();  //  ასოცირებული მასივი სადაც key იქნება მომხმარებლის id
 
-                    $workTimeArray[$setUser__ID]['vac'] = [];
+                    $wta['vac'] = [];
 
 
                     foreach ($workingGraphicType as $key => $val) {
@@ -382,7 +390,7 @@
                         }
                         
                         /*$date = $val['date_start_real'].':'.$val['date_end_real'].':'.$val['vtype'].':'.$val['order_temp_id'];
-                        array_push($workTimeArray[$setUser__ID]['vac'], $date);*/
+                        array_push($wta['vac'], $date);*/
                     }
                     /** Vacations  */
                         $vacations = array();
@@ -488,50 +496,7 @@
 
 
                     /** Face Log  ( in  , out  ) times */
-                    $db->setQuery("
-                        SELECT 
-                            tf.userID AS UserID,
-                            p.tbl_schedule_type_id as schedule_type,
-                            tst.name as schedule_name,
-                            DAY(tf.authDate) as day, 
-                            DATE_FORMAT(MIN(tf.authDateTime),'%H:%i') as real_in,
-                            DATE_FORMAT(MAX(tf.authDateTime),'%H:%i') as real_out,
-                            tst.plan_in,
-                            tst.plan_out,
-                            tst.working_minutes,
-                            tst.check_in,
-                            tst.check_out,
-                            tst.check_wm,
-                            tst.latecome,
-                            tst.earlygo,
-                            ROUND(TIMESTAMPDIFF(second, MIN(tf.authDateTime) ,MAX(tf.authDateTime)) / 60) as working_hours,
-                            tst.break
-                            
-                            
-
-                        FROM 
-                            tbl_facelog as tf
-                        LEFT JOIN
-                            users as p
-                                ON
-                                    p.id = tf.userID 
-                        LEFT JOIN
-                            tbl_schedule_types as tst
-                                ON
-                                    tst.id = p.tbl_schedule_type_id AND tst.deleted = 1 
-                        WHERE 
-                            tf.authDate >= '".$filteredDate."-01'  AND 
-                            tf.authDate <= '$lastDate' AND
-                            tf.userID = $setUser__ID
-                        GROUP BY
-                            tf.userID ,
-                            tf.authDate
-                        ORDER BY 
-                            tf.userID DESC,
-                            tf.authDate
-                    ");
-
-                    $attendance = $db->getResultArray()['result'];
+                    
                     /**  if date is in weekend */
                     function isWeekend($date)
                     {
@@ -819,23 +784,26 @@
                                             <td class='text-center'>დღეები</td>
                                             <td class='text-center'>უქმე დღეს ნამუშევარი</td>
                                             <td class='text-center'>არნამუშევარი საათები</td>
-                                            <td></td>
+                                           
                                         </tr>                   
                                     </thead>
 
                                     <tbody>
                                         <?php
-                                                echo '<tr class="table_'.$setUser__ID.'"><pre>';
+                                                foreach($workTimeArray AS $wta){
+
+                                                
+                                                echo '<tr class="table_'.$wta['person_id'].'">';
 
                                                 //var_dump($workTimeArray);
                                                 echo '  <td class="text-center">
                                                             <p>
-                                                                '.$workTimeArray[$setUser__ID]['person_id'].'
+                                                                '.$wta['person_id'].'
                                                             </p>
                                                         </td>
                                                         <td class="text-center">
                                                             <p>
-                                                                '.$workTimeArray[$setUser__ID]['name_first']." ".$workTimeArray[$setUser__ID]['name_last'] .'
+                                                                '.$wta['name_first']." ".$wta['name_last'] .'
                                                             </p>
                                                         </td>';
 
@@ -860,6 +828,52 @@
                                                         $dayoffs = 0;  // არა სამუშაო დღე
                         
                                                         
+                                                            $where2 = ' AND
+                                                            tf.userID = '.$wta['person_id'];
+                                                        
+                                                        $db->setQuery("
+                                                            SELECT 
+                                                                tf.userID AS UserID,
+                                                                p.tbl_schedule_type_id as schedule_type,
+                                                                tst.name as schedule_name,
+                                                                DAY(tf.authDate) as day, 
+                                                                DATE_FORMAT(MIN(tf.authDateTime),'%H:%i') as real_in,
+                                                                DATE_FORMAT(MAX(tf.authDateTime),'%H:%i') as real_out,
+                                                                tst.plan_in,
+                                                                tst.plan_out,
+                                                                tst.working_minutes,
+                                                                tst.check_in,
+                                                                tst.check_out,
+                                                                tst.check_wm,
+                                                                tst.latecome,
+                                                                tst.earlygo,
+                                                                ROUND(TIMESTAMPDIFF(second, MIN(tf.authDateTime) ,MAX(tf.authDateTime)) / 60) as working_hours,
+                                                                tst.break
+                                                                
+                                                                
+                                    
+                                                            FROM 
+                                                                tbl_facelog as tf
+                                                            LEFT JOIN
+                                                                users as p
+                                                                    ON
+                                                                        p.id = tf.userID 
+                                                            LEFT JOIN
+                                                                tbl_schedule_types as tst
+                                                                    ON
+                                                                        tst.id = p.tbl_schedule_type_id AND tst.deleted = 1 
+                                                            WHERE 
+                                                                tf.authDate >= '".$filteredDate."-01'  AND 
+                                                                tf.authDate <= '$lastDate' $where2
+                                                            GROUP BY
+                                                                tf.userID ,
+                                                                tf.authDate
+                                                            ORDER BY 
+                                                                tf.userID DESC,
+                                                                tf.authDate
+                                                        ");
+                                    
+                                                        $attendance = $db->getResultArray()['result'];
                                                         foreach ($attendance as $item) {
                                                             if ($graphicType === '' && $item['schedule_name']) {
                                                                 $graphicType = $item['schedule_name'];
@@ -880,7 +894,7 @@
                                                                     
                                                                 /** მივლინება */
                                                                 $isM = false;
-                                                                $trips  = isset($workTimeArray[$setUser__ID]['trips']) ? $workTimeArray[$setUser__ID]['trips'] : null ;
+                                                                $trips  = isset($wta['trips']) ? $wta['trips'] : null ;
                                                                     
                                                                 if ($trips) {
                                                                     foreach ($trips as $trip) {
@@ -894,7 +908,7 @@
                                                                 }
                                                             
                                                                 /** შვებულება **/
-                                                                $vac  = isset($workTimeArray[$setUser__ID]['vac']) ? $workTimeArray[$setUser__ID]['vac'] : [];
+                                                                $vac  = isset($wta['vac']) ? $wta['vac'] : [];
                                                                 $isV = false;
                                                                 $vType = 0;
                                                                 $orderType = '';
@@ -917,7 +931,7 @@
                         
                         
                                                                 /** კომენტარები */
-                                                                $comment  = isset($workTimeArray[$setUser__ID]['notification']) ?  $workTimeArray[$setUser__ID]['notification'] : [];
+                                                                $comment  = isset($wta['notification']) ?  $wta['notification'] : [];
                                                                 $ntClass = '';
                                                             
                                                                 if ($comment && count($comment) > 0) {
@@ -983,7 +997,7 @@
                                                                         
                                                                         break;
                                                                         case 3:  // მცოცავი გრაფიკი (ქსელი)
-                                                                            $sch3  = isset($workTimeArray[$setUser__ID]['schedule'][$date]) ? $workTimeArray[$setUser__ID]['schedule'][$date] : null;
+                                                                            $sch3  = isset($wta['schedule'][$date]) ? $wta['schedule'][$date] : null;
                                                                             
                                                                             if ($sch3) {
                                                                                 $sch3_plan_in = explode('-', $sch3)[0];
@@ -1211,7 +1225,7 @@
                         
                                                                 
                                                                 /** კომენტარები */
-                                                                $comment  = isset($workTimeArray[$setUser__ID]['notification']) ?  $workTimeArray[$setUser__ID]['notification'] : [];
+                                                                $comment  = isset($wta['notification']) ?  $wta['notification'] : [];
                                                                 $ntClass = '';
                                                                 
                                                                 if ($comment && count($comment) > 0) {
@@ -1429,7 +1443,7 @@
                                                                     
                                                                 /** შვებულება */
                                                                 $isV = false;
-                                                                $vac  = isset($workTimeArray[$setUser__ID]['vac']) ? $workTimeArray[$setUser__ID]['vac'] : null ;
+                                                                $vac  = isset($wta['vac']) ? $wta['vac'] : null ;
                                                                 $tempType = '';
                                                                 $vType  = 0;
                                                                     
@@ -1449,8 +1463,8 @@
                                                                 
                         
                                                                 /** ღამე ნამუშევარი საათები */
-                                                                if (isset($workTimeArray[$setUser__ID]['is_night'][$item['day']])) {
-                                                                    if ($workTimeArray[$setUser__ID]['is_night'][$item['day']] == 2) {
+                                                                if (isset($wta['is_night'][$item['day']])) {
+                                                                    if ($wta['is_night'][$item['day']] == 2) {
                                                                         $workingNightDays ++;
                                                                     }
                                                                 }
@@ -1506,7 +1520,7 @@
                         
                                                             /** მივლინება */
                                                             $isM = false;
-                                                            $trips  = isset($workTimeArray[$setUser__ID]['trips']) ? $workTimeArray[$setUser__ID]['trips'] : null;
+                                                            $trips  = isset($wta['trips']) ? $wta['trips'] : null;
                                                                     
                                                             if ($trips) {
                                                                 foreach ($trips as $trip) {
@@ -1522,7 +1536,7 @@
                                                         
                                                                 
                                                             /** შვებულება **/
-                                                            $vac  = isset($workTimeArray[$setUser__ID]['vac']) ? $workTimeArray[$setUser__ID]['vac'] : [];
+                                                            $vac  = isset($wta['vac']) ? $wta['vac'] : [];
                                                             $isV = false;
                                                             $vType = 0;
                                                             $orderType = '';
@@ -1544,7 +1558,7 @@
                                                             }
                                                             
                                                                 
-                                                            $comment  = isset($workTimeArray[$setUser__ID]['notification']) ?  $workTimeArray[$setUser__ID]['notification'] : [];
+                                                            $comment  = isset($wta['notification']) ?  $wta['notification'] : [];
                                                             $ntClass = '';
                                                             
                                                             if ($comment && count($comment) > 0) {
@@ -1577,7 +1591,7 @@
                                                                 switch ($myS) {
                                                                     
                                                                     case 3:  // მცოცავი გრაფიკი (ქსელი)
-                                                                        $sch3  = isset($workTimeArray[$setUser__ID]['schedule'][$date]) ? $workTimeArray[$setUser__ID]['schedule'][$date] : null;
+                                                                        $sch3  = isset($wta['schedule'][$date]) ? $wta['schedule'][$date] : null;
                                                                         
                                                                         if ($sch3) {
                                                                             $sch3_plan_in = explode('-', $sch3)[0];
@@ -1882,13 +1896,9 @@
                                                                 echo '<p>'.$hours.':'.$mins.'</p>';
                                                             
                                                         echo '</td>
-                                                        <td class="text-center">                                       
-
-                                                            <button class="viewRow btn btn-warning" onClick="retriveDetails('.$setUser__ID.", '".$filteredDate."' , ".$workingHolidays.",".$upsentPVacation.",".$upsentUPVacation.",".$overTimeHours.", '".$seen."'".", '".$upsent."' ,'".$workingNightDays."',".$upsentSFVacation .')">დეტალები</button>
-                                                            
-                                                        </td>
+                                                        
                                                         ';
-                                            
+                                                            }
                                         ?>
                                     
 
@@ -2061,13 +2071,7 @@
 		<!-- End Main Content-->
 		
 		<!-- Main Footer-->
-		<div class="main-footer text-center">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-12"> <span>Copyright © 2019 <a href="#">Dashlead</a>. Designed by <a href="https://www.spruko.com/">Spruko</a> All rights reserved.</span> </div>
-				</div>
-			</div>
-		</div>
+		
 		<!--End Footer-->
 	</div>
 	<!-- End Page -->
