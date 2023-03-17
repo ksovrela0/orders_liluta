@@ -245,12 +245,15 @@
 			box-shadow: 2px 1px black;
 		}
 		.k-master-row:has(.make_me_red) {
-			background-color: red;
-			color: white;
+			background-color: #d5d1eb;
+			color: #000;
 		}
-
 		.k-master-row:has(.make_me_red):hover {
+			background-color:#96a2d6;
 			color: black;
+		}
+		.k-grid tbody tr:not(.k-detail-row).k-hover, .k-grid tbody tr:not(.k-detail-row).k-state-hover, .k-grid tbody tr:not(.k-detail-row):hover{
+			background-color:#96a2d6;
 		}
 
 

@@ -9,6 +9,18 @@
 	.hydrated {
 		visibility: inherit
 	}
+    .table-bordered th, .table-bordered td{
+        border: 1px solid #e1e6f1!important;
+    }
+    .table th, .table td{
+        padding: 0px 0px!important;
+        line-height: 1!important;
+    }
+
+    .table td p{
+        margin-top:10px!important;
+        margin-bottom:10px!important;
+    }
 	</style>
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
@@ -624,6 +636,13 @@
                             .main_head_tabel td{
                                 color:#fff!important;
                                 padding:10px!important;
+                                
+                            }
+
+                            .main_head_tabel{
+                                position: sticky;
+                                top: 65px;
+                                z-index: 99999999;
                             }
                             /** table */
                             table > thead > tr {
@@ -671,6 +690,8 @@
                                 overflow:hidden;
                                 border: 1px solid lightgray;
                                 display:none;
+                                margin-left: 15px;
+                                margin-top: -8px;
                             } 
 
                             table > tbody > tr > td:hover .inOutInfo {
