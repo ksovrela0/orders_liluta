@@ -1678,7 +1678,7 @@ switch ($act){
 
         ) SEPARATOR '<br>') AS gr,
 
-        CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc_few\" data-id=\"',GROUP_CONCAT(products_glasses.id),'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
+        IF((SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = 5 AND glasses_paths.actived = 1 AND glasses_paths.glass_id IN (GROUP_CONCAT(products_glasses.id)) AND glasses_paths.status_id IN (1,2)) > 0,CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc_few\" data-id=\"',GROUP_CONCAT(products_glasses.id),'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>'), CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>'))
                         
                         
                         
