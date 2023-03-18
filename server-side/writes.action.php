@@ -1692,7 +1692,7 @@ switch ($act){
         JOIN		glass_status ON glass_status.id = glasses_paths.status_id
         LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
         
-        WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '5' AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND lists_to_cut.id  IS NOT NULL AND products_glasses.kalioni_group != 0
+        WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '5' AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND IF(products_glasses.go_to_cut = 1,lists_to_cut.id  IS NOT NULL,1=1) AND products_glasses.kalioni_group != 0
         
         GROUP BY products_glasses.kalioni_group
         ORDER BY glasses_paths.status_id ASC");
