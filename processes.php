@@ -531,26 +531,6 @@ $proc_data = $db->getResultArray()['result'][0];
 											data: url,
 											dataType: "json",
 											success: function(data) {
-												$.ajax({
-													url: "ajax/print.ajax.php",
-													type: "POST",
-													data: "act=print&glass_id="+codes_s,
-													dataType: "json",
-													success: function (data) {
-														if(typeof data != 'undefined'){
-															var a = window.open('', '', 'height=500, width=500');
-															a.document.write(data.page);
-															a.document.close();
-															setTimeout(function(){
-																a.print();
-															}, 1000)
-															
-														}
-														else{
-															alert('დაფიქსირდა შეცდომა');
-														}
-													}
-												});
 												$("#kalioni_group").data("kendoGrid").dataSource.read();
 												$('#finish_few_glasses_page').dialog("close");
 											}
