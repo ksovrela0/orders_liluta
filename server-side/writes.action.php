@@ -1636,13 +1636,17 @@ switch ($act){
 
         /* $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($codes)");
         $db->execQuery(); */
-
+        $kalioni_group = rand(1000000,9999999);
         foreach($codes_arr AS $code){
             $db->setQuery("SELECT id FROM glasses_paths WHERE glass_id= '$code' AND path_group_id = 5 AND actived = 1");
             $path_id_few = $db->getResultArray()['result'][0]['id'];
 
+
+            $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group' WHERE id = '$code'");
+            $db->execQuery();
+
             if($path_id_new != ''){
-                $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id_few', status_id = 2 WHERE id = '$code'");
+                $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id_few', status_id = 2, WHERE id = '$code'");
                 $db->execQuery();
             }
             
