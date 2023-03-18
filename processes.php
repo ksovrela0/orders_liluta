@@ -1035,7 +1035,7 @@ $proc_data = $db->getResultArray()['result'][0];
 			}
 			else{
 				var ask = prompt("ნამდვილად გსურთ მინის დახარვეზება? მიუთითეთ პირამიდის ნომერი!")
-				if (ask != '' && ask > 0) {
+				if (ask != '') {
 					$.ajax({
 						url: "server-side/writes.action.php",
 						type: "POST",
