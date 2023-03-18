@@ -4149,6 +4149,14 @@ function getFinishFewP($glass_ids){
                     <legend>პირამიდა</legend>
                         <div class="row">';
                             foreach($glass_ids AS $glass){
+
+                                $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id = '$glass' AND actived = 1 AND status_id IN (1,2)");
+
+                                $ccGlass = $db->getResultArray()['result'][0]['cc'];
+                                if($ccGlass == 0){
+                                    continue;
+                                }
+
                                 $db->setQuery("SELECT `groups`.name FROM glasses_paths JOIN `groups` ON `groups`.id = glasses_paths.path_group_id WHERE glasses_paths.glass_id = '$glass' AND glasses_paths.actived = 1 AND glasses_paths.status_id = 1 ORDER BY glasses_paths.sort_n ASC LIMIT 1");
                                 $next_proc = $db->getResultArray()['result'][0]['name'];
                                 if($next_proc == ''){

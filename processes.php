@@ -1070,6 +1070,7 @@ $proc_data = $db->getResultArray()['result'][0];
 						dataType: "json",
 						success: function(data) {
 							$("#main_div").data("kendoGrid").dataSource.read();
+							$("#kalioni_group").data("kendoGrid").dataSource.read();
 						}
 					});
 				}
