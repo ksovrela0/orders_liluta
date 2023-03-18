@@ -481,6 +481,92 @@ $proc_data = $db->getResultArray()['result'][0];
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
+		$(document).on('click','.finish_proc_few', function(){
+			if (confirm("ნამდვილად გსურთ დაასრულოთ პროცესი?") == true) {
+				let codes = $(this).attr('data-id').split(",").map(Number);
+				let codes_s = codes.join(',');
+				
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act:"finish_few",
+						"codes": codes
+					},
+					dataType: "json",
+					success: function(data) {
+					
+						$('#finish_few_glasses_page').html(data.page);
+
+						$("#finish_few_glasses_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 800,
+							modal: true,
+							buttons: {
+								"მინების დასრულება": function() {
+									var ready_to_save = 0;
+									var url = new Object();
+									url.act = "finish_few_glass";
+									url['gpyr'] = [];
+									$(".glass_pyramids_m").each(function(i, x){
+										if($(x).val() == ''){
+											ready_to_save++;
+										}
+										else{
+											url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+										}
+										
+									})
+
+									url.proc_id = 5;
+
+									if(ready_to_save > 0){
+										alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
+									}
+									else{
+										$.ajax({
+											url: "server-side/writes.action.php",
+											type: "POST",
+											data: url,
+											dataType: "json",
+											success: function(data) {
+												$.ajax({
+													url: "ajax/print.ajax.php",
+													type: "POST",
+													data: "act=print&glass_id="+codes_s,
+													dataType: "json",
+													success: function (data) {
+														if(typeof data != 'undefined'){
+															var a = window.open('', '', 'height=500, width=500');
+															a.document.write(data.page);
+															a.document.close();
+															setTimeout(function(){
+																a.print();
+															}, 1000)
+															
+														}
+														else{
+															alert('დაფიქსირდა შეცდომა');
+														}
+													}
+												});
+												$("#kalioni_group").data("kendoGrid").dataSource.read();
+												$('#finish_few_glasses_page').dialog("close");
+											}
+										});
+									}
+								}
+							}
+						});
+
+					}
+				});
+				
+				
+				
+			}
+		})
 		$(document).on('click', '#finish_few', function(){
 			$.ajax({
 					url: "server-side/writes.action.php",
@@ -495,144 +581,17 @@ $proc_data = $db->getResultArray()['result'][0];
 						$("#finish_few_page").dialog({
 							resizable: false,
 							height: "auto",
-							width: 400,
+							width: 1200,
 							modal: true,
-							buttons: {
+							/* buttons: {
 								"მინების დასრულება": function() {
-									if (confirm("ნამდვილად გსურთ დაასრულოთ პროცესი?") == true) {
-										let codes = $("#few_codes_f").val().trim().split("\n").map(Number);
-										let codes_s = codes.join(',');
-										if($("#few_codes_f").val() == ''){
-											alert("გთხოვთ ჩასვათ ერთი კოდი მაინც");
-										}
-										else{
-											$.ajax({
-												url: "server-side/writes.action.php",
-												type: "POST",
-												data: {
-													act:"finish_few",
-													"codes": codes
-												},
-												dataType: "json",
-												success: function(data) {
-												
-													$('#finish_few_page').dialog("close");
-													$('#finish_few_glasses_page').html(data.page);
+									
 
-													$("#finish_few_glasses_page").dialog({
-														resizable: false,
-														height: "auto",
-														width: 800,
-														modal: true,
-														buttons: {
-															"მინების დასრულება": function() {
-																var ready_to_save = 0;
-																var url = new Object();
-																url.act = "finish_few_glass";
-																url['gpyr'] = [];
-																$(".glass_pyramids_m").each(function(i, x){
-																	if($(x).val() == ''){
-																		ready_to_save++;
-																	}
-																	else{
-																		url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
-																	}
-																	
-																})
-
-																url.proc_id = 5;
-
-																if(ready_to_save > 0){
-																	alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
-																}
-																else{
-																	$.ajax({
-																		url: "server-side/writes.action.php",
-																		type: "POST",
-																		data: url,
-																		dataType: "json",
-																		success: function(data) {
-																			$.ajax({
-																				url: "ajax/print.ajax.php",
-																				type: "POST",
-																				data: "act=print&glass_id="+codes_s,
-																				dataType: "json",
-																				success: function (data) {
-																					if(typeof data != 'undefined'){
-																						var a = window.open('', '', 'height=500, width=500');
-																						a.document.write(data.page);
-																						a.document.close();
-																						setTimeout(function(){
-																							a.print();
-																						}, 1000)
-																						
-																					}
-																					else{
-																						alert('დაფიქსირდა შეცდომა');
-																					}
-																				}
-																			});
-																			$("#main_div").data("kendoGrid").dataSource.read();
-																			$('#finish_few_glasses_page').dialog("close");
-																		}
-																	});
-																}
-															}
-														}
-													});
-
-												}
-											});
-										}
-										
-										
-									}
-									/* var ready_to_save = 0;
-									var url = new Object();
-									url.act = "finish_glass_proc";
-									url['gpyr'] = [];
-									url['apyr'] = [];
-									$(".glass_pyramids_m").each(function(i, x){
-										if($(x).val() == ''){
-											ready_to_save++;
-										}
-										else{
-											url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
-										}
-										
-									})
-
-									$(".atxod_pyramids_m").each(function(i, x){
-										if($(x).val() == ''){
-											ready_to_save++;
-										}
-										else{
-											url['apyr'].push($(x).val()+'-'+$(x).attr('data-id'));
-										}
-									})
-
-									url.proc_id = get_proc_id;
-									url.cut_id = cut_id;
-
-									if(ready_to_save > 0){
-										alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
-									}
-									else{
-										$.ajax({
-											url: "server-side/writes.action.php",
-											type: "POST",
-											data: url,
-											dataType: "json",
-											success: function(data) {
-												
-												$("#main_cut").data("kendoGrid").dataSource.read();
-												$('#proc_finish_page').dialog("close");
-											}
-										});
-									} */
 								}
-							}
+							} */
 						});
+
+						LoadKendoTable_main33();
 					}
 				});
 		})
@@ -1428,6 +1387,26 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
 				kendo.loadKendoUI(aJaxURL, 'get_list_proccess', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
+
+			function LoadKendoTable_main33(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'kalioni_group';
+				var actions = '';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 2;
+				var columnsSQL = ["product_glasses:string", "product_act:string"];
+				var columnGeoNames = ["მინები", "ქმედება"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_kalioni_group', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
 			}
 
 			
