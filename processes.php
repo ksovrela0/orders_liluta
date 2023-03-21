@@ -256,6 +256,12 @@
 			background-color:#96a2d6;
 		}
 
+		.k-grid tbody tr td{
+			border: 1px solid black;
+			border-left: none;
+    		border-right: none;
+			border-top:none;
+		}
 
 		#start_few{
 			border: 1px solid black;
@@ -330,10 +336,19 @@ $proc_data = $db->getResultArray()['result'][0];
 				<div class="row">
 				<?php
 					if($proc_data['id'] == 5){
-						echo '
-						<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>
-						<div id="finish_few" style="margin-bottom: 10px;">რამდენიმე მინის დასრულება</div>
-						<div id="main_div" style="width:97%;"></div>';
+						if($_SESSION['GRPID'] == 14){
+							echo '<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>';
+						}
+						else if($_SESSION['GRPID'] == 15){
+							echo '<div id="finish_few" style="margin-bottom: 10px;">რამდენიმე მინის დასრულება</div>';
+						}
+						else{
+							echo '
+							<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>
+							<div id="finish_few" style="margin-bottom: 10px;">რამდენიმე მინის დასრულება</div>';
+						}
+						echo '<div id="main_div" style="width:97%;"></div>';
+						
 					}
 					else if($proc_data['id'] == 6 || $proc_data['id'] == 7){
 						echo '<div id="main_div_2" style="width:97%;"></div>';
@@ -497,7 +512,7 @@ $proc_data = $db->getResultArray()['result'][0];
 					success: function(data) {
 					
 						$('#finish_few_glasses_page').html(data.page);
-
+						
 						$("#finish_few_glasses_page").dialog({
 							resizable: false,
 							height: "auto",
@@ -557,7 +572,9 @@ $proc_data = $db->getResultArray()['result'][0];
 					dataType: "json",
 					success: function(data) {
 						$('#finish_few_page').html(data.page);
-							
+						setInterval(function () {
+							$("#kalioni_group").data("kendoGrid").dataSource.read();
+						}, 15000);
 						$("#finish_few_page").dialog({
 							resizable: false,
 							height: "auto",
