@@ -1574,6 +1574,26 @@
 							alert(data.error)
 						}
 						else{
+							if(proc_id == 3){
+								$('#get_price_page').html(data.page);
+								$("#get_price_page").dialog({
+									resizable: false,
+									height: 300,
+									width: 500,
+									modal: true,
+									position: "top",
+									buttons: {
+										"შენახვა": function() {
+											
+										},
+										'დახურვა': function() {
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+												$(this).dialog("close");
+											}
+										}
+									}
+								});
+							}
 							if(proc_id == 4){
 								$('#get_price_page').html(data.page);
 								$("#get_price_page").dialog({

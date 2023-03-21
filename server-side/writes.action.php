@@ -1341,7 +1341,7 @@ switch ($act){
             $data['error'] = 'ამ მინაზე ეგ პროცესი უკვე დამატებულია!!!';
         }
         else{
-            if($proc_id == 4){
+            if($proc_id == 4 || $proc_id == 3){
                 $data = array('page' => getPricePage($proc_id));
             }
             else{
@@ -3364,10 +3364,26 @@ function getPricePage($proc_id){
     $data = '   <fieldset class="fieldset">
                     <legend>ინფორმაცია</legend>
                         <div class="row">';
-                            if($proc_id == 3){
+                            /* if($proc_id == 3){
                                 $data .= '  <div class="col-sm-12">
                                                 <label>ფასი მეტრობით</label>
                                                 <input type="number" step=".01" value="20" id="kv_price">
+                                            </div>';
+                            } */
+                            if($proc_id == 3){
+                                $data .= '  <div class="col-sm-12">
+                                                <input style="height:14.14px !important;" type="checkbox" id="kronka_top">
+                                                <label>ზედა</label>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <input style="height:14.14px !important;" type="checkbox" id="kronka_bottom">
+                                                <label>ქვედა</label>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <input style="height:14.14px !important;" type="checkbox" id="kronka_left">
+                                                <label>მარცხენა</label>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <input style="height:14.14px !important;" type="checkbox" id="kronka_right">
+                                                <label>მარჯვენა</label>
+                                                
                                             </div>';
                             }
                             if($proc_id == 4){
