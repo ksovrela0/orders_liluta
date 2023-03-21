@@ -233,6 +233,18 @@ class kendoUI{
 							contains: "Contains",
 							suggestionOperator: "contains"
 						}
+					},
+					itemTemplate: function(e) {
+						if (e.field == "all") {
+							//handle the check-all checkbox templat
+
+							return '<li class="k-item k-check-all-wrap"><label class="k-label k-checkbox-label"><input type="checkbox" class="k-checkbox k-checkbox-md k-rounded-md k-check-all" value="Select All"><span>#= all#</span></label></li>';
+						} else {
+							//handle the other checkboxes
+							console.log(e)
+							
+							return "<li class='k-item'><label class='k-label k-checkbox-label'><input type='checkbox' class='k-checkbox k-checkbox-md k-rounded-md' value='#="+e.field+"#'><span>#="+e.field+"#</span></label></li>"
+						}
 					}
 				},
 				pageable: {
