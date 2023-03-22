@@ -3383,8 +3383,10 @@ function getPricePage($proc_id){
                                                 &nbsp;&nbsp;&nbsp;
                                                 <input style="height:14.14px !important;" type="checkbox" id="kronka_right">
                                                 <label>მარჯვენა</label>
-                                                
-                                            </div>';
+                                                <label>ფასი მეტრობით</label>
+                                                <input type="number" step=".01" value="5" id="kv_price">
+                                            </div>
+                                            ';
                             }
                             if($proc_id == 4){
                                 $data .= '  <div class="col-sm-6">
