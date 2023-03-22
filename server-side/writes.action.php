@@ -2234,6 +2234,42 @@ switch ($act){
         $price      = $_REQUEST['price'];
         $cuts = $_REQUEST['cuts'] != '' ? $_REQUEST['cuts'] : 0;
         $holes = $_REQUEST['holes'] ? $_REQUEST['holes'] : 0;
+
+        $kronka_top = $_REQUEST['kronka_top'] ? $_REQUEST['kronka_top'] : 0;
+        $kronka_bottom = $_REQUEST['kronka_bottom'] ? $_REQUEST['kronka_bottom'] : 0;
+        $kronka_right = $_REQUEST['kronka_right'] ? $_REQUEST['kronka_right'] : 0;
+        $kronka_left = $_REQUEST['kronka_left'] ? $_REQUEST['kronka_left'] : 0;
+
+        if(isset($_REQUEST['kronka_top']) AND $kronka_top == 'true'){
+            $kronka_top = 1;
+        }
+        else{
+            $kronka_top = 0;
+        }
+
+
+        if(isset($_REQUEST['kronka_bottom']) AND $kronka_bottom == 'true'){
+            $kronka_bottom = 1;
+        }
+        else{
+            $kronka_bottom = 0;
+        }
+
+
+        if(isset($_REQUEST['kronka_right']) AND $kronka_right == 'true'){
+            $kronka_right = 1;
+        }
+        else{
+            $kronka_right = 0;
+        }
+
+        if(isset($_REQUEST['kronka_left']) AND $kronka_left == 'true'){
+            $kronka_left = 1;
+        }
+        else{
+            $kronka_left = 0;
+        }
+
         $db->setQuery(" SELECT  COUNT(*) AS cc
                         FROM    glasses_paths
                         WHERE   id = '$id' AND actived = 1");
@@ -2253,7 +2289,11 @@ switch ($act){
                                                 price = '$price',
                                                 cuts = '$cuts',
                                                 holes = '$holes',
-                                                sort_n = '$sort_n'");
+                                                sort_n = '$sort_n',
+                                                kronka_top = '$kronka_top',
+                                                kronka_bottom = '$kronka_bottom',
+                                                kronka_right = '$kronka_right',
+                                                kronka_left = '$kronka_left'");
 
             $db->execQuery();
             //
