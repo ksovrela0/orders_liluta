@@ -264,6 +264,9 @@
 			cursor: pointer;
 			transition: 0.5s ease;
 		}
+		.change_sizes:hover,.change_damk:hover{
+			font-size: 18px;
+		}
 		.k-master-row:has(.make_me_red) {
 			background-color: #d5d1eb;
 			color: #000;
@@ -1371,6 +1374,8 @@
 				params.stand_glass = $("#stand_glass").is(':checked');
 				params.go_to_cut = $("#go_to_cut").is(':checked');
 
+				params.glass_count = $("#glass_count").val();
+
 
 				var ready_to_save = 0;
 
@@ -1570,6 +1575,90 @@
 							alert(data.error)
 						}
 						else{
+							if(proc_id == 3){
+								$('#get_price_page').html(data.page);
+								$("#get_price_page").dialog({
+									resizable: false,
+									height: 300,
+									width: 500,
+									modal: true,
+									position: "top",
+									buttons: {
+										"შენახვა": function() {
+											let params = new Object;
+											var price_total = 0;
+											params.act = 'save_path';
+											params.id = $("#path_id").val();
+											params.glass_id = $("#glass_id").val();
+
+											params.path_group_id = proc_id;
+											params.path_status = 1;
+											params.holes = $("#holes").val();
+											params.cuts = $("#cuts").val();
+
+											params.kronka_top = $("#kronka_top").prop('checked');
+											params.kronka_bottom = $("#kronka_bottom").prop('checked');
+											params.kronka_right = $("#kronka_right").prop('checked');
+											params.kronka_left = $("#kronka_left").prop('checked');
+
+											//params.sort_n = $("#sort_n").val();
+											if(proc_id == 4){
+												price_total = ($("#holes").val() * $("#hole_price").val()) + ($("#cuts").val() * $("#cut_price").val())
+											}
+											if(proc_id == 3){
+												price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
+											}
+											if(proc_id == 5){
+												price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
+											}
+											if(proc_id == 2){
+												price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
+											}
+											if(proc_id == 6 || proc_id == 7){
+												$.ajax({
+													url: "server-side/writes.action.php",
+													type: "POST",
+													async: false,
+													data: {
+														act: "get_lameks_data",
+														glass_id: $("#glass_id").val()
+													},
+													dataType: "json",
+													success: function(data) {
+														price_total = data.max_kv * $("#kv_price").val() * data.glass_count;
+													}
+												});
+											}
+
+											params.price = price_total;
+											var ready_to_save = 0;
+
+
+											if(ready_to_save == 0) {
+												$.ajax({
+													url: "server-side/writes.action.php",
+													type: "POST",
+													data: params,
+													dataType: "json",
+													
+													success: function(data) {
+														if(typeof data.error != 'undefined'){
+															alert(data.error)
+														}
+														$("#path_div").data("kendoGrid").dataSource.read();
+														$('#get_price_page').dialog("close");
+													}
+												});
+											}
+										},
+										'დახურვა': function() {
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+												$(this).dialog("close");
+											}
+										}
+									}
+								});
+							}
 							if(proc_id == 4){
 								$('#get_price_page').html(data.page);
 								$("#get_price_page").dialog({
@@ -1581,64 +1670,64 @@
 									buttons: {
 										"შენახვა": function() {
 											let params = new Object;
-												var price_total = 0;
-												params.act = 'save_path';
-												params.id = $("#path_id").val();
-												params.glass_id = $("#glass_id").val();
+											var price_total = 0;
+											params.act = 'save_path';
+											params.id = $("#path_id").val();
+											params.glass_id = $("#glass_id").val();
 
-												params.path_group_id = proc_id;
-												params.path_status = 1;
-												params.holes = $("#holes").val();
-												params.cuts = $("#cuts").val();
-												//params.sort_n = $("#sort_n").val();
-												if(proc_id == 4){
-													price_total = ($("#holes").val() * $("#hole_price").val()) + ($("#cuts").val() * $("#cut_price").val())
-												}
-												if(proc_id == 3){
-													price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
-												}
-												if(proc_id == 5){
-													price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
-												}
-												if(proc_id == 2){
-													price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
-												}
-												if(proc_id == 6 || proc_id == 7){
-													$.ajax({
-														url: "server-side/writes.action.php",
-														type: "POST",
-														async: false,
-														data: {
-															act: "get_lameks_data",
-															glass_id: $("#glass_id").val()
-														},
-														dataType: "json",
-														success: function(data) {
-															price_total = data.max_kv * $("#kv_price").val() * data.glass_count;
+											params.path_group_id = proc_id;
+											params.path_status = 1;
+											params.holes = $("#holes").val();
+											params.cuts = $("#cuts").val();
+											//params.sort_n = $("#sort_n").val();
+											if(proc_id == 4){
+												price_total = ($("#holes").val() * $("#hole_price").val()) + ($("#cuts").val() * $("#cut_price").val())
+											}
+											if(proc_id == 3){
+												price_total = (($("#glass_width").val()/100) + ($("#glass_height").val()/100))*2*$("#kv_price").val()
+											}
+											if(proc_id == 5){
+												price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
+											}
+											if(proc_id == 2){
+												price_total = (($("#glass_width").val()/100) * ($("#glass_height").val()/100))*$("#kv_price").val()
+											}
+											if(proc_id == 6 || proc_id == 7){
+												$.ajax({
+													url: "server-side/writes.action.php",
+													type: "POST",
+													async: false,
+													data: {
+														act: "get_lameks_data",
+														glass_id: $("#glass_id").val()
+													},
+													dataType: "json",
+													success: function(data) {
+														price_total = data.max_kv * $("#kv_price").val() * data.glass_count;
+													}
+												});
+											}
+
+											params.price = price_total;
+											var ready_to_save = 0;
+
+
+											if(ready_to_save == 0) {
+												$.ajax({
+													url: "server-side/writes.action.php",
+													type: "POST",
+													data: params,
+													dataType: "json",
+													
+													success: function(data) {
+														if(typeof data.error != 'undefined'){
+															alert(data.error)
 														}
-													});
-												}
-
-												params.price = price_total;
-												var ready_to_save = 0;
-
-
-												if(ready_to_save == 0) {
-													$.ajax({
-														url: "server-side/writes.action.php",
-														type: "POST",
-														data: params,
-														dataType: "json",
-														
-														success: function(data) {
-															if(typeof data.error != 'undefined'){
-																alert(data.error)
-															}
-															$("#path_div").data("kendoGrid").dataSource.read();
-															$('#get_price_page').dialog("close");
-														}
-													});
-												}
+														$("#path_div").data("kendoGrid").dataSource.read();
+														$('#get_price_page').dialog("close");
+													}
+												});
+											}
 										},
 										'დახურვა': function() {
 											if(confirm("ნამდვილად გსურთ დახურვა?")){
