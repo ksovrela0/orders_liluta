@@ -2471,6 +2471,14 @@ switch ($act){
         $hidefiri = false;
         $hidebutil = false;
         $cexis_ufrosi = false;
+
+        if($url[0] == 'page=processes' AND $url[1] == 'id=3'){
+            $hide_kronka = false;
+        }
+        else{
+            $hide_kronka = true;
+        }
+        
         if($url[0] == 'page=processes' AND $url[1] == 'id=7'){
             $hidefiri = true;
         }
@@ -2664,6 +2672,11 @@ switch ($act){
                     elseif($columns[$j] == "butil" OR $columns[$j] == "glasses_grouped_cc"){
 
 						$g = array('field'=>$columns[$j],'hidden' => $hidebutil, 'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 40);
+
+					}
+                    elseif($columns[$j] == "kronka_sides"){
+
+						$g = array('field'=>$columns[$j],'hidden' => $hide_kronka, 'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 120);
 
 					}
                     elseif($columns[$j] == "cut_id"){
@@ -2929,6 +2942,7 @@ switch ($act){
 
                                     CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
                                     CONCAT('ნახვრეტი: 4, ჭრის რაოდენობა:5'),
+                                    CONCAT(IF(glasses_paths.kronka_top = 1,'ზედა<br>',''),'', IF(glasses_paths.kronka_bottom = 1,'ქვედა<br>',''),' ',IF(glasses_paths.kronka_right = 1,'მარჯვენა<br>',''),' ',IF(glasses_paths.kronka_left = 1,'მარცხენა','')),
                                     products_glasses.last_pyramid,
                                     
                                     

@@ -1333,9 +1333,9 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				var actions = '';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 11;
-				var columnsSQL = ["id:string","orderer:string", "datetime:string", "client:string", "client_phone:string", "client_addr:string", "cliddent_addr:string", "infooo:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string"];
-				var columnGeoNames = ["ID","დამკვეთი", "მინა", "ტიპი", "ფერი", "სიგრძეXსიგანე", "სურათი", "ინფო", "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
+				var columnsCount = 12;
+				var columnsSQL = ["id:string","orderer:string", "datetime:string", "client:string", "client_phone:string", "client_addr:string", "cliddent_addr:string", "infooo:string", "kronka_sides:string", "avans:string", "add_money:string", "status:string"];
+				var columnGeoNames = ["ID","დამკვეთი", "მინა", "ტიპი", "ფერი", "სიგრძეXსიგანე", "სურათი", "ინფო",'კრონკა გვ', "პირამიდის ნომ.", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
