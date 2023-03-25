@@ -1629,38 +1629,61 @@ switch ($act){
         break;
     case 'start_few':
         $codes_arr = $_REQUEST['codes'];
-        $codes = implode(',',$codes_arr);
+        $err_glass_ids = array();
 
-        $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE glass_id IN ($codes) AND path_group_id = 5");
-        $db->execQuery();
 
-        /* $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id IN ($codes)");
-        $db->execQuery(); */
-        $kalioni_group = rand(1000000,9999999);
+
         foreach($codes_arr AS $code){
-            $db->setQuery("SELECT id FROM glasses_paths WHERE glass_id= '$code' AND path_group_id = 5 AND actived = 1");
-            $path_id_few = $db->getResultArray()['result'][0]['id'];
+            $db->setQuery(" SELECT path_group_id
+                            FROM glasses_paths
+                            WHERE glass_id = '$code' AND status_id = 1
+                            ORDER BY sort_n
+                            LIMIT 1");
+            $checkProcSort = $db->getResultArray()['result'][0]['path_group_id'];
 
-
-            $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group' WHERE id = '$code'");
-            $db->execQuery();
-
-            if($path_id_new != ''){
-                $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id_few', status_id = 2, WHERE id = '$code'");
-                $db->execQuery();
-            }
-            
-
+            if($checkProcSort != 5){
+                array_push($err_glass_ids, $code);
+            }  
         }
 
+        //die(var_dump($err_glass_ids));
+        $ok_codes = array_diff($codes_arr, $err_glass_ids);
+        $codes = implode(',',$ok_codes);
 
-        $db->setQuery(" UPDATE orders 
-                        JOIN products_glasses ON products_glasses.id IN ($codes)
-                        JOIN orders_product ON orders_product.id = products_glasses.order_product_id
-                        SET orders.status_id = 2
-                        
-                        WHERE orders.id = orders_product.order_id");
-        $db->execQuery();
+        if(count($ok_codes) > 0){
+            $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE glass_id IN ($codes) AND path_group_id = 5");
+            $db->execQuery();
+    
+            $kalioni_group = rand(1000000,9999999);
+            foreach($ok_codes AS $code){
+                $db->setQuery("SELECT id FROM glasses_paths WHERE glass_id= '$code' AND path_group_id = 5 AND actived = 1");
+                $path_id_few = $db->getResultArray()['result'][0]['id'];
+    
+    
+                $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group' WHERE id = '$code'");
+                $db->execQuery();
+    
+                if($path_id_few != ''){
+                    $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id_few', status_id = 2 WHERE id = '$code'");
+                    $db->execQuery();
+                }
+            }
+    
+    
+            $db->setQuery(" UPDATE orders 
+                            JOIN products_glasses ON products_glasses.id IN ($codes)
+                            JOIN orders_product ON orders_product.id = products_glasses.order_product_id
+                            SET orders.status_id = 2
+                            
+                            WHERE orders.id = orders_product.order_id");
+            $db->execQuery();
+            
+    
+            $data['error'] = "წარმატებით დაჯგუფდა შემდეგი მინები: ".$codes."\r\n\r\nვერ დაჯგუფდა შემდეგი მინები: ".implode(', ',$err_glass_ids)." რადგან ჯერ რიგშია, მიმდინარეა ან არ საჭიროებს ამ პროცესის გავლას";
+        }
+        else{
+            $data['error'] = "ვერც ერთი მინის დაჯგუფება ვერ მოხდა, რადგან არცერთი მინა არ იმყოფება წრთობის პროცესში ან უკვე დაწყებულია";
+        }
         
         break;
     case 'start_few_page':
