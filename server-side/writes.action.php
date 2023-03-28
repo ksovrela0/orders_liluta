@@ -1701,12 +1701,12 @@ switch ($act){
         $kalioni_gr = $_REQUEST['kalioni_gr'];
 
         if($type == 1){
-            $db->setQuery("UPDATE products_glasses SET last_pyramid='$pyr' WHERE id = '$glass_id'");
+            $db->setQuery("UPDATE glasses_paths SET pyramid='$pyr' WHERE glass_id = '$glass_id' AND path_group_id = 5");
 
             $db->execQuery();
         }
         else{
-            $db->setQuery("UPDATE products_glasses SET last_pyramid='$pyr' WHERE kalioni_group = '$kalioni_gr'");
+            $db->setQuery("UPDATE glasses_paths SET pyramid='$pyr' WHERE glass_id IN (SELECT id FROM products_glasses WHERE kalioni_group = '$kalioni_gr')");
 
             $db->execQuery();
         }
@@ -1716,11 +1716,11 @@ switch ($act){
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
 
-        $db->setQuery("SELECT	GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid, ' <input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.id,'\" class=\"kal_pyr\" value=\"',products_glasses.last_pyramid,'\"> <div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
+        $db->setQuery("SELECT	GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid, ' <input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.id,'\" kal_gr=\"',products_glasses.kalioni_group,'\" class=\"kal_pyr\" value=\"',IFNULL(glasses_paths.pyramid,0),'\"> <div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
 
         ) SEPARATOR '<br>') AS gr,
 
-        IF((SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = 5 AND glasses_paths.actived = 1 AND glasses_paths.glass_id IN (GROUP_CONCAT(products_glasses.id)) AND glasses_paths.status_id IN (1,2)) > 0,CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc_few\" data-id=\"',GROUP_CONCAT(products_glasses.id),'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span><input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.kalioni_group,'\" class=\"kal_pyr_gr\"></div>'), CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>'))
+        IF((SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = 5 AND glasses_paths.actived = 1 AND glasses_paths.glass_id IN (GROUP_CONCAT(products_glasses.id)) AND glasses_paths.status_id IN (1,2)) > 0,CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc_few\" kal_gr=\"',products_glasses.kalioni_group,'\" data-id=\"',GROUP_CONCAT(products_glasses.id),'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span><input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.kalioni_group,'\" class=\"kal_pyr_gr\"></div>'), CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>'))
                         
                         
                         

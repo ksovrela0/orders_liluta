@@ -504,63 +504,37 @@ $proc_data = $db->getResultArray()['result'][0];
 			if (confirm("ნამდვილად გსურთ დაასრულოთ პროცესი?") == true) {
 				let codes = $(this).attr('data-id').split(",").map(Number);
 				let codes_s = codes.join(',');
-				
-				$.ajax({
-					url: "server-side/writes.action.php",
-					type: "POST",
-					data: {
-						act:"finish_few",
-						"codes": codes
-					},
-					dataType: "json",
-					success: function(data) {
-					
-						$('#finish_few_glasses_page').html(data.page);
+				let kal_gr = $(this).attr('kal_gr');
+				let ready_to_save = 0;
+				var url = new Object();
+					url.act = "finish_few_glass";
+					url['gpyr'] = [];
+					$(".kal_pyr[kal_gr='"+kal_gr+"']").each(function(i, x){
+						if($(x).val() == 0){
+							ready_to_save++;
+						}
+						else{
+							url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+						}
 						
-						$("#finish_few_glasses_page").dialog({
-							resizable: false,
-							height: "auto",
-							width: 800,
-							modal: true,
-							buttons: {
-								"მინების დასრულება": function() {
-									var ready_to_save = 0;
-									var url = new Object();
-									url.act = "finish_few_glass";
-									url['gpyr'] = [];
-									$(".glass_pyramids_m").each(function(i, x){
-										if($(x).val() == ''){
-											ready_to_save++;
-										}
-										else{
-											url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
-										}
-										
-									})
+					})
 
-									url.proc_id = 5;
+					url.proc_id = 5;
 
-									if(ready_to_save > 0){
-										alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
-									}
-									else{
-										$.ajax({
-											url: "server-side/writes.action.php",
-											type: "POST",
-											data: url,
-											dataType: "json",
-											success: function(data) {
-												$("#kalioni_group").data("kendoGrid").dataSource.read();
-												$('#finish_few_glasses_page').dialog("close");
-											}
-										});
-									}
-								}
+					if(ready_to_save > 0){
+						alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
+					}
+					else{
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: url,
+							dataType: "json",
+							success: function(data) {
+								$("#main_div_kalioni").data("kendoGrid").dataSource.read();
 							}
 						});
-
 					}
-				});
 				
 				
 				
