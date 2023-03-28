@@ -341,16 +341,17 @@ $proc_data = $db->getResultArray()['result'][0];
 					if($proc_data['id'] == 5){
 						if($_SESSION['GRPID'] == 14){
 							echo '<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>';
+							echo '<div id="main_div" style="width:97%;"></div>';
 						}
 						else if($_SESSION['GRPID'] == 15){
-							echo '<div id="finish_few" style="margin-bottom: 10px;">რამდენიმე მინის დასრულება</div>';
+							echo '<div id="main_div_kalioni" style="width:97%;"></div>';
 						}
 						else{
 							echo '
-							<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>
-							<div id="finish_few" style="margin-bottom: 10px;">რამდენიმე მინის დასრულება</div>';
+							<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>';
+							echo '<div id="main_div" style="width:97%;"></div>';
 						}
-						echo '<div id="main_div" style="width:97%;"></div>';
+						
 						
 					}
 					else if($proc_data['id'] == 6 || $proc_data['id'] == 7){
@@ -1322,6 +1323,20 @@ $proc_data = $db->getResultArray()['result'][0];
 						// echo 'setInterval(function () {$("#main_cut").data("kendoGrid").dataSource.read();}, 15000);';
 						
 					}
+					else if($proc_data['id'] == 5){
+						if($_SESSION['GRPID'] == 14){
+							echo 'LoadKendoTable_main(hid);';
+						}
+						else if($_SESSION['GRPID'] == 15){
+							echo 'setInterval(function () {
+								$("#main_div_kalioni").data("kendoGrid").dataSource.read();
+							}, 15000);
+							LoadKendoTable_main33();';
+						}
+						else{
+							echo 'LoadKendoTable_main(hid);';
+						}
+					}
 					else{
 						echo 'LoadKendoTable_main(hid);';
 						// echo 'setInterval(function () {$("#main_div").data("kendoGrid").dataSource.read();}, 15000);';
@@ -1400,7 +1415,7 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 			function LoadKendoTable_main33(hidden) {
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
-				var gridName = 'kalioni_group';
+				var gridName = 'main_div_kalioni';
 				var actions = '';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
@@ -2055,10 +2070,69 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				var search = "&path_id=2&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id+"&client="+params.client;
 				LoadKendoTable_main3(search)
 			});
+			
+			$(document).on('keyup','.kal_pyr_gr', function(e){
+				if(e.key==="Enter"){
+					let kalioni_gr = $(this).attr('data-id');
+					let cur_pyr = $(this).val();
+					
+					const myTimeout = setTimeout(function(){
+
+					}, 2);
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "kalioni_pyr_save",
+							type: 2,
+							kalioni_gr: kalioni_gr,
+							pyr: cur_pyr
+						},
+						dataType: "json",
+						success: function(data) {
+							
+							$("#main_div_kalioni").data("kendoGrid").dataSource.read();
+						}
+					});
+				}
+				
+
+
+				//
+			})
+			$(document).on('keyup','.kal_pyr', function(e){
+				if(e.key==="Enter"){
+					let glass_id = $(this).attr('data-id');
+					let cur_pyr = $(this).val();
+					
+					const myTimeout = setTimeout(function(){
+
+					}, 2);
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "kalioni_pyr_save",
+							type: 1,
+							glass_id: glass_id,
+							pyr: cur_pyr
+						},
+						dataType: "json",
+						success: function(data) {
+							
+							$("#main_div_kalioni").data("kendoGrid").dataSource.read();
+						}
+					});
+				}
+				
+
+
+				//
+			})
 	</script>
 </body>
 
-</html>
+</html>s
 <?php
 function getClients($id){
 	GLOBAL $db;
