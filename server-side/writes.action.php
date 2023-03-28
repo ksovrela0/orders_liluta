@@ -1704,9 +1704,17 @@ switch ($act){
             $db->setQuery("UPDATE glasses_paths SET pyramid='$pyr' WHERE glass_id = '$glass_id' AND path_group_id = 5");
 
             $db->execQuery();
+
+
+            $db->setQuery("UPDATE products_glasses SET last_pyramid='$pyr' WHERE id = '$glass_id'");
+
+            $db->execQuery();
         }
         else{
             $db->setQuery("UPDATE glasses_paths SET pyramid='$pyr' WHERE glass_id IN (SELECT id FROM products_glasses WHERE kalioni_group = '$kalioni_gr')");
+
+            $db->execQuery();
+            $db->setQuery("UPDATE products_glasses SET last_pyramid='$pyr' WHERE kalioni_group = '$kalioni_gr'");
 
             $db->execQuery();
         }
