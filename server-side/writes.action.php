@@ -1650,7 +1650,7 @@ switch ($act){
         $ok_codes = array_diff($codes_arr, $err_glass_ids);
         $codes = implode(',',$ok_codes);
 
-        if(count($ok_codes) > 0){
+        if(count($err_glass_ids) == 0){
             $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE glass_id IN ($codes) AND path_group_id = 5");
             $db->execQuery();
     
@@ -1679,7 +1679,7 @@ switch ($act){
             $db->execQuery();
             
     
-            $data['error'] = "წარმატებით დაჯგუფდა შემდეგი მინები: ".$codes."\r\n\r\nვერ დაჯგუფდა შემდეგი მინები: ".implode(', ',$err_glass_ids)." რადგან ჯერ რიგშია, მიმდინარეა ან არ საჭიროებს ამ პროცესის გავლას";
+            $data['error'] = "ვერ დაჯგუფდა შემდეგი მინები: ".implode(', ',$err_glass_ids)." რადგან ჯერ რიგშია, მიმდინარეა ან არ საჭიროებს ამ პროცესის გავლას";
         }
         else{
             $data['error'] = "ვერც ერთი მინის დაჯგუფება ვერ მოხდა, რადგან არცერთი მინა არ იმყოფება წრთობის პროცესში ან უკვე დაწყებულია";
