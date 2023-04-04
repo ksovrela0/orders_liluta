@@ -10,7 +10,7 @@ switch ($act){
     case 'print':
         $glass_id = $_REQUEST['glass_id'];
         $db->setQuery(" SELECT products_glasses.id,
-                                CONCAT(products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ') AS size,
+                                CONCAT(products_glasses.glass_width, ' x ', products_glasses.glass_height) AS size,
                                 orders.client_name,
                                 orders_product.add_info AS comment,
                                 products_glasses.last_pyramid
