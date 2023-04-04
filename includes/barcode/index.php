@@ -11,7 +11,7 @@ header('Content-Type: image/png');
 $color_white = new BCGColor(255, 255, 255);
 
 $code = new BCGcode128();
-$code->setScale(1);
+$code->setScale('0.9');
 $code->parse($title);
 
 $drawing = new BCGDrawing('', $color_white);
