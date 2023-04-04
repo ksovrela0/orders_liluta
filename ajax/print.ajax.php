@@ -40,17 +40,17 @@ switch ($act){
 
                         .damkveti{
                             display: block;
-                            font-size: 10px;
+                            font-size: 11px;
                         };
 
                         .minisid{
                             display: block;
-                            font-size: 10px;
+                            font-size: 11px;
                         };
 
                         .zoma{
                             display: block;
-                            font-size: 10px;
+                            font-size: 11px;
 
                         };
                         .barcode{
@@ -64,14 +64,14 @@ switch ($act){
                         <div class="bechdva">
                         
                             <ul style="list-style-type: none">
-                                <li class="damkveti" style="font-size: 10px;">
+                                <li class="damkveti" style="font-size: 11px;">
                                     '.$glass['client_name'].'
                                 </li>
-                                <li class="minisid" style="font-size: 10px;">
+                                <li class="minisid" style="font-size: 11px;">
                                     '.$glass['comment'].'
                                 </li>
-                                <li class="zoma" style="font-size: 10px;">
-                                    <b style="font-size: 10px;">'.$glass['size'].'</b>
+                                <li class="zoma" style="font-size: 11px;">
+                                    <b style="font-size: 11px;">'.$glass['size'].'</b>
                                     <br>პირ: '.$glass['last_pyramid'].'
                                 </li>
                                 <li class="barcode">
