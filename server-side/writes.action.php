@@ -1284,7 +1284,7 @@ switch ($act){
                         }
                         else if($proc_id == 5){
                             $db->setQuery(" SELECT   COUNT(*) AS cc
-                                            FROM glasses_paths 
+                                            FROM glasses_paths
                                             WHERE status_id = 2 AND actived = 1 AND path_group_id = 5");
     
                             $cc = $db->getResultArray()['result'][0]['cc'];
@@ -1294,12 +1294,21 @@ switch ($act){
                                 echo json_encode($data);
                                 return;
                             }
+                            else{
+                                $kalioni_group = rand(1000000,9999999);
+            
+    
+    
+                                $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group' WHERE id = '$glass_id'");
+                                $db->execQuery();
+                            }
                         }
                         $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE id = '$path_id'");
                         $db->execQuery();
             
                         $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id', status_id = 2 WHERE id = '$glass_id'");
                         $db->execQuery();
+                        
             
                         $db->setQuery(" UPDATE orders 
                                         JOIN products_glasses ON products_glasses.id = '$glass_id'
