@@ -1645,7 +1645,7 @@ switch ($act){
         foreach($codes_arr AS $code){
             $db->setQuery(" SELECT path_group_id
                             FROM glasses_paths
-                            WHERE glass_id = '$code' AND status_id = 1
+                            WHERE glass_id = '$code' AND status_id = 1 AND actived = 1
                             ORDER BY sort_n
                             LIMIT 1");
             $checkProcSort = $db->getResultArray()['result'][0]['path_group_id'];
