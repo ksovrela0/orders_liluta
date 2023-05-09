@@ -1299,7 +1299,7 @@ switch ($act){
             
     
     
-                                $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group' WHERE id = '$glass_id'");
+                                $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group', kalioni_group_user_id = '$user_id' WHERE id = '$glass_id'");
                                 $db->execQuery();
                             }
                         }
@@ -1669,7 +1669,7 @@ switch ($act){
                 $path_id_few = $db->getResultArray()['result'][0]['id'];
     
     
-                $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group' WHERE id = '$code'");
+                $db->setQuery("UPDATE products_glasses SET kalioni_group='$kalioni_group', kalioni_group_user_id = '$user_id' WHERE id = '$code'");
                 $db->execQuery();
     
                 if($path_id_few != ''){
@@ -1733,7 +1733,7 @@ switch ($act){
         $columnCount = 		$_REQUEST['count'];
 		$cols[]      =      $_REQUEST['cols'];
 
-        $db->setQuery("SELECT	GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid, ' <input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.id,'\" kal_gr=\"',products_glasses.kalioni_group,'\" class=\"kal_pyr\" value=\"',IFNULL(glasses_paths.pyramid,0),'\"> <div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
+        $db->setQuery("SELECT	products_glasses.kalioni_group,GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid, IF(glasses_paths.status_id != 4, CONCAT('<input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.id,'\" kal_gr=\"',products_glasses.kalioni_group,'\" class=\"kal_pyr\" value=\"',IFNULL(glasses_paths.pyramid,0),'\">'),''),IF(glasses_paths.status_id = 4,' - <span class=\"status_1\">დახარვეზებული</span> ',''), '<div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
 
         ) SEPARATOR '<br>') AS gr,
 
@@ -1752,6 +1752,62 @@ switch ($act){
         LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
         
         WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '5' AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND IF(products_glasses.go_to_cut = 1,lists_to_cut.id  IS NOT NULL,1=1) AND products_glasses.kalioni_group != 0
+        
+        GROUP BY products_glasses.kalioni_group
+        ORDER BY glasses_paths.status_id ASC");
+        $result = $db->getKendoList($columnCount, $cols);
+
+        $data = $result;
+        break;
+    case 'get_list_kalioni_group_ne':
+        $columnCount = 		$_REQUEST['count'];
+        $cols[]      =      $_REQUEST['cols'];
+
+        $db->setQuery("SELECT	products_glasses.kalioni_group,GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid,IF(glasses_paths.status_id = 4,' - <span class=\"status_1\">დახარვეზებული</span> ',''), '  <span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
+
+        ) SEPARATOR '<br>') AS gr
+                        
+                        
+                        
+        FROM 		products_glasses
+        JOIN		orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+        JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+        JOIN		glass_options ON glass_options.id = products_glasses.glass_option_id		
+        JOIN 		glass_type ON glass_type.id = products_glasses.glass_type_id
+        JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
+        JOIN		glasses_paths ON glasses_paths.glass_id = products_glasses.id
+        JOIN		glass_status ON glass_status.id = glasses_paths.status_id
+        LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+        
+        WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '5' AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND IF(products_glasses.go_to_cut = 1,lists_to_cut.id  IS NOT NULL,1=1) AND products_glasses.kalioni_group != 0
+        
+        GROUP BY products_glasses.kalioni_group
+        ORDER BY glasses_paths.status_id ASC");
+        $result = $db->getKendoList($columnCount, $cols);
+
+        $data = $result;
+        break;
+    case 'get_list_kalioni_group_mine':
+        $columnCount = 		$_REQUEST['count'];
+        $cols[]      =      $_REQUEST['cols'];
+
+        $db->setQuery("SELECT	products_glasses.kalioni_group, GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid, IF(glasses_paths.status_id = 4,' - <span class=\"status_1\">დახარვეზებული</span> ',''),'  <span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
+
+        ) SEPARATOR '<br>') AS gr
+                        
+                        
+                        
+        FROM 		products_glasses
+        JOIN		orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+        JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+        JOIN		glass_options ON glass_options.id = products_glasses.glass_option_id		
+        JOIN 		glass_type ON glass_type.id = products_glasses.glass_type_id
+        JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
+        JOIN		glasses_paths ON glasses_paths.glass_id = products_glasses.id
+        JOIN		glass_status ON glass_status.id = glasses_paths.status_id
+        LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+        
+        WHERE 	    products_glasses.actived = 1 AND products_glasses.kalioni_group_user_id = '$user_id' AND glasses_paths.path_group_id = '5' AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND IF(products_glasses.go_to_cut = 1,lists_to_cut.id  IS NOT NULL,1=1) AND products_glasses.kalioni_group != 0
         
         GROUP BY products_glasses.kalioni_group
         ORDER BY glasses_paths.status_id ASC");
@@ -2766,11 +2822,18 @@ switch ($act){
                     elseif($columns[$j] == "total_to_pay" OR $columns[$j] == "avans" OR $columns[$j] == "add_money" OR $columns[$j] == "left_to_pay" OR $columns[$j] == "price_glass_proc"){
                         $g = array('field'=>$columns[$j],'hidden' => $cexis_ufrosi,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')));
                     }
+                    else if($columns[$j] == "product_glasses_all"){
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 1050);
+                    }
+                    else if($columns[$j] == "gr_id"){
+                        $g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 40);
+                    }
                     else{
 
                     	$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')));
 
 					}
+                    
 
                 }
 
@@ -4327,7 +4390,7 @@ function getFinishFewP($glass_ids){
 }
 function getFinishFew(){
     $data = '   <fieldset class="fieldset">
-                    <legend>კოდები</legend>
+                    <legend>დაჯგუფებული მინები</legend>
                         <div class="row">
                             <div class="col-sm-12">
                                 <div id="kalioni_group"></div>

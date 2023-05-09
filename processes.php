@@ -277,7 +277,7 @@
 			box-shadow: 2px 1px black;
 		}
 
-		#finish_few{
+		#finish_few, #finish_few_mine{
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
@@ -340,7 +340,8 @@ $proc_data = $db->getResultArray()['result'][0];
 				<?php
 					if($proc_data['id'] == 5){
 						if($_SESSION['GRPID'] == 14){
-							echo '<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>';
+							echo '<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>
+							<div id="finish_few_mine" style="margin-bottom: 10px;">დაჯგუფებული მინები</div>';
 							echo '<div id="main_div" style="width:97%;"></div>';
 						}
 						else if($_SESSION['GRPID'] == 15){
@@ -348,7 +349,9 @@ $proc_data = $db->getResultArray()['result'][0];
 						}
 						else{
 							echo '
-							<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>';
+							<div id="start_few" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>
+							<div id="finish_few" style="margin-bottom: 10px;">დაჯგუფებული მინები</div>';
+							
 							echo '<div id="main_div" style="width:97%;"></div>';
 						}
 						
@@ -495,7 +498,7 @@ $proc_data = $db->getResultArray()['result'][0];
 	<div title="პროცესის დასრულება" id="proc_finish_page"></div>
 	<div title="პროცესის დახარვეზება" id="proc_error_page"></div>
 	<div title="რამდენიმე მინის დაწყება" id="start_few_page"></div>
-	<div title="რამდენიმე მინის დასრულება" id="finish_few_page"></div>
+	<div title="დაჯგუფებული მინები" id="finish_few_page"></div>
 	<div title="რამდენიმე მინის დასრულება" id="finish_few_glasses_page"></div>
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
@@ -566,7 +569,38 @@ $proc_data = $db->getResultArray()['result'][0];
 							} */
 						});
 
-						LoadKendoTable_main33();
+						LoadKendoTable_main333();
+					}
+				});
+		})
+
+		$(document).on('click', '#finish_few_mine', function(){
+			$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "finish_few_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#finish_few_page').html(data.page);
+						setInterval(function () {
+							$("#kalioni_group").data("kendoGrid").dataSource.read();
+						}, 15000);
+						$("#finish_few_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 1200,
+							modal: true,
+							/* buttons: {
+								"მინების დასრულება": function() {
+									
+
+								}
+							} */
+						});
+
+						LoadKendoTable_main444();
 					}
 				});
 		})
@@ -1393,9 +1427,9 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				var actions = '';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 2;
-				var columnsSQL = ["product_glasses:string", "product_act:string"];
-				var columnGeoNames = ["მინები", "ქმედება"];
+				var columnsCount = 3;
+				var columnsSQL = ["gr_id:string","product_glasses:string", "product_act:string"];
+				var columnGeoNames = ["ჯგუფის ID","მინები", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1404,6 +1438,44 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
 				kendo.loadKendoUI(aJaxURL, 'get_list_kalioni_group', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
+			function LoadKendoTable_main333(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'kalioni_group';
+				var actions = '';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 2;
+				var columnsSQL = ["gr_id:string","product_glasses:string"];
+				var columnGeoNames = ["ჯგუფის ID","მინები"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_kalioni_group_ne', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
+			function LoadKendoTable_main444(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'kalioni_group';
+				var actions = '';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 2;
+				var columnsSQL = ["gr_id:string","product_glasses:string"];
+				var columnGeoNames = ["ჯგუფის ID","მინები"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_kalioni_group_mine', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
 			}
 
 			
