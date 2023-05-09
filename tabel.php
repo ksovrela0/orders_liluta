@@ -156,6 +156,20 @@
 	} else if(document.attachEvent) {
 		document.attachEvent("onkeydown", s8fj);
 	}
+
+
+    $(document).ready(function (){
+        $("#date").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm',
+            
+            onClose: function(dateText, inst) { 
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    })
 	</script>
 	<meta http-equiv="imagetoolbar" content="no">
 	<style type="text/css">
@@ -174,6 +188,12 @@
 		cursor: default!important;
 		padding: 0!important;
 	}
+    .ui-datepicker-calendar {
+        display: none;
+    }
+    #ui-datepicker-div{
+        z-index: 999999999999!important;
+    }
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -213,7 +233,14 @@
 				
                     <?php
                     $setUser__ID = 1;
-                    $curYearMonth = date("Y-m");
+
+                    if(!empty($_REQUEST['date'])){
+                        $curYearMonth = $_REQUEST['date'];
+                    }
+                    else{
+                        $curYearMonth = date("Y-m");
+                    }
+                    
                     $curYearMonthExplode = explode("-", $curYearMonth);
                     $minusMonth = str_pad($curYearMonthExplode[1] - 1, 2, '0', STR_PAD_LEFT);
 
@@ -752,13 +779,9 @@
                             </div>
                                 
                             <div class="panel-body">
-                                <form class="row" action = '' method = "get" >
-                                    <div class="col-md-8">
-                                    
-                                    </div>
+                                <form class="row" action = "index.php" method = "GET" >
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label class="control-label wn-font-normal small " for="date">თარიღი</label>
                                         
                                             <div class="input-group date-picker" >
                                                 <input type="text" name="date" id="date" min='2021-03-01' max='2021-04-31'  value="<?php echo $params['date'] ?? $params['date']  ?>" class="form-control required lime-data-send is_date"  data-date-format="YYYY-MM"/>
@@ -768,12 +791,12 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <input type="hidden" name="page" value="tabel">
                                     <div class="col-sm-1">
                                         <div class="form-group">
-                                            <div class="col-xs-12 text-right">
+                                            <div class="col-xs-12">
                                                 <label class="wn-font-normal "> &nbsp;</label>
-                                                <button class="btn btn-primary "> ძებნა </button>
+                                                <input type="submit" class="btn btn-primary " value="ძებნა">
                                             </div>
                                         </div>
                                     </div>   
