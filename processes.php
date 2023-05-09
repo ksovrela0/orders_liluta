@@ -640,7 +640,7 @@ $proc_data = $db->getResultArray()['result'][0];
 													if(typeof data.error != 'undefined'){
 														alert(data.error)
 														$("#main_div").data("kendoGrid").dataSource.read();
-														$('#start_few_page').dialog("close");
+														
 													}
 													else{
 														$("#main_div").data("kendoGrid").dataSource.read();
