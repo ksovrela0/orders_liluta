@@ -373,9 +373,9 @@ switch ($act){
                     elseif($columns[$j] == "glasses_prod"){
                         $g = array('field'=>$columns[$j], 'hidden' => false,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 600);
                     }
-                    /* elseif($columns[$j] == "id_pyr_glass"){
-                        $g = array('field'=>$columns[$j], 'hidden' => false,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'dataSource' => array('transport' => array('read' => array('url' => 'server-side/objects.action.php?act=get_list_by_col', 'dataType' => 'json', 'data' => array('field'=>'products_glasses.id'))))));
-                    } */
+                    elseif($columns[$j] == "id_pyr_glass"){
+                        $g = array('field'=>$columns[$j], 'hidden' => true,'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'dataSource' => array('transport' => array('read' => array('url' => 'server-side/objects.action.php?act=get_list_by_col', 'dataType' => 'json', 'data' => array('field'=>'products_glasses.id'))))));
+                    }
                     elseif($columns[$j] == "inc_date"){
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 130);
 					}else{
@@ -505,7 +505,7 @@ switch ($act){
         $add_page = ($add['page'] - 1) * $add_limit; */
         
 
-        $db->setQuery("SELECT * FROM (SELECT	CONCAT('<a target=\"_blank\" style=\"color: blue;text-decoration: underline;\" href=\"index.php?page=orders&glass_id=',products_glasses.id,'\">',products_glasses.id,'</a>'),
+        $db->setQuery("SELECT * FROM (SELECT	products_glasses.id,CONCAT('<a target=\"_blank\" style=\"color: blue;text-decoration: underline;\" href=\"index.php?page=orders&glass_id=',products_glasses.id,'\">',products_glasses.id,'</a>'),
                                 CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ', IF(products.id IN (2,3),CONCAT('<br>(',products.name,')'),'' )) AS glass,
                                 products_glasses.last_pyramid,
                                 orders.id AS order_id,
