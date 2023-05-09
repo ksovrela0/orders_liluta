@@ -505,7 +505,7 @@ switch ($act){
         $add_page = ($add['page'] - 1) * $add_limit; */
         
 
-        $db->setQuery("SELECT * FROM (SELECT	products_glasses.id,
+        $db->setQuery("SELECT * FROM (SELECT	CONCAT('<a target=\"_blank\" style=\"color: blue;text-decoration: underline;\" href=\"index.php?page=orders&glass_id=',products_glasses.id,'\">',products_glasses.id,'</a>'),
                                 CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ', IF(products.id IN (2,3),CONCAT('<br>(',products.name,')'),'' )) AS glass,
                                 products_glasses.last_pyramid,
                                 orders.id AS order_id,

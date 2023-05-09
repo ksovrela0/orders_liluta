@@ -1539,6 +1539,13 @@ switch ($act){
         $data = array('page' => getPage($id, getWriting($id)));
 
     break;
+    case 'get_edit_page_by_glass':
+        $glass_id = $_REQUEST['id'];
+        $db->setQuery("SELECT order_id FROM products_glasses WHERE id = '$glass_id'");
+
+        $id = $db->getResultArray()['result'][0]['order_id'];
+        $data = array('page' => getPage($id, getWriting($id)), 'order_id' => $id);
+        break;
     case 'finish_few_glass':
         $gpyr = $_REQUEST['gpyr'];
         $proc_id = $_REQUEST['proc_id'];

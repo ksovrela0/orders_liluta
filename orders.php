@@ -514,6 +514,69 @@
 						});
 					}
 				});
+
+
+
+				<?php
+					if(isset($_REQUEST['glass_id']) AND !empty($_REQUEST['glass_id'])){
+						echo '
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "get_edit_page_by_glass",
+								id: '.$_REQUEST['glass_id'].'
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#get_edit_page").html(data.page);
+								$("#resp_user,#clients").chosen();
+								$("#order_date").daterangepicker({
+									timePicker: true,
+									locale: {
+										format: "YYYY-MM-DD HH:mm:ss"
+									}
+								});
+								var kendo = new kendoUI();
+								var pr = "&order_id="+data.order_id;
+								LoadKendoTable_product(pr);
+								$("#get_edit_page").dialog({
+									resizable: false,
+									height: "auto",
+									width: 1400,
+									modal: true,
+									position: "top",
+									buttons: {
+										"გადათვლა": function() {
+											$.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												data: {
+													act: "calc_price",
+													order_id: $("#writing_id").val()
+												},
+												dataType: "json",
+												success: function(data) {
+													$("#pay_total").val(data.total_price);
+												}
+											});
+										},
+										"შენახვა": function() {
+											save_order();
+										},
+										\'დახურვა\': function() {
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+												$(this).dialog("close");
+											}
+										}
+									}
+								});
+							}
+						});
+						
+						';
+					}
+				?>
 			});
 
 			function LoadKendoTable_main(hidden) {
