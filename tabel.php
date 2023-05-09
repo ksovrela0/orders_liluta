@@ -221,10 +221,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">მწარმოებლები</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">ტაბელი</h2>
 						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="#">პარამეტრები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">მწარმოებლები</li>
+							<li class="breadcrumb-item"><a href="#">ტაბელი</a></li>
+							<li class="breadcrumb-item active" aria-current="page">ტაბელი</li>
 						</ol>
 					</div>
 				</div>
