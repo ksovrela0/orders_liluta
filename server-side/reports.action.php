@@ -141,6 +141,43 @@ switch ($act){
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
     break;
+    case 'get_list_kalioni':
+        $report_date = explode(' - ', $_REQUEST['report_date']);
+
+        $group_id = $_REQUEST['group_id'];
+        $date_start = $report_date[0];
+        $date_end = $report_date[1] . ' 23:59:59';
+
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
+
+
+        $db->setQuery("SELECT	'$_REQUEST[report_date]' AS periodi,
+                                `groups`.name,
+                                glass_manuf.name AS manuf,
+                                glass_options.`name` AS opt,
+                                glass_type.name AS gl_type,
+                                glass_colors.name AS gl_color,
+                                ROUND(SUM((glass_width*glass_height)/1000000),2) AS total_kv_m,
+                                ROUND(SUM(IF(glasses_paths.status_id = 4,((glass_width*glass_height)/1000000),0)), 2) AS total_damaged
+
+                        FROM 		products_glasses
+                        JOIN 		orders ON products_glasses.order_id = orders.id AND orders.actived = 1
+                        JOIN 		orders_product ON products_glasses.order_product_id = orders_product.id AND orders_product.actived = 1
+                        JOIN 		glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = 5 AND glasses_paths.datetime BETWEEN '$date_start' AND '$date_end'
+                        JOIN 		`groups` ON `groups`.id = glasses_paths.path_group_id
+                        JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+                        JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+                        JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                        JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+
+
+                        WHERE 	products_glasses.actived = 1
+
+                        GROUP BY products_glasses.glass_manuf_id, products_glasses.glass_option_id,products_glasses.glass_type_id, products_glasses.glass_color_id");
+        $result = $db->getKendoList($columnCount, $cols);
+        $data = $result;
+    break;
     case 'get_list_kronka':
         $report_date = explode(' - ', $_REQUEST['report_date']);
 
