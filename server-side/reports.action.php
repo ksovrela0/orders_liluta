@@ -164,7 +164,7 @@ switch ($act){
                         FROM 		products_glasses
                         JOIN 		orders ON products_glasses.order_id = orders.id AND orders.actived = 1
                         JOIN 		orders_product ON products_glasses.order_product_id = orders_product.id AND orders_product.actived = 1
-                        JOIN 		glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = 5 AND glasses_paths.datetime BETWEEN '$date_start' AND '$date_end'
+                        JOIN 		glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = 5 AND glasses_paths.datetime BETWEEN '$date_start' AND '$date_end' AND glasses_paths.actived = 1
                         JOIN 		`groups` ON `groups`.id = glasses_paths.path_group_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
@@ -201,7 +201,7 @@ switch ($act){
                         FROM 		products_glasses
                         JOIN 		orders ON products_glasses.order_id = orders.id AND orders.actived = 1
                         JOIN 		orders_product ON products_glasses.order_product_id = orders_product.id AND orders_product.actived = 1
-                        JOIN 		glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = 3 AND glasses_paths.datetime BETWEEN '$date_start' AND '$date_end'
+                        JOIN 		glasses_paths ON glasses_paths.glass_id = products_glasses.id AND glasses_paths.path_group_id = 3 AND glasses_paths.datetime BETWEEN '$date_start' AND '$date_end' AND glasses_paths.actived = 1
                         JOIN 		`groups` ON `groups`.id = glasses_paths.path_group_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
