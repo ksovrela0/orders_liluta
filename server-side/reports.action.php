@@ -117,6 +117,7 @@ switch ($act){
                                 glass_options.`name` AS opt,
                                 glass_type.name AS gl_type,
                                 glass_colors.name AS gl_color,
+                                '' AS unk,
                                 ROUND(SUM((glass_width*glass_height)/1000000),2) AS total_kv_m,
                                 
                                 IFNULL(ROUND(SUM((cut_atxod.width*cut_atxod.height)/1000000),2),0) AS total_atxod
