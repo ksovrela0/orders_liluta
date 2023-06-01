@@ -18,7 +18,7 @@
 	<!-- Favicon -->
 	<!-- <link rel="icon" href="assets/img/brand/logo.png" type="image/x-icon"> -->
 	<!-- Title -->
-	<title>რეპორტი - ტაბელის საერთო რეპორტი</title>
+	<title>რეპორტი - კრონკა</title>
 	<!---Fontawesome css-->
 	<?php include('includes/functions.php'); ?>
 	<script type="text/javascript">
@@ -188,10 +188,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">ტაბელის საერთო რეპორტი</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">რეპორტი - კრონკა</h2>
 						<ol class="breadcrumb">
 							<li class="breadcrumb-item"><a href="#">რეპორტები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">ტაბელის საერთო რეპორტი</li>
+							<li class="breadcrumb-item active" aria-current="page">რეპორტი - კრონკა</li>
 						</ol>
 					</div>
 				</div>
@@ -207,33 +207,11 @@
 							border-radius: 14px;
 							padding: 6px;" type="text" id="report_date" class="idle form-input" autocomplete="off">
                     </div>
-					<div class="col-md-2">
+					<div class="col-md-2" style="display:none;">
 						<label>აირჩიეთ ჯგუფი</label>
 						<select id="user_group" style="width:95%; border: 2px solid #413241; text-align: center;font-size: 20px;  color: black;">
-							<?php getUserGroups(0); ?>
 						</select>
 					</div>
-					<?php
-						function getUserGroups($id){
-							GLOBAL $db;
-							$data = '';
-							$db->setQuery("SELECT   id,
-													name AS 'name'
-											FROM    `groups`
-											WHERE actived = 1 AND id != 1");
-							$cats = $db->getResultArray();
-							$data .= '<option value="">აირჩიეთ</option>';
-							foreach($cats['result'] AS $cat){
-								if($cat[id] == $id){
-									$data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
-								}
-								else{
-									$data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
-								}
-							}
-							echo $data;
-						}
-					?>
 					<div id="users"></div>
 				</div>
 				<!-- End Row -->
@@ -489,35 +467,29 @@
 		var actions         = 	'<div class="btn btn-list"><a id="export_excel" style="color:white;" class="btn ripple btn-primary">მონაცემთა რეპორტი</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	11;
+		var columnsCount    =	8;
 		var columnsSQL      = 	[
-                                    "user_id:string",
-                                    "group:string",
-									"firstname:string",
-                                    "lastname:string",
-                                    "phone:string",
+                                    "period:string",
+                                    "proc:string",
+									"manuf:string",
+                                    "glass_option:string",
+                                    "glass_type:string",
                                     
-                                    "pid:string",
+                                    "glass_color:string",
                                     
 
-                                    "total_worked_time:string",
-                                    "total_worked_nonwork_time:string",
-                                    "total_additional_worked_time:string",
-                                    "total_lated_time:string",
-                                    "total_lated_days:string"
+                                    "total_kronked_kvm:string",
+                                    "total_damaged_kvm:string"
 									
 								];
-		var columnGeoNames  = 	[   "ID",
-									"ჯგუფი", 
-									"სახელი",
-                                    "გვარი",
-                                    "ტელეფონი",
-                                    "პ/ნ",
-                                    "ნამუშევარი საათები",
-                                    "უქმეებშ ნამუშევარი საათები",
-                                    "დამატებითი საათები",
-                                    "გაცდენილი საათები",
-                                    "დაგვიანებული დღეები"
+		var columnGeoNames  = 	[   "პერიოდი",
+									"პროცესი", 
+									"მწარმოებელი",
+                                    "სისქე",
+                                    "ტიპი",
+                                    "ფერი",
+                                    "სულ დაკრ. კვ",
+                                    "დახარვ. მინ. კვ"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
@@ -530,7 +502,7 @@
 		//KendoUI CLASS CONFIGS END
 			
 		const kendo = new kendoUI();
-		kendo.loadKendoUI(aJaxURL,'get_list_tabel',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
+		kendo.loadKendoUI(aJaxURL,'get_list_kronka',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
 
 	}
 	$(document).on('change', '#user_group', function(){
