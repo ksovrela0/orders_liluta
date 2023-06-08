@@ -129,8 +129,7 @@ switch ($act){
         $data['result'] = $attendance;
 
 
-        $data['holidays'] = [];
-        $data['holidays'] = array_push($data['holidays'],$holidays['result']);
+        $data['holidays'] = $holidays['result'] == '' ? array() :  $holidays['result'];
 
 
 
