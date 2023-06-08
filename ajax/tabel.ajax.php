@@ -129,7 +129,7 @@ switch ($act){
         $data['result'] = $attendance;
 
 
-        
+        $data['holidays'] = [];
         $data['holidays'] = $holidays['result'];
 
 
