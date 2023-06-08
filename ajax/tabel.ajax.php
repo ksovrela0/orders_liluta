@@ -130,7 +130,7 @@ switch ($act){
 
 
         $data['holidays'] = [];
-        $data['holidays'] = $holidays['result'];
+        $data['holidays'] = array_push($data['holidays'],$holidays['result']);
 
 
 
