@@ -44,7 +44,7 @@
                                     FROM notifications
                                     WHERE actived = 1 AND user_id = '$user_id'
                                     ORDER BY id DESC
-                                    LIMIT 100");
+                                    ");
                      $notifications = $db->getResultArray();
 
                      foreach($notifications['result'] AS $notification){

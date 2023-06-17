@@ -605,7 +605,7 @@ switch ($act){
         $order_id = $_REQUEST['order_id'];
 
         foreach($glass_ids AS $g_id){
-            $db->setQuery("SELECT   orders_product.product_id
+            $db->setQuery(" SELECT   orders_product.product_id
                             FROM products_glasses
                             JOIN orders_product ON  orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
                             WHERE products_glasses.id = '$g_id'");
