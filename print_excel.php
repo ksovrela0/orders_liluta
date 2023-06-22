@@ -77,7 +77,7 @@ switch($act){
 
         $objPHPExcel    =   new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0);
-        
+        $objPHPExcel->getActiveSheet()->setTitle('Sheet1');
         $objPHPExcel->getActiveSheet()->SetCellValue('A1', 'Piece Number');
         $objPHPExcel->getActiveSheet()->SetCellValue('B1', 'X DIM');
         $objPHPExcel->getActiveSheet()->SetCellValue('C1', 'Y DIM');
