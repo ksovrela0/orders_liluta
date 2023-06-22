@@ -96,7 +96,7 @@ switch($act){
             $objPHPExcel->getActiveSheet()->SetCellValue('D'.$rowCount, 'Customer '.$rowCount);
             $objPHPExcel->getActiveSheet()->SetCellValue('E'.$rowCount, 'Order '.$rowCount);
             $objPHPExcel->getActiveSheet()->SetCellValue('F'.$rowCount, 'FL4');
-            $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, 'Note '.$rowCount);
+            $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, 'NOTE '.$rowCount);
             $objPHPExcel->getActiveSheet()->SetCellValue('H'.$rowCount, 'A '.$rowCount);
             $objPHPExcel->getActiveSheet()->SetCellValue('I'.$rowCount, 0);
             
