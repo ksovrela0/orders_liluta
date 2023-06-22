@@ -93,12 +93,13 @@ switch($act){
             $objPHPExcel->getActiveSheet()->SetCellValue('A'.$rowCount, $glass['cc']);
             $objPHPExcel->getActiveSheet()->SetCellValue('B'.$rowCount, $glass['glass_width']);
             $objPHPExcel->getActiveSheet()->SetCellValue('C'.$rowCount, $glass['glass_height']);
-            /* $objPHPExcel->getActiveSheet()->SetCellValue('D'.$rowCount, $glass['firstname']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('E'.$rowCount, $glass['lastname']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('F'.$rowCount, $glass['phone']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, $glass['pid']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('H'.$rowCount, $glass['birth_date']);
-            d$objPHPExcel->getActiveSheet()->SetCellValue('I'.$rowCount, $glass['address']); */
+            $objPHPExcel->getActiveSheet()->SetCellValue('D'.$rowCount, 'Customer '.$rowCount);
+            $objPHPExcel->getActiveSheet()->SetCellValue('E'.$rowCount, 'Order '.$rowCount);
+            $objPHPExcel->getActiveSheet()->SetCellValue('F'.$rowCount, 'FL4');
+            $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, 'Note '.$rowCount);
+            
+            $objPHPExcel->getActiveSheet()->SetCellValue('H'.$rowCount, 'A '.$rowCount);
+            $objPHPExcel->getActiveSheet()->SetCellValue('I'.$rowCount, 0);
             
 
             $rowCount++;
