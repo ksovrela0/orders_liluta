@@ -2,6 +2,7 @@
 session_start();
 error_reporting(E_ERROR);
 include('includes/excel/PHPExcel.php');
+include('includes/excel/Writer/Excel5.php');
 include('db.php');
 GLOBAL $db;
 $db = new dbClass();
@@ -104,13 +105,13 @@ switch($act){
         }
 
 
-        $objWriter  =   new PHPExcel_Writer_Excel2007($objPHPExcel);
+        $objWriter  =   new PHPExcel_Writer_Excel5($objPHPExcel);
  
  
         header('Content-Type: application/vnd.ms-excel'); //mime type
-        header('Content-Disposition: attachment;filename="raskroi-'.date("Y-m-d H:i").'.xlsx"'); //tell browser what's the file name
+        header('Content-Disposition: attachment;filename="raskroi-'.date("Y-m-d H:i").'.xls"'); //tell browser what's the file name
         header('Cache-Control: max-age=0'); //no cache
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');  
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');  
         $objWriter->save('php://output');
     break;
     case 'all':
