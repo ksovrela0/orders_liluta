@@ -133,7 +133,8 @@ switch($act){
                                 
                                 products_glasses.last_pyramid AS pyramid,
                                 products_glasses.id AS shtrix,
-                                products_glasses.order_id
+                                products_glasses.order_id,
+                                products_glasses.id AS glass_id
 
 
                         FROM 	products_glasses 
@@ -300,6 +301,8 @@ switch($act){
                                 <th>დამატოვება</th>
                                 <th>ლაზერი</th>
                                 <th>პირამიდა</th>
+                                <th>შეკვ.ID</th>
+                                <th>მინის ID</th>
                             </tr>';
                             foreach($glasses['result'] AS $glass){
             
@@ -319,6 +322,8 @@ switch($act){
                                             <td>'.$glass['damatoveba'].'</td>
                                             <td>'.$glass['lazeri'].'</td>
                                             <td>'.$glass['pyramid'].'</td>
+                                            <td>'.$glass['order_id'].'</td>
+                                            <td>'.$glass['glass_id'].'</td>
                                         </tr>';
 
             
