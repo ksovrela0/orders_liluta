@@ -1,6 +1,7 @@
 <?php
 session_start();
 error_reporting(E_ERROR);
+include('includes/excel/PHPExcel.php');
 include('db.php');
 GLOBAL $db;
 $db = new dbClass();
@@ -9,6 +10,109 @@ $user_id = $_SESSION['USERID'];
 
 
 switch($act){
+    case 'raskroi_excel':
+        $product_id = $_REQUEST['product_id'];
+
+        $option_id  = $_REQUEST['option_id'];
+        $manuf_id   = $_REQUEST['manuf_id'];
+        $color_id   = $_REQUEST['color_id'];
+
+        $client   = $_REQUEST['client'];
+
+        $size   = explode('-',$_REQUEST['size']);
+
+        $where = '';
+
+        if($option_id != ''){
+            $where .= " AND products_glasses.glass_option_id = '$option_id'";
+        }
+        if($manuf_id != ''){
+            $where .= " AND products_glasses.glass_manuf_id = '$manuf_id'";
+        }
+        if($color_id != ''){
+            $where .= " AND products_glasses.glass_color_id = '$color_id'";
+        }
+
+        if($client != ''){
+            $where .= " AND orders.id IN ($client)";
+        }
+
+        if($size[0] != ''){
+            $where .= " AND products_glasses.glass_width = '$size[0]' AND products_glasses.glass_height = '$size[1]'";
+        }
+
+
+        $db->setQuery(" SELECT  products_glasses.id,
+                                products_glasses.glass_option_id,
+                                products_glasses.glass_type_id,
+                                products_glasses.glass_color_id,
+                                products_glasses.glass_manuf_id,
+                                products_glasses.glass_width,
+                                products_glasses.glass_height,
+                                products_glasses.not_standard,
+                                products_glasses.picture,
+                                CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
+                                CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
+                                glass_colors.name AS color,
+                                COUNT(*) AS cc,
+                                GROUP_CONCAT(DISTINCT orders.client_name) as clients
+
+                        FROM    products_glasses
+                        JOIN		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
+                        JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                        JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
+                        JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
+                        JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                        JOIN    glass_status ON glass_status.id = products_glasses.status_id
+                        JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
+                        
+                        WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) $where
+                        GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, products_glasses.not_standard
+                        ORDER BY products_glasses.id");
+
+
+        $data = $db->getResultArray()['result'];
+
+
+        $objPHPExcel    =   new PHPExcel();
+        $objPHPExcel->setActiveSheetIndex(0);
+        
+        $objPHPExcel->getActiveSheet()->SetCellValue('A1', 'Piece Number');
+        $objPHPExcel->getActiveSheet()->SetCellValue('B1', 'X DIM');
+        $objPHPExcel->getActiveSheet()->SetCellValue('C1', 'Y DIM');
+        $objPHPExcel->getActiveSheet()->SetCellValue('D1', 'Customer');
+        $objPHPExcel->getActiveSheet()->SetCellValue('E1', 'Order');
+        $objPHPExcel->getActiveSheet()->SetCellValue('F1', 'MATERIAL CODE');
+        $objPHPExcel->getActiveSheet()->SetCellValue('G1', 'NOTE');
+        $objPHPExcel->getActiveSheet()->SetCellValue('H1', 'RACK');
+        $objPHPExcel->getActiveSheet()->SetCellValue('I1', 'Priority');
+
+        $rowCount = 2;
+        foreach($data AS $glass){
+            $objPHPExcel->getActiveSheet()->SetCellValue('A'.$rowCount, $glass['cc']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('B'.$rowCount, $glass['glass_width']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('C'.$rowCount, $glass['glass_height']);
+            /* $objPHPExcel->getActiveSheet()->SetCellValue('D'.$rowCount, $glass['firstname']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('E'.$rowCount, $glass['lastname']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('F'.$rowCount, $glass['phone']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, $glass['pid']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('H'.$rowCount, $glass['birth_date']);
+            $objPHPExcel->getActiveSheet()->SetCellValue('I'.$rowCount, $glass['address']); */
+            
+
+            $rowCount++;
+        }
+
+
+        $objWriter  =   new PHPExcel_Writer_Excel2007($objPHPExcel);
+ 
+ 
+        header('Content-Type: application/vnd.ms-excel'); //mime type
+        header('Content-Disposition: attachment;filename="raskroi-'.date("Y-m-d H:i").'.xlsx"'); //tell browser what's the file name
+        header('Cache-Control: max-age=0'); //no cache
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');  
+        $objWriter->save('php://output');
+    break;
     case 'all':
         $order_id =  $_REQUEST['order_id'];
 

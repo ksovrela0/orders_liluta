@@ -175,6 +175,20 @@
 		border-radius: 15px;
 		box-shadow: 2px 1px black;
     }
+
+	#go_excel{
+		border: 1px solid black;
+		width: fit-content;
+		padding: 7px;
+		font-size: 18px;
+		color: #fff;
+		background-color: red;
+		cursor: pointer;
+		margin-left: 20px;
+		background: radial-gradient(#1ad551 0.3%, #1ad551 90%);
+		border-radius: 15px;
+		box-shadow: 2px 1px black;
+	}
     .k-grid-toolbar {
         display: flex;
     }
@@ -360,6 +374,8 @@
 					<div class="col-sm-12" style="margin-top:20px;display:flex;justify-content: flex-start;align-items: end;">
 						<div id="filter">ფილტრი</div>
 						<div id="cut_glass">ჭრაზე გაშვება</div>
+
+						<div id="go_excel">EXCEL</div>
 					</div>
 					<div class="col-sm-2">
 						
@@ -971,6 +987,20 @@
 		var search = "&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id+"&size="+params.size+"&client="+params.client;
         loadBlocks(search);
 	});
+
+	$(document).on('click', '#go_excel', function(){
+		let params = new Object();
+
+		params.manuf_id = $("#selected_glass_manuf_id").val();
+        params.option_id = $("#selected_glass_cat_id").val();
+        params.color_id = $("#selected_glass_color_id").val();
+		params.size = $("#selected_glass_sizes").val();
+		params.client = $("#selected_glass_client").val();
+
+		var search = "act=raskroi_excel&manuf_id="+params.manuf_id+"&option_id="+params.option_id+"&color_id="+params.color_id+"&size="+params.size+"&client="+params.client;
+
+		window.open("print_excel.php?"+search, '_blank').focus();
+	})
 
 	function loadBlocks(search = ''){
 		$("#glasses_div").html('');
