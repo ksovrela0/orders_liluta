@@ -98,7 +98,7 @@ switch($act){
             $objPHPExcel->getActiveSheet()->SetCellValue('F'.$rowCount, $glass['phone']);
             $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, $glass['pid']);
             $objPHPExcel->getActiveSheet()->SetCellValue('H'.$rowCount, $glass['birth_date']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('I'.$rowCount, $glass['address']); */
+            d$objPHPExcel->getActiveSheet()->SetCellValue('I'.$rowCount, $glass['address']); */
             
 
             $rowCount++;
