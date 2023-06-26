@@ -72,7 +72,8 @@ switch ($act){
                                 </li>
                                 <li class="zoma" style="font-size: 13px;">
                                     <b style="font-size: 13px;">'.$glass['size'].'</b>
-                                    <br>პირ: '.$glass['last_pyramid'].'
+                                    <br>
+                                    ID: '.$glass['id'].' პირ: '.$glass['last_pyramid'].'
                                 </li>
                                 <li class="barcode">
                                     <img src="includes/barcode/index.php?title='.$glass['id'].'">

@@ -58,7 +58,9 @@ switch($act){
                                 COUNT(*) AS cc,
                                 GROUP_CONCAT(DISTINCT orders.client_name) as clients,
 
-                                glass_options.g_size
+                                glass_options.g_size,
+
+                                ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2) AS kv_m
 
                         FROM    products_glasses
                         JOIN		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
@@ -91,6 +93,10 @@ switch($act){
         $objPHPExcel->getActiveSheet()->SetCellValue('I1', 'Priority');
 
         $rowCount = 2;
+
+        $glass_size = $option_id;
+        $total_kvm = 0;
+        $glass_size_2 = 0;
         foreach($data AS $glass){
             $objPHPExcel->getActiveSheet()->SetCellValue('A'.$rowCount, $glass['cc']);
             $objPHPExcel->getActiveSheet()->SetCellValue('B'.$rowCount, $glass['glass_width']);
@@ -102,19 +108,23 @@ switch($act){
             $objPHPExcel->getActiveSheet()->SetCellValue('H'.$rowCount, 'A'.rand(1,5));
             $objPHPExcel->getActiveSheet()->SetCellValue('I'.$rowCount, 0);
             
+            $total_kvm += $glass['kv_m'];
 
+            $glass_size_2 = $glass['g_size'];
             $rowCount++;
         }
 
 
         $objWriter  =   new PHPExcel_Writer_Excel5($objPHPExcel);
  
- 
-        header('Content-Type: application/vnd.ms-excel'); //mime type
-        header('Content-Disposition: attachment;filename="raskroi-'.date("Y-m-d H:i").'.xls"'); //tell browser what's the file name
-        header('Cache-Control: max-age=0'); //no cache
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');  
-        $objWriter->save('php://output');
+        if($glass_size != 0){
+            header('Content-Type: application/vnd.ms-excel'); //mime type
+            header('Content-Disposition: attachment;filename="'.$glass_size_2.'mm-'.$total_kvm.'-'.date("Y-m-d H:i").'.xls"'); //tell browser what's the file name
+            header('Cache-Control: max-age=0'); //no cache
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');  
+            $objWriter->save('php://output');
+        }
+        
     break;
     case 'all':
         $order_id =  $_REQUEST['order_id'];

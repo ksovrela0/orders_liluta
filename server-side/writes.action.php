@@ -3216,7 +3216,8 @@ switch ($act){
                                 CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
                                 glass_colors.name AS color,
                                 COUNT(*) AS cc,
-                                GROUP_CONCAT(DISTINCT orders.client_name) as clients
+                                GROUP_CONCAT(DISTINCT orders.client_name) as clients,
+                                ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2) AS kv_m
 
                         FROM    products_glasses
                         JOIN		orders ON orders.id = products_glasses.order_id AND orders.actived = 1

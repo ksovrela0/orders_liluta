@@ -383,6 +383,9 @@
 				</div>
 				<div class="row">
 					<div class="col-sm-12">
+						<p style="font-size: 17px;">კვადრატულობა: <span id="total_kvm" style="font-weight:bold;">0</span></p>
+					</div>
+					<div class="col-sm-12">
 						<div id="list_area">
 							<p id="no_list">ლისტი ცარიელია</p>
 						</div>
@@ -1011,9 +1014,10 @@
 			dataType: "json",
 			success: function(data){
 				if(typeof data != 'undefined' || data.length > 0){
+					let total_kvm = 0;
 					data.forEach(function(data, x){
 						x = x+1;
-						
+						total_kvm += parseFloat(data.kv_m);
 						var styles = ``;
 						if(data.not_standard == 1){
 							styles = 'style="background-color:#ffeaa3;"';
@@ -1031,6 +1035,8 @@
 							<div class="sort_n">`+x+`</div>
 						</div>`);
 					})
+
+					$("#total_kvm").html(total_kvm)
 				}
 			}
 		})
