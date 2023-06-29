@@ -383,7 +383,12 @@
 				</div>
 				<div class="row">
 					<div class="col-sm-12">
-						<p style="font-size: 17px;">კვადრატულობა: <span id="total_kvm" style="font-weight:bold;">0</span></p>
+							<p style="font-size: 17px;">კვადრატულობა: <span id="total_kvm" style="font-weight:bold;">0</span></p>
+
+							<p style="font-size: 17px;">დახ. კვადრატულობა: <span id="total_broken_kvm" style="font-weight:bold;">0</span></p>
+
+							<p style="font-size: 17px;">კვადრატულობა დახ. გარეშე: <span id="total_kvm_no_broken" style="font-weight:bold;">0</span></p>
+						
 					</div>
 					<div class="col-sm-12">
 						<div id="list_area">
@@ -1015,9 +1020,11 @@
 			success: function(data){
 				if(typeof data != 'undefined' || data.length > 0){
 					let total_kvm = 0;
+					let total_broken_kvm = 0;
 					data.forEach(function(data, x){
 						x = x+1;
-						total_kvm += parseFloat(data.kv_m);
+						total_kvm += parseFloat(data.kv_m)*data.cc;
+						total_broken_kvm += parseFloat(data.broken_kvm);
 						var styles = ``;
 						if(data.not_standard == 1){
 							styles = 'style="background-color:#ffeaa3;"';
@@ -1035,8 +1042,11 @@
 							<div class="sort_n">`+x+`</div>
 						</div>`);
 					})
-
 					$("#total_kvm").html(total_kvm)
+
+					$("#total_broken_kvm").html(total_broken_kvm)
+
+					$("#total_kvm_no_broken").html(total_kvm-total_broken_kvm)
 				}
 			}
 		})

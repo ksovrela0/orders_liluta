@@ -3217,7 +3217,8 @@ switch ($act){
                                 glass_colors.name AS color,
                                 COUNT(*) AS cc,
                                 GROUP_CONCAT(DISTINCT orders.client_name) as clients,
-                                ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2) AS kv_m
+                                ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2) AS kv_m,
+                                IFNULL((SELECT ROUND((pg.glass_width * pg.glass_height)/1000000,2) FROM products_glasses AS pg WHERE pg.new_id = products_glasses.id),0) AS broken_kvm
 
                         FROM    products_glasses
                         JOIN		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
