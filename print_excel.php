@@ -63,8 +63,9 @@ switch($act){
                                 ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2) AS kv_m
 
                         FROM    products_glasses
-                        JOIN		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                        JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                        
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
