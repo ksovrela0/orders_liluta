@@ -791,7 +791,8 @@ switch($act){
                         JOIN products_glasses ON products_glasses.order_product_id = orders_product.id AND products_glasses.actived = 1 AND products_glasses.status_id != 4
                         JOIN glass_options ON glass_options.id = products_glasses.glass_option_id
                         JOIN glass_colors ON glass_colors.id = products_glasses.glass_color_id
-                        WHERE orders_product.id IN ($prod_ids)");
+                        WHERE orders_product.id IN ($prod_ids)
+                        GROUP BY orders_product.id");
         $glasses = $db->getResultArray();
 
 
@@ -943,16 +944,16 @@ switch($act){
                                 <th>პირამიდა</th>
                             </tr>';
                             foreach($glasses['result'] AS $gl){
-
+                                echo '<tr>
+                                        <td>'.$gl['sort_n'].'</td>
+                                        <td>'.$gl['glasses'].'</td>
+                                        <td><b>'.$gl['m_width'].'</b></td>
+                                        <td><b>'.$gl['m_height'].'</b></td>
+                                        <td><b>'.$gl['sqr_m'].'</b></td>
+                                        <td><b>'.$gl['pyramid'].'</b></td>
+                                    </tr>';
                             }
-                            echo '<tr>
-                                <td>'.$gl['sort_n'].'</td>
-                                <td>'.$gl['glasses'].'</td>
-                                <td><b>'.$gl['m_width'].'</b></td>
-                                <td><b>'.$gl['m_height'].'</b></td>
-                                <td><b>'.$gl['sqr_m'].'</b></td>
-                                <td><b>'.$gl['pyramid'].'</b></td>
-                            </tr>';
+                            
 
                             
                         echo '</table>
