@@ -60,8 +60,8 @@ switch($act){
 
                                 glass_options.g_size,
 
-                                ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2) AS kv_m
-
+                                ROUND((products_glasses.glass_width * products_glasses.glass_height)/1000000,2) AS kv_m,
+                                IFNULL((SELECT ROUND((pg.glass_width * pg.glass_height)/1000000,2) FROM products_glasses AS pg WHERE pg.new_id = products_glasses.id),0) AS broken_kvm
                         FROM    products_glasses
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
                         JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
