@@ -35,8 +35,9 @@ switch ($act){
         
                         FROM products_glasses
                         LEFT JOIN lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
-                        JOIN		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                        JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                        
                         WHERE products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id  =1");
 
         $cut_queue = intval($db->getResultArray()['result'][0]['cc']);
