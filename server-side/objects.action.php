@@ -513,7 +513,7 @@ switch ($act){
                                 orders.client_pid,
                                 orders.client_phone,
                                 IF(orders.total - (orders.avansi+orders.avans_plus) = 0,'კი','არა') AS payment,
-                                products_glasses.new_id,
+                                products_glasses.new_id,products_glasses.add_info,
                                 (SELECT MAX(finish_datetime) FROM glasses_paths WHERE glass_id = products_glasses.id AND actived = 1) AS finish_date,
                                 IF((SELECT COUNT(*) FROM glasses_paths WHERE actived = 1 AND glass_id = products_glasses.id AND status_id IN (1,2,4,5,6)) = 0,'<span class=\"status_finished\">გასაცემი</span>',CASE
                                     WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM `groups` WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1  WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM `groups` WHERE id = lists_to_cut.status_id)),'ჭრა')
