@@ -55,7 +55,7 @@ switch($act){
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
                                 glass_colors.name AS color,
-                                1 AS cc,
+                                COUNT(*) AS cc,
                                 
 
                                 glass_options.g_size,
@@ -73,7 +73,7 @@ switch($act){
                         JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
                         
                         WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) $where
-                        
+                        GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, products_glasses.not_standard
                         ORDER BY products_glasses.id");
 
 
