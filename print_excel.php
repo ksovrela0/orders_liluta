@@ -55,8 +55,8 @@ switch($act){
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
                                 glass_colors.name AS color,
-                                COUNT(*) AS cc,
-                                GROUP_CONCAT(DISTINCT orders.client_name) as clients,
+                                1 AS cc,
+                                
 
                                 glass_options.g_size,
 
@@ -73,7 +73,7 @@ switch($act){
                         JOIN    glass_manuf ON glass_manuf.id = products_glasses.glass_manuf_id
                         
                         WHERE   products_glasses.actived = 1 AND products_glasses.go_to_cut = 1 AND products_glasses.status_id = 1 AND products_glasses.id NOT IN (SELECT glass_id FROM lists_to_cut WHERE actived = 1) $where
-                        GROUP BY products_glasses.glass_width, products_glasses.glass_height, products_glasses.glass_option_id, products_glasses.glass_color_id, products_glasses.glass_manuf_id, products_glasses.not_standard
+                        
                         ORDER BY products_glasses.id");
 
 
@@ -103,7 +103,7 @@ switch($act){
             $objPHPExcel->getActiveSheet()->SetCellValue('B'.$rowCount, $glass['glass_width']);
             $objPHPExcel->getActiveSheet()->SetCellValue('C'.$rowCount, $glass['glass_height']);
             $objPHPExcel->getActiveSheet()->SetCellValue('D'.$rowCount, 'Customer '.$rowCount);
-            $objPHPExcel->getActiveSheet()->SetCellValue('E'.$rowCount, 'Order '.$rowCount);
+            $objPHPExcel->getActiveSheet()->SetCellValue('E'.$rowCount, $glass['id']);
             $objPHPExcel->getActiveSheet()->SetCellValue('F'.$rowCount, 'FL'.$glass['g_size']);
             $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, 'NOTE'.$rowCount);
             $objPHPExcel->getActiveSheet()->SetCellValue('H'.$rowCount, 'A'.rand(1,5));
