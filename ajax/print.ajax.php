@@ -13,7 +13,8 @@ switch ($act){
                                 CONCAT(CONCAT(products_glasses.glass_width, ' x ', products_glasses.glass_height), IF(products_glasses.not_standard = 1, '*','')) AS size,
                                 orders.client_name,
                                 orders_product.add_info AS comment,
-                                products_glasses.last_pyramid
+                                products_glasses.last_pyramid,
+                                products_glasses.add_info
                         FROM products_glasses
                         JOIN orders ON orders.id = products_glasses.order_id AND orders.actived = 1
                         JOIN orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
@@ -68,7 +69,7 @@ switch ($act){
                                     '.$glass['client_name'].'
                                 </li>
                                 <li class="minisid" style="font-size: 13px;">
-                                    '.$glass['comment'].'
+                                    '.$glass['comment'].' '.$glass['add_info'].'
                                 </li>
                                 <li class="zoma" style="font-size: 13px;">
                                     <b style="font-size: 13px;">'.$glass['size'].'</b>
