@@ -56,6 +56,7 @@ switch($act){
                                 CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
                                 glass_colors.name AS color,
                                 COUNT(*) AS cc,
+                                GROUP_CONCAT(products_glasses.id) AS glass_ids,
                                 
 
                                 glass_options.g_size,
@@ -102,7 +103,7 @@ switch($act){
             $objPHPExcel->getActiveSheet()->SetCellValue('A'.$rowCount, $glass['cc']);
             $objPHPExcel->getActiveSheet()->SetCellValue('B'.$rowCount, $glass['glass_width']);
             $objPHPExcel->getActiveSheet()->SetCellValue('C'.$rowCount, $glass['glass_height']);
-            $objPHPExcel->getActiveSheet()->SetCellValue('D'.$rowCount, 'Customer '.$rowCount);
+            $objPHPExcel->getActiveSheet()->SetCellValue('D'.$rowCount, $glass['glass_ids']);
             $objPHPExcel->getActiveSheet()->SetCellValue('E'.$rowCount, $glass['id']);
             $objPHPExcel->getActiveSheet()->SetCellValue('F'.$rowCount, 'FL'.$glass['g_size']);
             $objPHPExcel->getActiveSheet()->SetCellValue('G'.$rowCount, 'NOTE'.$rowCount);
