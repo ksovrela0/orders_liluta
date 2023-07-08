@@ -558,7 +558,7 @@ switch ($act){
 
 
         $to_give_count = count($prod_ids);
-        $db->setQuery("SELECT COUNT(*) AS cc FROM orders_product WHERE id IN ($ids) AND status_id = 3");
+        $db->setQuery("SELECT COUNT(*) AS cc FROM orders_product WHERE id IN ($ids)");
         $cc_finished = $db->getResultArray()['result'][0]['cc'];
         if($cc_finished == $to_give_count){
             $db->setQuery("SELECT COUNT(*) AS cc FROM orders_product WHERE id IN ($ids) AND status_id = 6");
