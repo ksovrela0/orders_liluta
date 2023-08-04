@@ -529,7 +529,7 @@
 		params.ids = glass_ids;
 
 
-
+		params.client = $("#selected_glass_client").val();
 
 		$.ajax({
 			url: "server-side/writes.action.php",

@@ -744,11 +744,17 @@ switch ($act){
         $glass_type_id = $_REQUEST['glass_type_id'];
         $glass_color_id = $_REQUEST['glass_color_id'];
         $glass_manuf_id = $_REQUEST['glass_manuf_id'];
+        $client = implode(',',$_REQUEST['client']);
         $not_standard = $_REQUEST['not_standard'];
+
+        
         $where = '';
         $ids = implode(',',$_REQUEST['ids']);
         if($ids != ''){
             $where .= " AND products_glasses.id NOT IN ($ids)";
+        }
+        if($client != ''){
+            $where .= " AND orders.id IN ($client)";
         }
         $db->setQuery(" SELECT products_glasses.*,CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
