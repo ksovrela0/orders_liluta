@@ -1138,8 +1138,8 @@ switch ($act){
 
                     $cc = $db->getResultArray()['result'][0]['cc'];
 
-                    if($cc >= 2){
-                        $data['error'] = 'თქვენ არ გაქვთ 2-ზე მეტი ჭრის დაწყების უფლება';
+                    if($cc >= 20){
+                        $data['error'] = 'თქვენ არ გაქვთ 20-ზე მეტი ჭრის დაწყების უფლება';
                     }
                     else{
                         $db->setQuery("UPDATE cut_glass SET status_id = 2 WHERE id = '$cut_id' AND actived = 1");
