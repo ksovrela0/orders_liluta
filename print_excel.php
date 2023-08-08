@@ -57,7 +57,7 @@ switch($act){
                                 glass_colors.name AS color,
                                 COUNT(*) AS cc,
                                 GROUP_CONCAT(products_glasses.id) AS glass_ids,
-                                
+                                GROUP_CONCAT(DISTINCT orders.client_name) as clients,
 
                                 glass_options.g_size,
 
