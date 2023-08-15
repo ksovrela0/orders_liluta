@@ -1357,15 +1357,16 @@ switch ($act){
             $data['error'] = 'ამ მინაზე ეგ პროცესი უკვე დამატებულია!!!';
         }
         else{
+            $db->setQuery("SELECT default_price
+                            FROM `groups`
+                            WHERE id = '$proc_id'");
+            $price = $db->getResultArray()['result'][0]['default_price'];
             if($proc_id == 4 || $proc_id == 3){
-                $data = array('page' => getPricePage($proc_id));
+                $data = array('page' => getPricePage($proc_id, $price));
             }
             else{
     
-                $db->setQuery("SELECT default_price
-                                FROM `groups`
-                                WHERE id = '$proc_id'");
-                $price = $db->getResultArray()['result'][0]['default_price'];
+                
     
                 if($proc_id == 3){
                     $price_total = (($width/1000) + ($height/1000))*2*$price;
@@ -3551,7 +3552,7 @@ function getProduct($id){
     return $result['result'][0];
     
 }
-function getPricePage($proc_id){
+function getPricePage($proc_id,$price){
     GLOBAL $db;
 
     $data = '   <fieldset class="fieldset">
@@ -3577,8 +3578,7 @@ function getPricePage($proc_id){
                                                 &nbsp;&nbsp;&nbsp;
                                                 <input style="height:14.14px !important;" type="checkbox" id="kronka_right">
                                                 <label>მარჯვენა</label>
-                                                <label>ფასი მეტრობით</label>
-                                                <input type="number" step=".01" value="5" id="kv_price">
+                                                <input style="display:none;" type="number" step=".01" value="'.$price.'" id="kv_price">
                                             </div>
                                             ';
                             }
