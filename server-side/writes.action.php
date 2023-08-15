@@ -3565,6 +3565,7 @@ function getPricePage($proc_id){
                             } */
                             if($proc_id == 3){
                                 $data .= '  <div class="col-sm-12">
+                                                <button id="select_all_kronka">ყველას მონიშვნა</button><br>
                                                 <input style="height:14.14px !important;" type="checkbox" id="kronka_top">
                                                 <label>ზედა</label>
                                                 &nbsp;&nbsp;&nbsp;

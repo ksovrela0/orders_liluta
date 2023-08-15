@@ -2213,6 +2213,9 @@
 					}
 				})
 			})
+			$(document).on('click','#select_all_kronka', function(){
+				$('#kronka_top, #kronka_bottom, #kronka_left, #kronka_right').click();
+			});	
 			</script>
 </body>
 

@@ -83,8 +83,8 @@ if(isset($_SESSION['USERID'])){
         
     }
     else{
-		$db->setQuery("SET GLOBAL group_concat_max_len = 99999999999999");
-		$db->execQuery();
+		/* $db->setQuery("SET GLOBAL group_concat_max_len = 99999999999999");
+		$db->execQuery(); */
         include($page.'.php');
     }
 }
