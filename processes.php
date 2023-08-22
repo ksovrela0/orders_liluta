@@ -1377,7 +1377,7 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				setTimeout(function(){
 					$( ".k-input-inner" ).eq(1).focus()
 					$(".f_img").fancybox();
-				},1000)
+				},4000)
 			}
 
 			function LoadKendoTable_main2(hidden) {

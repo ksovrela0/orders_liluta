@@ -173,6 +173,11 @@
 		border-radius: 15px;
 		box-shadow: 2px 1px black;
     }
+	.print_shtrixkod,.print_shtrixkod_all{
+		color: blue;
+		cursor: pointer;
+		font-size: 17px;
+	}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>
@@ -479,7 +484,7 @@
 									"მინა ID", 
                                     "ზომა",
 									"პირამიდა",
-                                    "შეკვ.ID",
+                                    "სურ",
 									"დამკვეთი",
 									"პ/ნ ან ს/კ",
 									"ტელეფონი",
@@ -502,9 +507,35 @@
 			
 		const kendo = new kendoUI();
 		kendo.loadKendoUI(aJaxURL,'get_list_by_glass',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
-
+		setTimeout(function(){
+			$( ".k-input-inner" ).eq(1).focus()
+			$(".f_img").fancybox();
+		},4000)
 	}
+	$(document).on('click', '.print_shtrixkod, .print_shtrixkod_all', function(){
+				var glass_id = $(this).attr('data-id');
 
+				$.ajax({
+					url: "ajax/print.ajax.php",
+					type: "POST",
+					data: "act=print&glass_id="+glass_id,
+					dataType: "json",
+					success: function (data) {
+						if(typeof data != 'undefined'){
+							var a = window.open('', '', 'height=500, width=500');
+							a.document.write(data.page);
+							a.document.close();
+							setTimeout(function(){
+								a.print();
+							}, 1000)
+							
+						}
+						else{
+							alert('დაფიქსირდა შეცდომა');
+						}
+					}
+				});
+			});
 	$(document).on('click', '#new_glass', function(){
 		var grid = $("#pyramid_glass").data("kendoGrid");
 		var selectedRows = grid.select();
