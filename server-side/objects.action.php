@@ -509,6 +509,7 @@ switch ($act){
                                 CONCAT(glass_options.name,' <br><b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ', IF(products.id IN (2,3),CONCAT('<br>(',products.name,')'),'' )) AS glass,
                                 products_glasses.last_pyramid,
                                 CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>')), '<span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:30px\" src=\"assets/img/print.png\"></span>'),
+                                orders.id AS order_id,
                                 CONCAT(orders.client_name, ' ', IFNULL(orders_product.add_info,'')),
                                 orders.client_pid,
                                 orders.client_phone,
