@@ -515,6 +515,69 @@
 						});
 					}
 				});
+
+
+
+				<?php
+					if(isset($_REQUEST['glass_id']) AND !empty($_REQUEST['glass_id'])){
+						echo '
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "get_edit_page_by_glass",
+								id: '.$_REQUEST['glass_id'].'
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#get_edit_page").html(data.page);
+								$("#resp_user,#clients").chosen();
+								$("#order_date").daterangepicker({
+									timePicker: true,
+									locale: {
+										format: "YYYY-MM-DD HH:mm:ss"
+									}
+								});
+								var kendo = new kendoUI();
+								var pr = "&order_id="+data.order_id;
+								LoadKendoTable_product(pr);
+								$("#get_edit_page").dialog({
+									resizable: false,
+									height: "auto",
+									width: 1400,
+									modal: true,
+									position: "top",
+									buttons: {
+										"გადათვლა": function() {
+											$.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												data: {
+													act: "calc_price",
+													order_id: $("#writing_id").val()
+												},
+												dataType: "json",
+												success: function(data) {
+													$("#pay_total").val(data.total_price);
+												}
+											});
+										},
+										"შენახვა": function() {
+											save_order();
+										},
+										\'დახურვა\': function() {
+											if(confirm("ნამდვილად გსურთ დახურვა?")){
+												$(this).dialog("close");
+											}
+										}
+									}
+								});
+							}
+						});
+						
+						';
+					}
+				?>
 			});
 
 			function LoadKendoTable_main(hidden) {
@@ -526,7 +589,7 @@
 				var itemPerPage = 100;
 				var columnsCount = 13;
 				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "sum_sqrm:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string", "gacmin:string"];
-				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დამკვეთი", "პირადი ნომერი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი", "გაც.მინები"];
+				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დამკვეთი", "დამკვეთი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი", "გაც.მინები"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2151,6 +2214,9 @@
 					}
 				})
 			})
+			$(document).on('click','#select_all_kronka', function(){
+				$('#kronka_top, #kronka_bottom, #kronka_left, #kronka_right').click();
+			});	
 			</script>
 </body>
 
