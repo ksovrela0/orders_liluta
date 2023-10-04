@@ -3032,7 +3032,7 @@ switch ($act){
                                         WHERE 	    cut_glass.actived = 1 $where
                                         
                                         GROUP BY    cut_glass.id
-                                        ORDER BY    glass_status.sort_n, DATEDIFF(orders.datetime_finish,CURDATE())");
+                                        ORDER BY    glass_status.sort_n ASC, cut_glass.id DESC");
 
             
         }
