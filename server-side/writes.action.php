@@ -258,7 +258,12 @@ switch ($act){
 
         $data = array('page' => change_sizes(getGlass($glass_id), $prod_id));
     break;
-    
+    case 'hard_finish':
+        $order_id = $_REQUEST['order_id'];
+
+        $db->setQuery("UPDATE orders SET status_id = 4 WHERE id = '$order_id'");
+        $db->execQuery();
+        break;
     case 'change_sizes_save':
         $glass_id = $_REQUEST['glass_id'];
         $prod_id = $_REQUEST['prod_id'];

@@ -547,6 +547,9 @@
 									modal: true,
 									position: "top",
 									buttons: {
+										"შეკვეთის დასრულება": function() {
+											hard_finish();
+										},
 										"გადათვლა": function() {
 											$.ajax({
 												url: "server-side/writes.action.php",
@@ -826,6 +829,9 @@
 							modal: true,
 							position: "top",
 							buttons: {
+								"შეკვეთის დასრულება": function() {
+									hard_finish();
+								},
 								"გადათვლა": function() {
 									$.ajax({
 										url: "server-side/writes.action.php",
@@ -1166,6 +1172,9 @@
 							modal: true,
 							position: "top",
 							buttons: {
+								"შეკვეთის დასრულება": function() {
+									hard_finish();
+								},
 								"გადათვლა": function() {
 									$.ajax({
 										url: "server-side/writes.action.php",
@@ -1335,7 +1344,26 @@
 					}
 				});
 			}
+			function hard_finish() {
+				let ask = confirm("ნამდვილად გსურთ შეკვეთის დასრულება?");
 
+				if(ask){
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "hard_finish",
+							order_id: $('#writing_id').val(),
+							zones: $('#zones').val()
+						},
+						dataType: "json",
+						success: function(data) {
+							$("#main_div").data("kendoGrid").dataSource.read();
+							$('#get_edit_page').dialog("close");
+						}
+					});
+				}
+			}
 			function save_order() {
 				let params = new Object;
 
