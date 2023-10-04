@@ -786,10 +786,17 @@ switch ($act){
         
     break;
     case 'save_list_cut':
-        $raw_ids = $_REQUEST['glass_ids'];
+        $raw_ids = array();
         $glass_ids = explode(',', $_REQUEST['glass_ids']);
         $list_id = $_REQUEST['list_id'];
         $cut_id = $_REQUEST['cut_id'];
+
+        foreach($glass_ids AS $glass){
+            $glass_data = explode(':', $glass);
+            $raw_ids[] = $glass_data[0];
+        }
+        $raw_ids = implode(',', $raw_ids);
+
 
         $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($raw_ids) AND status_id = 1");
         $glass_check = $db->getResultArray()['result'][0]['cc'];
@@ -818,7 +825,12 @@ switch ($act){
 
             foreach($glass_ids AS $glass){
                 
-                $db->setQuery("INSERT INTO lists_to_cut SET cut_id = '$cut_id', list_id = '$list_id', glass_id = '$glass', status_id = 1");
+                $glass_data = explode(':', $glass);
+                $glass = $glass_data[0];
+                $sort_n = $glass_data[1];
+
+
+                $db->setQuery("INSERT INTO lists_to_cut SET cut_id = '$cut_id', list_id = '$list_id', glass_id = '$glass', sort_n = '$sort_n', status_id = 1");
                 $db->execQuery();
             }
 

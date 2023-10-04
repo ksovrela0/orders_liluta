@@ -783,13 +783,15 @@
         var color_ids = [];
         var manuf_ids = [];
 		$(".element_in_list").each(function(i,x){
-			console.log($(x).attr('glass-id'))
 
-			glass_ids.push($(x).attr('glass-id'));
-            option_ids.push($(x).attr('glass_option_id'));
-            type_ids.push($(x).attr('glass_type_id'));
-            color_ids.push($(x).attr('glass_color_id'));
-            manuf_ids.push($(x).attr('glass_manuf_id'));
+
+			let glass_id_with_sort = $(x).attr('glass-id') + ":" + $(x).attr('sort_n')
+
+			glass_ids.push(glass_id_with_sort);
+			option_ids.push($(x).attr('glass_option_id'));
+			type_ids.push($(x).attr('glass_type_id'));
+			color_ids.push($(x).attr('glass_color_id'));
+			manuf_ids.push($(x).attr('glass_manuf_id'));
 		})
         
         var allowToCut = 0;
