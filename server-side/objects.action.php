@@ -179,7 +179,7 @@ switch ($act){
                 $path_id = $glass_data[0]['id'];
                 $path_group_id = $glass_data[0]['path_group_id'];
                 $path_status_id = $glass_data[0]['status_id'];
-                if($path_status_id == 4){
+                //if($path_status_id == 4){
                     if($path_group_id == 6 || $path_group_id == 7){
                         $data['error'] = 'მინაპაკეტის/ლამექსის შემდეგ პროცესზე გადაყვანა შეუძლებელია. დააწყებინეთ პროცესი თავიდან';
                     }
@@ -205,10 +205,10 @@ switch ($act){
                         $data['status'] = 1;
                     }
                     
-                }
+                /* }
                 else{
                     $data['error'] = 'თქვენ მიერ არჩეული მინა მოლოდინშია ან მიმდინარე, მისი შემდეგ პროცესზე გადაყვანა შეუძლებელია';
-                }
+                } */
 
             }
         }
