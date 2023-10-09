@@ -155,17 +155,17 @@ switch ($act){
             $cut_id = $cut_data['cut_id'];
             $status_id = $cut_data['status_id'];
             if($cut_id != ''){
-                if($status_id == 4){
+                //if($status_id == 4){
                     $db->setQuery("UPDATE lists_to_cut SET status_id = 3, pyramid = '$pyramid', finish_datetime = NOW() WHERE glass_id = '$id'");
                     $db->execQuery();
 
                     $db->setQuery("UPDATE products_glasses SET status_id = '2', last_pyramid = '$pyramid' WHERE id = '$id'");
                     $db->execQuery();
                     $data['status'] = 1;
-                }
+                /* }
                 else{
                     $data['error'] = 'თქვენ მიერ არჩეული მინა მოლოდინშია ან მიმდინარე, მისი შემდეგ პროცესზე გადაყვანა შეუძლებელია';
-                }
+                } */
             }
             else{
                 $db->setQuery(" SELECT      id, path_group_id, status_id
