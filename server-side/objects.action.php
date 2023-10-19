@@ -155,17 +155,17 @@ switch ($act){
             $cut_id = $cut_data['cut_id'];
             $status_id = $cut_data['status_id'];
             if($cut_id != ''){
-                if($status_id == 4){
+                //if($status_id == 4){
                     $db->setQuery("UPDATE lists_to_cut SET status_id = 3, pyramid = '$pyramid', finish_datetime = NOW() WHERE glass_id = '$id'");
                     $db->execQuery();
 
                     $db->setQuery("UPDATE products_glasses SET status_id = '2', last_pyramid = '$pyramid' WHERE id = '$id'");
                     $db->execQuery();
                     $data['status'] = 1;
-                }
+                /* }
                 else{
                     $data['error'] = 'თქვენ მიერ არჩეული მინა მოლოდინშია ან მიმდინარე, მისი შემდეგ პროცესზე გადაყვანა შეუძლებელია';
-                }
+                } */
             }
             else{
                 $db->setQuery(" SELECT      id, path_group_id, status_id
@@ -179,7 +179,7 @@ switch ($act){
                 $path_id = $glass_data[0]['id'];
                 $path_group_id = $glass_data[0]['path_group_id'];
                 $path_status_id = $glass_data[0]['status_id'];
-                if($path_status_id == 4){
+                //if($path_status_id == 4){
                     if($path_group_id == 6 || $path_group_id == 7){
                         $data['error'] = 'მინაპაკეტის/ლამექსის შემდეგ პროცესზე გადაყვანა შეუძლებელია. დააწყებინეთ პროცესი თავიდან';
                     }
@@ -205,10 +205,10 @@ switch ($act){
                         $data['status'] = 1;
                     }
                     
-                }
+                /* }
                 else{
                     $data['error'] = 'თქვენ მიერ არჩეული მინა მოლოდინშია ან მიმდინარე, მისი შემდეგ პროცესზე გადაყვანა შეუძლებელია';
-                }
+                } */
 
             }
         }
