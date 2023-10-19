@@ -35,7 +35,7 @@ $user_gr = $_SESSION['GRPID'];
                         if($item['id'] == 15){
                             $db->setQuery(" SELECT  `groups`.id, 
                                                             name,
-                                                            IF(`sgroups`.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
+                                                            IF(`groups`.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
 																(SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = `groups`.id AND glasses_paths.status_id = 3 AND glasses_paths.actived = 1 AND DATE(finish_datetime) = CURDATE()))AS cc_finished,
                                                             IF(`groups`.id = 2,(SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 2), (SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = `groups`.id AND glasses_paths.status_id = 2 AND glasses_paths.actived = 1)) AS cc_active,
                                                             
