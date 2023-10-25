@@ -258,11 +258,94 @@ switch ($act){
 
         $data = array('page' => change_sizes(getGlass($glass_id), $prod_id));
     break;
-    case 'hard_finish':
-        $order_id = $_REQUEST['order_id'];
+    case 'hard_give_glasses':
+        $glass_ids = $_REQUEST['ids'];
+        
+        $order_id = implode(',',$_REQUEST['order_id']);
 
-        $db->setQuery("UPDATE orders SET status_id = 4 WHERE id = '$order_id'");
+        $db->setQuery(" SELECT  id
+                        FROM    products_glasses 
+                        WHERE   products_glasses.actived = 1 AND products_glasses.order_id = '$order_id' AND products_glasses.new_id = 0");
+
+        $glass_ids = $db->getResultArray()['result'];
+        $glass_arr = array();
+        foreach($glass_ids AS $g_id){
+            $glass_arr[] = $g_id['id'];
+            $db->setQuery(" SELECT   orders_product.product_id
+                            FROM products_glasses
+                            JOIN orders_product ON  orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                            WHERE products_glasses.id = '$g_id[id]'");
+
+            $prod_id = $db->getResultArray()['result'][0]['product_id'];
+
+            if($prod_id == 2 || $prod_id == 3){
+
+                if (($key = array_search($g_id, $glass_ids)) !== false) {
+                    unset($glass_ids[$key]);
+                }
+
+            }
+        }
+        
+        $glass_ids = $glass_arr;
+
+        $ids = implode(',',$glass_ids);
+
+        $to_give_count = count($glass_ids);
+        
+        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id IN (3,4)");
+        $cc_finished = $db->getResultArray()['result'][0]['cc'];
+        if($cc_finished == $to_give_count){
+            $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id = 6");
+            $cc = $db->getResultArray()['result'][0]['cc'];
+    
+            if($cc == 0){
+                $db->setQuery("SELECT GROUP_CONCAT(id) AS ids FROM products_glasses WHERE id IN ($ids) AND status_id IN (3)");
+                $ids = $db->getResultArray()['result'][0]['ids'];
+
+                $db->setQuery("UPDATE products_glasses SET status_id = 6 WHERE id IN ($ids)");
+                $db->execQuery();
+    
+                $db->setQuery("INSERT INTO given_glasses SET datetime=NOW(),
+                                                                order_id = '$order_id',
+                                                                glass_ids = '$ids',
+                                                                user_id = '$user_id'");
+    
+                $db->execQuery();
+    
+                $given_id = $db->getLastId();
+                $data['page'] = '
+                <fieldset class="fieldset">
+                        <legend>ექსელი</legend>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <a href="print_excel.php?act=partly&given_id='.$given_id.'" target="_blank" style="display: flex;
+                                    gap: 10px;
+                                    justify-content: center;
+                                    align-items: center;
+                                    cursor: pointer;">დაბეჭვდვა</a>
+                                </div>
+                            </div>
+                        </legend>
+                    </fieldset>
+                ';
+            }
+            else{
+                $data['error'] = 'ერთი ან რამოდენიმე მინა უკვე გაცემულია';
+            }
+        }
+        else{
+            $data['error'] = 'თქვენ მიერ გასაცემად არჩეული მინებიდან 1 ან რამოდენიმე ჯერ არ არის დასრულებული. ამ მინებს ვერ გასცემთ';
+        }
+        
+    break;
+    case 'hard_finish':
+        $order_id = implode(',', $_REQUEST['order_id']);
+
+        $db->setQuery("UPDATE orders SET status_id = 4 WHERE id IN ($order_id)");
         $db->execQuery();
+
+        
         break;
     case 'change_sizes_save':
         $glass_id = $_REQUEST['glass_id'];
@@ -2602,11 +2685,11 @@ switch ($act){
         $data['opts'] = '';
         //$data .= '<option value="">აირჩიეთ</option>';
         foreach($cats['result'] AS $cat){
-            if($cat[id] == $id){
-                $data['opts'] .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+            if($cat['id'] == $id){
+                $data['opts'] .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
             }
             else{
-                $data['opts'] .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+                $data['opts'] .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
             }
         }
         
@@ -3724,11 +3807,11 @@ function getGlassStatusOptions($id){
                     WHERE actived = 1");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3742,11 +3825,11 @@ function getGlassColorOptions($id){
                     WHERE actived = 1");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3760,11 +3843,11 @@ function getGlassManuf($id){
                     WHERE actived = 1");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3778,11 +3861,11 @@ function getGlassTypeOptions($id){
                     WHERE actived = 1");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3797,11 +3880,11 @@ function getGlassOptions($id){
     $cats = $db->getResultArray();
     $data .= '<option value="">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3815,11 +3898,11 @@ function getPathOptions($id){
                     WHERE actived = 1 AND id != '1'");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3834,11 +3917,11 @@ function getClients(){
     $cats = $db->getResultArray();
     $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3852,11 +3935,11 @@ function getRespUser($id){
                     WHERE actived = 1 AND group_id IN (1,12,13)");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -3870,11 +3953,11 @@ function getProductOptions($id){
                     WHERE actived = 1");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -4178,15 +4261,15 @@ function getPersonal($id){
 
     foreach($cats['result'] AS $cat){
 
-        if($cat[id] == $id){
+        if($cat['id'] == $id){
 
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
 
         }
 
         else{
 
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
 
         }
 
@@ -4218,15 +4301,15 @@ function getStatuses($id){
 
     foreach($cats['result'] AS $cat){
 
-        if($cat[id] == $id){
+        if($cat['id'] == $id){
 
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
 
         }
 
         else{
 
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
 
         }
 
@@ -4256,15 +4339,15 @@ function getCab($id){
 
     foreach($cats['result'] AS $cat){
 
-        if($cat[id] == $id){
+        if($cat['id'] == $id){
 
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
 
         }
 
         else{
 
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
 
         }
 
@@ -4331,11 +4414,11 @@ function getCutOptions($option_id, $type_id, $color_id, $manuf_id){
                     WHERE   warehouse.actived = 1 AND warehouse.glass_option_id = '$option_id' AND warehouse.glass_type_id = '$type_id' AND warehouse.glass_color_id = '$color_id'");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
 

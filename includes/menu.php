@@ -30,8 +30,8 @@ $user_gr = $_SESSION['GRPID'];
                                 ORDER BY 	menu_detail.position ASC");
                 $menu = $db->getResultArray();
                 foreach($menu['result'] AS $item){
-                    if($item[url] == '#'){
-                        $menu_li .= '<li class="nav-label">'.$item[name].'</li>';
+                    if($item['url'] == '#'){
+                        $menu_li .= '<li class="nav-label">'.$item['name'].'</li>';
                         if($item['id'] == 15){
                             $db->setQuery(" SELECT  `groups`.id, 
                                                             name,
@@ -56,12 +56,12 @@ $user_gr = $_SESSION['GRPID'];
                             }
                             
                             foreach($processes AS $group){
-                                $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_'.$group['id'].'">'.$group[name].' <span style="color: green;">('.$group[cc_finished].')</span> <span style="color: #95952a;">('.$group[cc_active].')</span> <span style="color: red;">('.$group[cc_queue].')</span> </span></a> </li>';
+                                $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_'.$group['id'].'">'.$group['name'].' <span style="color: green;">('.$group['cc_finished'].')</span> <span style="color: #95952a;">('.$group['cc_active'].')</span> <span style="color: red;">('.$group['cc_queue'].')</span> </span></a> </li>';
                             }
                         }
                     }
                     else{
-                        $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page='.$item[url].'">'.$item[icon].'<span class="sidemenu-label">'.$item[name].'</span></a> </li>';
+                        $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page='.$item['url'].'">'.$item['icon'].'<span class="sidemenu-label">'.$item['name'].'</span></a> </li>';
                     }
                 }
                 echo $menu_li;

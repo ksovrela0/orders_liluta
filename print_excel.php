@@ -447,7 +447,7 @@ switch($act){
         </html>';
     break;
     case 'partly':
-        
+        echo 13213;
         $given_id =  $_REQUEST['given_id'];
 
 
