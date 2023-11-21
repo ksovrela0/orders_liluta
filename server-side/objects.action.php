@@ -538,7 +538,8 @@ switch ($act){
                                     WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.status_id,gp1.status_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT glass_status.sort_n FROM glass_status WHERE id = lists_to_cut.status_id)), (SELECT glass_status.sort_n FROM glass_status WHERE id = lists_to_cut.status_id))
                                     
                                     ELSE IF(products_glasses.go_to_cut != 1,IFNULL(IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.status_id,gp1.status_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT glass_status.sort_n FROM glass_status WHERE id = (SELECT status_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), lists_to_cut.status_id),'')
-                                END AS sort_n
+                                END AS sort_n,
+                                products_glasses.id AS glass_id
                                 
                                 
 
@@ -552,7 +553,7 @@ switch ($act){
                         WHERE 	products_glasses.actived = 1
 
                         GROUP BY products_glasses.id) AS ttt
-                        ORDER BY ttt.sort_n DESC");
+                        ORDER BY  ttt.sort_n DESC, ttt.glass_id DESC");
 
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
