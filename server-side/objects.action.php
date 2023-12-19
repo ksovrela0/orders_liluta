@@ -285,7 +285,8 @@ switch ($act){
                                                                         glass_height = '$glass[glass_height]',
                                                                         picture = '$glass[picture]',
                                                                         go_to_cut = '$glass[go_to_cut]',
-                                                                        status_id = 1");
+                                                                        status_id = 1,
+                                                                        add_info = '$glass[add_info]'");
                         $db->execQuery();
         
                         $newGlassID = $db->getLastId();
