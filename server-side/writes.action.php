@@ -293,7 +293,7 @@ switch ($act){
 
         $to_give_count = count($glass_ids);
         
-        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id IN (3,4)");
+        $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id IN (3,4,6)");
         $cc_finished = $db->getResultArray()['result'][0]['cc'];
         if($cc_finished == $to_give_count){
             $db->setQuery("SELECT COUNT(*) AS cc FROM products_glasses WHERE id IN ($ids) AND status_id = 6");
@@ -304,6 +304,9 @@ switch ($act){
                 $ids = $db->getResultArray()['result'][0]['ids'];
 
                 $db->setQuery("UPDATE products_glasses SET status_id = 6 WHERE id IN ($ids)");
+                $db->execQuery();
+
+                $db->setQuery("UPDATE orders SET status_id = 6 WHERE id ='$order_id'");
                 $db->execQuery();
     
                 $db->setQuery("INSERT INTO given_glasses SET datetime=NOW(),
