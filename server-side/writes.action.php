@@ -400,6 +400,9 @@ switch ($act){
                                                                     glass_manuf_id = '$glass[glass_manuf_id]',
                                                                     glass_width = '$glass[glass_width]',
                                                                     glass_height = '$glass[glass_height]',
+                                                                    glass_width_add = '$glass[glass_width_add]',
+                                                                    glass_height_add = '$glass[glass_height_add]',
+                                                                    not_standard = '$glass[not_standard]',
                                                                     picture = '$glass[picture]',
                                                                     go_to_cut = '$glass[go_to_cut]',
                                                                     status_id = 1");
@@ -2307,6 +2310,10 @@ switch ($act){
         $glass_status    = $_REQUEST['glass_status'];
         $glass_width     = $_REQUEST['glass_width'];
         $glass_height      = $_REQUEST['glass_height'];
+
+        $glass_width_add = $_REQUEST['glass_width_add'];
+        $glass_height_add = $_REQUEST['glass_height_add'];
+
         $glass_manuf    = $_REQUEST['glass_manuf'];
         $stand_glass    = $_REQUEST['stand_glass'];
 
@@ -2334,6 +2341,20 @@ switch ($act){
 
         $db->setQuery("SELECT glass_count, product_id FROM orders_product WHERE id = '$product_id' AND actived = 1");
         $prod_data = $db->getResultArray()['result'][0];
+
+        if(($glass_width_add != '' || $glass_height_add != '') && ($glass_width_add != '0' || $glass_height_add != '0')){
+            $db->setQuery(" SELECT  COUNT(*) AS cc
+                            FROM    glasses_paths
+                            WHERE   glass_id = '$id' AND actived = 1 AND path_group_id = 3");
+            
+            $kronka_cc = $db->getResultArray()['result'][0]['cc'];
+
+            if($kronka_cc == 0){
+                $data['error'] = 'გთხოვთ დაამატოთ კრონკის პროცესი!!! რადგან მიუთითეთ დამატებით ზომები, დამატებით ველებში!!!';
+                echo json_encode($data);
+                return;
+            }
+        }
 
         if($prod_data['product_id'] == 3){
             $db->setQuery("SELECT COUNT(*) AS cc
@@ -2423,6 +2444,10 @@ switch ($act){
                                                 glass_color_id='$glass_color',
                                                 glass_width='$glass_width',
                                                 glass_height='$glass_height',
+
+                                                glass_width_add='$glass_width_add',
+                                                glass_height_add='$glass_height_add',
+
                                                 glass_manuf_id = '$glass_manuf',
                                                 not_standard = '$stand_glass',
                                                 status_id='1',
@@ -2440,6 +2465,10 @@ switch ($act){
                                                 glass_color_id='$glass_color',
                                                 glass_width='$glass_width',
                                                 glass_height='$glass_height',
+
+                                                glass_width_add='$glass_width_add',
+                                                glass_height_add='$glass_height_add',
+
                                                 glass_manuf_id = '$glass_manuf',
                                                 not_standard = '$stand_glass',
                                                 status_id='$glass_status',
@@ -3324,7 +3353,7 @@ switch ($act){
                                 products_glasses.not_standard,
                                 products_glasses.picture,
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
-                                CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
+                                CONCAT(products_glasses.glass_width+products_glasses.glass_width_add, ' X ', products_glasses.glass_height+products_glasses.glass_height_add) AS sizes,
                                 glass_colors.name AS color,
                                 COUNT(*) AS cc,
                                 GROUP_CONCAT(DISTINCT orders.client_name) as clients,
@@ -3470,6 +3499,8 @@ function getGlass($id){
                             glass_color_id,
                             glass_width,
                             glass_height,
+                            glass_width_add,
+                            glass_height_add,
                             glass_manuf_id,
                             status_id,
                             go_to_cut,
@@ -3510,8 +3541,8 @@ function getGlassPage($id, $res = ''){
                             <div class="col-sm-6">
                                 <label>ზომა (მმ) (სიმაღლეXსიგანე)</label>
                                 <div class="row">
-                                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_width" value="'.$res['glass_width'].'"></div>
-                                    <div class="col-sm-6"><input style="width:99%;" type="text" id="glass_height" value="'.$res['glass_height'].'"></div>
+                                    <div class="col-sm-6"><input style="width:50%;" type="text" id="glass_width" value="'.$res['glass_width'].'"> + <input style="width:33%;" type="text" id="glass_width_add" value="'.$res['glass_width_add'].'"></div>
+                                    <div class="col-sm-6"><input style="width:50%;" type="text" id="glass_height" value="'.$res['glass_height'].'"> + <input style="width:33%;" type="text" id="glass_height_add" value="'.$res['glass_height_add'].'"></div>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -3569,8 +3600,8 @@ function getGlassPage($id, $res = ''){
                         $rows = $db->getResultArray()['result'];
 
                         foreach($rows AS $row){
-                            $data .= '<div class="proccess" data-id="'.$row[id].'">
-                                        <span>'.$row[name].'</span>
+                            $data .= '<div class="proccess" data-id="'.$row['id'].'">
+                                        <span>'.$row['name'].'</span>
                                     </div>';
                         }
                         

@@ -153,7 +153,7 @@
 	<noscript>
 		<p>To display this page you need a browser that supports JavaScript.</p>
 	</noscript>
-	<script src="assets/js/custom.js?v=2.3"></script>
+	<script src="assets/js/custom.js?v=2.4"></script>
 
 <script type="text/javascript" language="javascript" src="assets/plugins/jquery-ui/chosen.jquery.js"></script>
 <script type="text/javascript" language="javascript" src="assets/plugins/jquery-ui/jquery-ui.min.js"></script>
