@@ -166,7 +166,7 @@ function getPage($res = ''){
             
         </div>
     </fieldset>
-    <input type="hidden" id="option_id" value="'.$res[id].'">
+    <input type="hidden" id="option_id" value="'.$res['id'].'">
     ';
 
     return $data;
