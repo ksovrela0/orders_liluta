@@ -131,6 +131,34 @@
 			box-shadow: 2px 1px black;
 		}
 
+		#hard_finish_writing{
+			border: 1px solid black;
+			width: fit-content;
+			padding: 7px;
+			font-size: 18px;
+			color: #fff;
+			background-color: red;
+			cursor: pointer;
+			margin-left: 20px;
+			background: radial-gradient(#4a8aff 0.3%, #072ea3 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
+
+		#hard_give_glasses{
+			border: 1px solid black;
+			width: fit-content;
+			padding: 7px;
+			font-size: 18px;
+			color: #fff;
+			background-color: red;
+			cursor: pointer;
+			margin-left: 20px;
+			background: radial-gradient(#a94aff 0.3%, #7000ff 90%);
+			border-radius: 15px;
+			box-shadow: 2px 1px black;
+		}
+
 		#del_writing:hover, #del_product:hover, #del_glass:hover, #del_path:hover {
 			box-shadow: unset;
 		}
@@ -548,6 +576,9 @@
 									modal: true,
 									position: "top",
 									buttons: {
+										"შეკვეთის დასრულება": function() {
+											hard_finish();
+										},
 										"გადათვლა": function() {
 											$.ajax({
 												url: "server-side/writes.action.php",
@@ -584,7 +615,7 @@
 				//KendoUI CLASS CONFIGS BEGIN
 				var aJaxURL = "server-side/writes.action.php";
 				var gridName = 'main_div';
-				var actions = '<?php if($_SESSION['GRPID'] != 11) { echo '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div>';} ?>';
+				var actions = '<?php if($_SESSION['GRPID'] != 11) { echo '<div id="new_writing">ახალი შეკვეთა</div><div style="display:none;" id="copy_writing">შეკვეთის კოპირება</div><div id="del_writing">შეკვეთის წაშლა</div><div id="hard_finish_writing">შეკვეთის დასრულება</div><div id="hard_give_glasses">შეკვეთის გაცემა</div>';} ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
 				var columnsCount = 13;
@@ -827,6 +858,9 @@
 							modal: true,
 							position: "top",
 							buttons: {
+								"შეკვეთის დასრულება": function() {
+									hard_finish();
+								},
 								"გადათვლა": function() {
 									$.ajax({
 										url: "server-side/writes.action.php",
@@ -988,6 +1022,81 @@
 					});
 				}
 			});
+			$(document).on('click', '#hard_give_glasses', function(){
+				var grid = $("#main_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var order_id = [];
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					order_id.push(selectedItem.id);
+				});
+				if(typeof order_id == 'undefined' || order_id.length != 1) {
+					alert('გასაცემად უნდა არიჩიოთ მხოლოდ 1 შეკვეთა');
+				}
+				else{
+					if(confirm("ნამდვილად გსურთ მინების გაცემა?")){
+						let params 			= new Object;
+						params.act 			= 'hard_give_glasses';
+						params.order_id 	= order_id;
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: params,
+							dataType: "json",
+							success: function(data){
+								if(typeof(data.error) == 'undefined'){
+									$("#get_excel").html(data.page)
+									$("#get_excel").dialog({
+										resizable: false,
+										height: 'auto',
+										width: 120,
+										modal: true,
+										buttons: {
+											'დახურვა': function() {
+												$(this).dialog("close");
+											}
+										}
+									});
+								}
+								else{
+									alert(data.error);
+								}
+								$("#main_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+				}
+			})
+			$(document).on('click', '#hard_finish_writing', function(){
+				var grid = $("#main_div").data("kendoGrid");
+				var selectedRows = grid.select();
+				var writing_id = [];
+				selectedRows.each(function(index, row) {
+					var selectedItem = grid.dataItem(row);
+					writing_id.push(selectedItem.id);
+				});
+				console.log(writing_id)
+				if(typeof writing_id == 'undefined' || writing_id.length == 0) {
+					alert('აირჩიეთ შეკვეთა!!!');
+				} else {
+					var ask = confirm("ნამდვილად გსურთ შეკვეთის დასრულება?");
+					if(ask){
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "hard_finish",
+								order_id: writing_id
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#main_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+					
+				}
+			})
 			$(document).on('click', '#del_writing', function() {
 				var grid = $("#main_div").data("kendoGrid");
 				var selectedRows = grid.select();
@@ -1167,6 +1276,9 @@
 							modal: true,
 							position: "top",
 							buttons: {
+								"შეკვეთის დასრულება": function() {
+									hard_finish();
+								},
 								"გადათვლა": function() {
 									$.ajax({
 										url: "server-side/writes.action.php",
@@ -1336,7 +1448,26 @@
 					}
 				});
 			}
+			function hard_finish() {
+				let ask = confirm("ნამდვილად გსურთ შეკვეთის დასრულება?");
 
+				if(ask){
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "hard_finish",
+							order_id: $('#writing_id').val(),
+							zones: $('#zones').val()
+						},
+						dataType: "json",
+						success: function(data) {
+							$("#main_div").data("kendoGrid").dataSource.read();
+							$('#get_edit_page').dialog("close");
+						}
+					});
+				}
+			}
 			function save_order() {
 				let params = new Object;
 
@@ -1434,6 +1565,10 @@
 				params.glass_manuf = $("#selected_glass_manuf_id").val();
 				params.glass_width = $("#glass_width").val();
 				params.glass_height = $("#glass_height").val();
+
+				params.glass_width_add = $("#glass_width_add").val();
+				params.glass_height_add = $("#glass_height_add").val();
+
 				params.stand_glass = $("#stand_glass").is(':checked');
 				params.go_to_cut = $("#go_to_cut").is(':checked');
 
@@ -2218,6 +2353,7 @@
 				$('#kronka_top, #kronka_bottom, #kronka_left, #kronka_right').click();
 			});	
 			</script>
+			<div title="ბეჭვდვა" id="get_excel">
 </body>
 
 </html>
