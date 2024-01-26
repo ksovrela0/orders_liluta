@@ -2,10 +2,10 @@
 
 session_start();
 
-error_reporting(E_ERROR);
+
 
 include('../db.php');
-
+error_reporting(E_ERROR);
 GLOBAL $db;
 
 $db = new dbClass();
@@ -838,12 +838,15 @@ switch ($act){
         $glass_type_id = $_REQUEST['glass_type_id'];
         $glass_color_id = $_REQUEST['glass_color_id'];
         $glass_manuf_id = $_REQUEST['glass_manuf_id'];
-        $client = implode(',',$_REQUEST['client']);
-        $not_standard = $_REQUEST['not_standard'];
 
+
+        if(!empty($_REQUEST['client'])) $client = implode(',',$_REQUEST['client']);
+        if(!empty($_REQUEST['ids'])) $ids = implode(',',$_REQUEST['ids']);
+        $not_standard = $_REQUEST['not_standard'];
+        
         
         $where = '';
-        $ids = implode(',',$_REQUEST['ids']);
+
         if($ids != ''){
             $where .= " AND products_glasses.id NOT IN ($ids)";
         }
