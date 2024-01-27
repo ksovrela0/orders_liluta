@@ -564,7 +564,7 @@
 
 					var pic = '';
 
-					if(data.picture != '' && data.picture != null){
+					if(data.picture2 != '' && data.picture2 != null){
 						pic = data.picture2;
 					}
 
