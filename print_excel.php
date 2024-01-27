@@ -53,7 +53,8 @@ switch($act){
                                 products_glasses.not_standard,
                                 products_glasses.picture,
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
-                                CONCAT(products_glasses.glass_width, ' X ', products_glasses.glass_height) AS sizes,
+                                
+                                CONCAT(products_glasses.glass_width+products_glasses.glass_width_add, ' X ', products_glasses.glass_height+products_glasses.glass_height_add) AS sizes,
                                 glass_colors.name AS color,
                                 COUNT(*) AS cc,
                                 GROUP_CONCAT(products_glasses.id) AS glass_ids,
