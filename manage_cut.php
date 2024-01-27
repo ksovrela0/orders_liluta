@@ -506,6 +506,7 @@
 	var glass_color_id = '';
 	var glass_manuf_id = '';
 	$(document).on("dblclick", ".element_in_div", function () {
+		
 		var sort_n = $(this).attr('sort_n');
 		var el = this;
 		var params = new Object();
@@ -564,7 +565,7 @@
 					var pic = '';
 
 					if(data.picture != '' && data.picture != null){
-						pic = '<a style="color:blue;" target="_blank" href="'+data.picture+'"><img style="width:35px;" src="assets/img/main.png"></a>';
+						pic = data.picture2;
 					}
 
 					$("#list_area").append(`

@@ -854,6 +854,7 @@ switch ($act){
             $where .= " AND orders.id IN ($client)";
         }
         $db->setQuery(" SELECT products_glasses.*,CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
+                                CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" target=\"_blank\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" target=\"_blank\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))) AS picture2,
                                 CONCAT(products_glasses.glass_width, 'მმ X ', products_glasses.glass_height,'მმ') AS sizes,
                                 glass_colors.name AS color,
                                 orders.client_name
@@ -3354,7 +3355,7 @@ switch ($act){
                                 products_glasses.glass_width,
                                 products_glasses.glass_height,
                                 products_glasses.not_standard,
-                                products_glasses.picture,
+                                CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" target=\"_blank\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" target=\"_blank\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))) AS picture,
                                 CONCAT(glass_options.name, '(',glass_manuf.name,')') AS name,
                                 CONCAT(products_glasses.glass_width+products_glasses.glass_width_add, ' X ', products_glasses.glass_height+products_glasses.glass_height_add) AS sizes,
                                 glass_colors.name AS color,
