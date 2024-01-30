@@ -469,6 +469,10 @@ switch ($act){
                                                                     glass_manuf_id = '$glass[glass_manuf_id]',
                                                                     glass_width = '$glass[glass_width]',
                                                                     glass_height = '$glass[glass_height]',
+                                                                    glass_width_add = '$glass[glass_width_add]',
+                                                                    glass_height_add = '$glass[glass_height_add]',
+                                                                    not_standard = '$glass[not_standard]',
+                                                                    picture = '$glass[picture]',
                                                                     go_to_cut = '$glass[go_to_cut]',
                                                                     status_id = 1");
                         $db->execQuery();
