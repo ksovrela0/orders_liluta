@@ -1766,6 +1766,65 @@ switch ($act){
 
         $data = array('page' => getFinishFewP($codes_arr));
         break;
+    case 'start_few_kronka':
+        $codes_arr = $_REQUEST['codes'];
+        $err_glass_ids = array();
+
+
+
+        foreach($codes_arr AS $code){
+            $db->setQuery(" SELECT path_group_id
+                            FROM glasses_paths
+                            WHERE glass_id = '$code' AND status_id = 1 AND actived = 1
+                            ORDER BY sort_n
+                            LIMIT 1");
+            $checkProcSort = $db->getResultArray()['result'][0]['path_group_id'];
+
+            if($checkProcSort != 3){
+                array_push($err_glass_ids, $code);
+            }  
+        }
+
+        //die(var_dump($err_glass_ids));
+        $ok_codes = array_diff($codes_arr, $err_glass_ids);
+        $codes = implode(',',$ok_codes);
+
+        if(count($err_glass_ids) == 0){
+            $db->setQuery("UPDATE glasses_paths SET status_id = 2 WHERE glass_id IN ($codes) AND path_group_id = 3");
+            $db->execQuery();
+    
+            $kronka_group = time();
+            foreach($ok_codes AS $code){
+                $db->setQuery("SELECT id FROM glasses_paths WHERE glass_id= '$code' AND path_group_id = 3 AND actived = 1");
+                $path_id_few = $db->getResultArray()['result'][0]['id'];
+    
+    
+                $db->setQuery("UPDATE products_glasses SET kronka_group='$kronka_group', kronka_group_user_id = '$user_id' WHERE id = '$code'");
+                $db->execQuery();
+    
+                if($path_id_few != ''){
+                    $db->setQuery("UPDATE products_glasses SET last_path_id = '$path_id_few', status_id = 2 WHERE id = '$code'");
+                    $db->execQuery();
+                }
+            }
+    
+    
+            $db->setQuery(" UPDATE orders 
+                            JOIN products_glasses ON products_glasses.id IN ($codes)
+                            JOIN orders_product ON orders_product.id = products_glasses.order_product_id
+                            SET orders.status_id = 2
+                            
+                            WHERE orders.id = orders_product.order_id");
+            $db->execQuery();
+            
+    
+            
+        }
+        else{
+            $data['error'] = "ვერ დაჯგუფდა შემდეგი მინები: ".implode(', ',$err_glass_ids)." რადგან ჯერ რიგშია, მიმდინარეა ან არ საჭიროებს ამ პროცესის გავლას";
+        }
+        
+        break;
     case 'start_few':
         $codes_arr = $_REQUEST['codes'];
         $err_glass_ids = array();
@@ -1940,6 +1999,37 @@ switch ($act){
         WHERE 	    products_glasses.actived = 1 AND products_glasses.kalioni_group_user_id = '$user_id' AND glasses_paths.path_group_id = '5' AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND IF(products_glasses.go_to_cut = 1,lists_to_cut.id  IS NOT NULL,1=1) AND products_glasses.kalioni_group != 0
         
         GROUP BY products_glasses.kalioni_group
+        ORDER BY glasses_paths.status_id ASC");
+        $result = $db->getKendoList($columnCount, $cols);
+
+        $data = $result;
+        break;
+
+
+    case 'get_list_kronka_group_mine':
+        $columnCount = 		$_REQUEST['count'];
+        $cols[]      =      $_REQUEST['cols'];
+
+        $db->setQuery("SELECT	products_glasses.kronka_group,GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid, IF(glasses_paths.status_id != 4, CONCAT('<input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.id,'\" kal_gr=\"',products_glasses.kronka_group,'\" class=\"kal_pyr\" value=\"',IFNULL(glasses_paths.pyramid,0),'\">'),''),IF(glasses_paths.status_id = 4,' - <span class=\"status_1\">დახარვეზებული</span> ',''), '<div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
+
+        ) SEPARATOR '<br>') AS gr,
+        IF((SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = 3 AND glasses_paths.actived = 1 AND glasses_paths.glass_id IN (GROUP_CONCAT(products_glasses.id)) AND glasses_paths.status_id IN (1,2)) > 0,CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc_few_kronka\" kal_gr=\"',products_glasses.kronka_group,'\" data-id=\"',GROUP_CONCAT(products_glasses.id),'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span><input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.kronka_group,'\" class=\"kal_pyr_gr\"></div>'), CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>'))
+                        
+                        
+                        
+        FROM 		products_glasses
+        JOIN		orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+        JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+        JOIN		glass_options ON glass_options.id = products_glasses.glass_option_id		
+        JOIN 		glass_type ON glass_type.id = products_glasses.glass_type_id
+        JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
+        JOIN		glasses_paths ON glasses_paths.glass_id = products_glasses.id
+        JOIN		glass_status ON glass_status.id = glasses_paths.status_id
+        LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+        
+        WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '3' AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND IF(products_glasses.go_to_cut = 1,lists_to_cut.id  IS NOT NULL,1=1) AND products_glasses.kronka_group != 0
+        
+        GROUP BY products_glasses.kronka_group
         ORDER BY glasses_paths.status_id ASC");
         $result = $db->getKendoList($columnCount, $cols);
 
@@ -3209,6 +3299,72 @@ switch ($act){
                             
                             GROUP BY orders_product.id
                             ORDER BY glass_status.sort_n, DATEDIFF(orders.datetime_finish,CURDATE())");
+        }
+        else if($path_id == 3){
+            $db->setQuery(" SELECT * FROM (SELECT	products_glasses.id,
+                                    CONCAT(orders.client_name , ' ', IFNULL(orders_product.add_info,'')),
+                                    CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')) AS `option`,
+                                    glass_type.name AS type,
+                                    glass_colors.name AS color,
+                                    CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ') AS param,
+
+                                    CONCAT(IF(orders_product.picture IS NULL OR orders_product.picture = '','',CONCAT('<a class=\"f_img\" target=\"_blank\" style=\"color:blue;\"  href=\"',orders_product.picture,'\"><img style=\"width:35px;\" src=\"assets/img/main.png\"></a>')), IF(products_glasses.picture IS NULL OR products_glasses.picture = '','',CONCAT('<a class=\"f_img\" target=\"_blank\" style=\"color:blue;\"  href=\"',products_glasses.picture,'\"><img style=\"width:35px;\" src=\"assets/img/glass.png\"></a>'))),
+                                    CONCAT('ნახვრეტი: 4, ჭრის რაოდენობა:5'),
+                                    CONCAT(IF(glasses_paths.kronka_top = 1,'ზედა<br>',''),'', IF(glasses_paths.kronka_bottom = 1,'ქვედა<br>',''),' ',IF(glasses_paths.kronka_right = 1,'მარჯვენა<br>',''),' ',IF(glasses_paths.kronka_left = 1,'მარცხენა','')),
+                                    products_glasses.last_pyramid,
+                                    
+                                    
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
+                                    WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 ORDER BY sort_n LIMIT 1) != glasses_paths.path_group_id, CONCAT('<span style=\"padding: 5px;
+                                    color: white;
+                                    background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+                                    border-radius: 5px;\">რიგში</span> ', CASE
+                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM `groups` WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1  WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM `groups` WHERE id = lists_to_cut.status_id)),'ჭრა')
+                                    
+                                    ELSE IF(products_glasses.go_to_cut != 1,IFNULL(IFNULL((SELECT name FROM `groups` WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM `groups` WHERE id = lists_to_cut.status_id)), '')
+                                END),CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>'))
+                                                                        ELSE CONCAT('<span class=\"status_',glass_status.id,'\">',glass_status.name,'</span>')
+                                                                    END,CONCAT('<span style=\"padding: 5px;
+                                    color: white;
+                                    background: radial-gradient(#1448ce 0.3%, #5e28ee 90%);
+                                    border-radius: 5px;\">რიგში</span> ',CASE
+                                    WHEN lists_to_cut.id IS NOT NULL THEN IF(lists_to_cut.status_id = 3, IFNULL(IFNULL((SELECT name FROM `groups` WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1  WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM `groups` WHERE id = lists_to_cut.status_id)),'ჭრა')
+                                    
+                                    ELSE IF(products_glasses.go_to_cut != 1,IFNULL(IFNULL((SELECT name FROM `groups` WHERE id = (SELECT IF(gp1.status_id = 3 OR gp1.status_id IS NULL,gp2.path_group_id,gp1.path_group_id) FROM glasses_paths AS gp2 LEFT JOIN glasses_paths AS gp1 ON gp1.glass_id = gp2.glass_id AND gp1.sort_n = gp2.sort_n-1 AND gp1.actived=1 WHERE gp2.status_id IN (1,2) AND gp2.glass_id = products_glasses.id AND gp2.actived = 1 ORDER BY gp1.sort_n ASC LIMIT 1)), IFNULL((SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (4,5) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n ASC LIMIT 1)), (SELECT name FROM `groups` WHERE id = (SELECT path_group_id FROM glasses_paths WHERE status_id IN (3) AND actived = 1 AND glass_id = products_glasses.id ORDER BY sort_n DESC LIMIT 1)))), (SELECT name FROM `groups` WHERE id = lists_to_cut.status_id)), '')
+                                END)) AS glasses,
+
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
+                                        WHEN glass_status.id = 1 AND (SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 ORDER BY sort_n LIMIT 1) = glasses_paths.path_group_id THEN CONCAT('<div style=\"display:flex;\"><div class=\"start_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/play.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
+                                        WHEN glass_status.id = 2 THEN CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 40px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span></div>')
+                                        WHEN glass_status.id = 3 THEN CONCAT('<span style=\"','\" data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+                                        WHEN glass_status.id = 4 THEN CONCAT('<span style=\"','\" data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+                                        WHEN glass_status.id = 5 THEN CONCAT('<span style=\"','\" data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>')
+
+
+                                    END,'') AS acc,
+
+                                    IF(IFNULL((SELECT status_id FROM lists_to_cut WHERE glass_id = products_glasses.id AND actived = 1), IF(products_glasses.go_to_cut = 0,3,1)) = 3,CASE
+                                    WHEN glass_status.id = 1 THEN IF((SELECT path_group_id FROM glasses_paths WHERE status_id IN (1,2,4,5) AND glass_id = products_glasses.id AND actived = 1 ORDER BY sort_n LIMIT 1) != glasses_paths.path_group_id, 3,glass_status.sort_n)
+                                        ELSE glass_status.sort_n
+                                    END,3) AS sort_n,
+                                    DATEDIFF(orders.datetime_finish,CURDATE()) AS deadline
+                                    
+                                    
+                            FROM 		products_glasses
+                            JOIN		orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
+                            JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                            JOIN		glass_options ON glass_options.id = products_glasses.glass_option_id		
+                            JOIN 		glass_type ON glass_type.id = products_glasses.glass_type_id
+                            JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
+                            JOIN		glasses_paths ON glasses_paths.glass_id = products_glasses.id
+                            JOIN		glass_status ON glass_status.id = glasses_paths.status_id
+                            LEFT JOIN		lists_to_cut ON lists_to_cut.glass_id = products_glasses.id AND lists_to_cut.actived = 1
+
+                            WHERE 	    products_glasses.actived = 1 AND glasses_paths.path_group_id = '$path_id' AND products_glasses.kronka_group = 0 AND glasses_paths.actived = 1 AND products_glasses.display = 1 AND IF(products_glasses.go_to_cut = 1,lists_to_cut.id  IS NOT NULL,1=1) AND glass_status.id NOT IN (3)
+
+                            GROUP BY products_glasses.id
+                            ORDER BY glasses_paths.status_id ASC) AS ttt
+                            ORDER BY ttt.sort_n, ttt.deadline ");
         }
         else{
             $db->setQuery(" SELECT * FROM (SELECT	products_glasses.id,

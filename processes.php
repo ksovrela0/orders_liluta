@@ -263,7 +263,7 @@
 			border-top:none;
 		}
 
-		#start_few{
+		#start_few,#start_few_kronka{
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
@@ -277,7 +277,7 @@
 			box-shadow: 2px 1px black;
 		}
 
-		#finish_few, #finish_few_mine{
+		#finish_few, #finish_few_mine, #finish_few_mine_kronka{
 			border: 1px solid black;
 			width: fit-content;
 			padding: 7px;
@@ -356,6 +356,11 @@ $proc_data = $db->getResultArray()['result'][0];
 						}
 						
 						
+					}
+					else if($proc_data['id'] == 3){
+						echo '<div id="start_few_kronka" style="margin-bottom: 10px;">რამდენიმე მინის დაწყება</div>
+							<div id="finish_few_mine_kronka" style="margin-bottom: 10px;">დაჯგუფებული მინები</div>';
+						echo '<div id="main_div" style="width:97%;"></div>';
 					}
 					else if($proc_data['id'] == 6 || $proc_data['id'] == 7){
 						echo '<div id="main_div_2" style="width:97%;"></div>';
@@ -503,6 +508,47 @@ $proc_data = $db->getResultArray()['result'][0];
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
+		$(document).on('click','.finish_proc_few_kronka', function(){
+			if (confirm("ნამდვილად გსურთ დაასრულოთ პროცესი?") == true) {
+				let codes = $(this).attr('data-id').split(",").map(Number);
+				let codes_s = codes.join(',');
+				let kal_gr = $(this).attr('kal_gr');
+				
+				let ready_to_save = 0;
+				var url = new Object();
+					url.act = "finish_few_glass";
+					url['gpyr'] = [];
+					$(".kal_pyr[kal_gr='"+kal_gr+"']").each(function(i, x){
+						if($(x).val() == 0){
+							ready_to_save++;
+						}
+						else{
+							url['gpyr'].push($(x).val()+'-'+$(x).attr('data-id'));
+						}
+						
+					})
+
+					url.proc_id = 3;
+
+					if(ready_to_save > 0){
+						alert("გთხოვთ შეიყვანეთ ყველა პირამიდის ნომერი!!!");
+					}
+					else{
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: url,
+							dataType: "json",
+							success: function(data) {
+								$("#main_div").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+				
+				
+				
+			}
+		})
 		$(document).on('click','.finish_proc_few', function(){
 			if (confirm("ნამდვილად გსურთ დაასრულოთ პროცესი?") == true) {
 				let codes = $(this).attr('data-id').split(",").map(Number);
@@ -601,6 +647,93 @@ $proc_data = $db->getResultArray()['result'][0];
 						});
 
 						LoadKendoTable_main444();
+					}
+				});
+		})
+
+		$(document).on('click', '#finish_few_mine_kronka', function(){
+			$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "finish_few_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#finish_few_page').html(data.page);
+						setInterval(function () {
+							$("#kalioni_group").data("kendoGrid").dataSource.read();
+						}, 15000);
+						$("#finish_few_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 1200,
+							modal: true,
+							/* buttons: {
+								"მინების დასრულება": function() {
+									
+
+								}
+							} */
+						});
+
+						LoadKendoTable_main888();
+					}
+				});
+		})
+		$(document).on('click', '#start_few_kronka', function(){
+			$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: {
+						act: "start_few_page"
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#start_few_page').html(data.page);
+							
+						$("#start_few_page").dialog({
+							resizable: false,
+							height: "auto",
+							width: 400,
+							modal: true,
+							buttons: {
+								"დაწყება": function() {
+									if (confirm("ნამდვილად გსურთ დაიწყოთ პროცესი?") == true) {
+										let codes = $("#few_codes").val().trim().split("\n").map(Number);
+										if($("#few_codes").val() == ''){
+											alert("გთხოვთ ჩასვათ ერთი კოდი მაინც");
+										}
+										else{
+											$.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												data: {
+													act:"start_few_kronka",
+													"codes": codes
+												},
+												dataType: "json",
+												success: function(data) {
+													if(typeof data.error != 'undefined'){
+														alert(data.error)
+														$("#main_div").data("kendoGrid").dataSource.read();
+														
+													}
+													else{
+														$("#main_div").data("kendoGrid").dataSource.read();
+														$('#start_few_page').dialog("close");
+													}
+													
+												}
+											});
+										}
+										
+										
+									}
+									
+								}
+							}
+						});
 					}
 				});
 		})
@@ -1476,6 +1609,25 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				//KendoUI CLASS CONFIGS END
 				const kendo = new kendoUI();
 				kendo.loadKendoUI(aJaxURL, 'get_list_kalioni_group_mine', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
+			}
+			function LoadKendoTable_main888(hidden) {
+				//KendoUI CLASS CONFIGS BEGIN
+				var aJaxURL = "server-side/writes.action.php";
+				var gridName = 'kalioni_group';
+				var actions = '';
+				var editType = "popup"; // Two types "popup" and "inline"
+				var itemPerPage = 100;
+				var columnsCount = 3;
+				var columnsSQL = ["gr_id:string","product_glasses:string",'product_act:string'];
+				var columnGeoNames = ["ჯგუფის ID","მინები","ქმედება"];
+				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var lockable = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
+				//KendoUI CLASS CONFIGS END
+				const kendo = new kendoUI();
+				kendo.loadKendoUI(aJaxURL, 'get_list_kronka_group_mine', itemPerPage, columnsCount, columnsSQL, gridName, actions, editType, columnGeoNames, filtersCustomOperators, showOperatorsByColumns, selectors, hidden, 1, locked, lockable);
 			}
 
 			
