@@ -194,7 +194,7 @@
 		#del_list:hover {
 			box-shadow: unset;
 		}
-		.print_shtrixkod,.print_shtrixkod_all{
+		.print_shtrixkod,.print_shtrixkod_all,.print_atxod{
 			color: blue;
 			cursor: pointer;
 			font-size: 17px;
@@ -1540,9 +1540,9 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				var actions = '<?php if( in_array($_SESSION['GRPID'],array(1,12,13,11))){ echo '<div style="display:flex;gap: 10px;"><div id="cut_glass">ლისტის კოპირება</div> <div id="del_list">ლისტის წაშლა</div><div id="status_change">მოლოდინში გადაყვანა</div></div>'; } ?>';
 				var editType = "popup"; // Two types "popup" and "inline"
 				var itemPerPage = 100;
-				var columnsCount = 6;
-				var columnsSQL = ["cut_id","list:string", "product_glasses:string", "atxodebi:string", "product_status:string", "product_act:string"];
-				var columnGeoNames = ["ჭრის ID","ლისტი", "მინები", "ათხოდები", "სტატუსი", "ქმედება"];
+				var columnsCount = 7;
+				var columnsSQL = ["cut_id","cut_datetime:string","list:string", "product_glasses:string", "atxodebi:string", "product_status:string", "product_act:string"];
+				var columnGeoNames = ["ჭრის ID","შექ.თარიღი","ლისტი", "მინები", "ათხოდები", "სტატუსი", "ქმედება"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2137,6 +2137,31 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				});
 			});
 
+			$(document).on('click', '.print_atxod', function(){
+				var atxod_id = $(this).attr('data-id');
+
+				$.ajax({
+					url: "ajax/print.ajax.php",
+					type: "POST",
+					data: "act=print_atxod&atxod_id="+atxod_id,
+					dataType: "json",
+					success: function (data) {
+						if(typeof data != 'undefined'){
+							var a = window.open('', '', 'height=500, width=500');
+							a.document.write(data.page);
+							a.document.close();
+							setTimeout(function(){
+								a.print();
+							}, 1000)
+							
+						}
+						else{
+							alert('დაფიქსირდა შეცდომა');
+						}
+					}
+				});
+			});
+
 			$(document).on('click', '#cut_glass', function(){
 				var grid = $("#main_cut").data("kendoGrid");
 				var selectedRows = grid.select();
@@ -2269,7 +2294,7 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 				LoadKendoTable_main3(search)
 			});
 			
-			$(document).on('keyup','.kal_pyr_gr', function(e){
+			$(document).on('keyup','.kronka_pyr_gr', function(e){
 				if(e.key==="Enter"){
 					let kalioni_gr = $(this).attr('data-id');
 					let cur_pyr = $(this).val();
@@ -2281,7 +2306,7 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 						url: "server-side/writes.action.php",
 						type: "POST",
 						data: {
-							act: "kalioni_pyr_save",
+							act: "kronka_pyr_save",
 							type: 2,
 							kalioni_gr: kalioni_gr,
 							pyr: cur_pyr

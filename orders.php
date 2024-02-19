@@ -303,6 +303,18 @@
 			background-color:#96a2d6;
 			color: black;
 		}
+
+
+		.k-master-row:has(.make_me_green) {
+			background-color: #81ff81;
+			color: #000;
+		}
+		.k-master-row:has(.make_me_green):hover {
+			background-color:#96a2d6;
+			color: black;
+		}
+
+
 		.k-grid tbody tr:not(.k-detail-row).k-hover, .k-grid tbody tr:not(.k-detail-row).k-state-hover, .k-grid tbody tr:not(.k-detail-row):hover{
 			background-color:#96a2d6;
 		}
@@ -1474,6 +1486,7 @@
 				params.id = $("#writing_id").val();
 				params.client_name = $("#client_name").val();
 				params.client_pid = $("#client_pid").val();
+				params.client_comment = $("#client_comment").val();
 				params.client_phone = $("#client_phone").val();
 				params.client_addr = $("#client_addr").val();
 				params.order_date = $("#order_date").val();

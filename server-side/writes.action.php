@@ -918,7 +918,7 @@ switch ($act){
             $db->setQuery("UPDATE cut_glass SET actived = 0 WHERE id IN ($cut_ids)");
             $db->execQuery();
 
-            $db->setQuery("INSERT INTO cut_glass SET id = '$cut_id', status_id = 1, user_id = '$user_id', list_id = '$list_id'");
+            $db->setQuery("INSERT INTO cut_glass SET id = '$cut_id', status_id = 1, user_id = '$user_id', list_id = '$list_id', create_datetime = NOW()");
             $db->execQuery();
 
             $cutGlassId = $db->getLastId();
@@ -1890,6 +1890,34 @@ switch ($act){
     case 'finish_few_page':
         $data = array('page' => getFinishFew());
         break;
+    case 'kronka_pyr_save':
+        $type = $_REQUEST['type'];
+
+        $glass_id = $_REQUEST['glass_id'];
+        $pyr = $_REQUEST['pyr'];
+
+        $kalioni_gr = $_REQUEST['kalioni_gr'];
+
+        if($type == 1){
+            /* $db->setQuery("UPDATE glasses_paths SET pyramid='$pyr' WHERE glass_id = '$glass_id' AND path_group_id = 5");
+
+            $db->execQuery();
+
+
+            $db->setQuery("UPDATE products_glasses SET last_pyramid='$pyr' WHERE id = '$glass_id'");
+
+            $db->execQuery(); */
+        }
+        else{
+            $db->setQuery("UPDATE glasses_paths SET pyramid='$pyr' WHERE glass_id IN (SELECT id FROM products_glasses WHERE kronka_group = '$kalioni_gr')");
+
+            $db->execQuery();
+            $db->setQuery("UPDATE products_glasses SET last_pyramid='$pyr' WHERE kronka_group = '$kalioni_gr'");
+
+            $db->execQuery();
+        }
+        
+        break;
     case 'kalioni_pyr_save':
         $type = $_REQUEST['type'];
 
@@ -2013,7 +2041,7 @@ switch ($act){
         $db->setQuery("SELECT	products_glasses.kronka_group,GROUP_CONCAT(CONCAT('<div style=\"display:flex;\">ID: ',products_glasses.id, ' ზომები: ', CONCAT(glass_options.name,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'')),CONCAT('<b class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'\">',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ '), glass_type.name,' ', glass_colors.name,' - პირ: ',products_glasses.last_pyramid, IF(glasses_paths.status_id != 4, CONCAT('<input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.id,'\" kal_gr=\"',products_glasses.kronka_group,'\" class=\"kal_pyr\" value=\"',IFNULL(glasses_paths.pyramid,0),'\">'),''),IF(glasses_paths.status_id = 4,' - <span class=\"status_1\">დახარვეზებული</span> ',''), '<div id=\"del_glass\" class=\"del_glass\" path-id=\"',glasses_paths.id,'\" data-id=\"',products_glasses.id,'\"> <img style=\"width: 20px;\" src=\"assets/img/error.png\"></div><span data-id=\"',products_glasses.id,'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></div>'
 
         ) SEPARATOR '<br>') AS gr,
-        IF((SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = 3 AND glasses_paths.actived = 1 AND glasses_paths.glass_id IN (GROUP_CONCAT(products_glasses.id)) AND glasses_paths.status_id IN (1,2)) > 0,CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc_few_kronka\" kal_gr=\"',products_glasses.kronka_group,'\" data-id=\"',GROUP_CONCAT(products_glasses.id),'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span><input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.kronka_group,'\" class=\"kal_pyr_gr\"></div>'), CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>'))
+        IF((SELECT COUNT(*) FROM glasses_paths WHERE glasses_paths.path_group_id = 3 AND glasses_paths.actived = 1 AND glasses_paths.glass_id IN (SELECT pg.id FROM products_glasses AS pg WHERE pg.kronka_group = products_glasses.kronka_group) AND glasses_paths.status_id IN (1,2)) > 0,CONCAT('<div style=\"display:flex;\"><div class=\"finish_proc_few_kronka\" kal_gr=\"',products_glasses.kronka_group,'\" data-id=\"',GROUP_CONCAT(products_glasses.id),'\" id=\"new_glass\"><img style=\"width: 40px;\" src=\"assets/img/ok.png\"></div><span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span><input style=\"width: 50px; margin-left: 10px; margin-right: 10px;\" type=\"text\" data-id=\"',products_glasses.kronka_group,'\" class=\"kronka_pyr_gr\"></div>'), CONCAT('<span data-id=\"',GROUP_CONCAT(products_glasses.id),'\" style=\"','\" class=\"print_shtrixkod\"><img style=\"width:40px\" src=\"assets/img/print.png\"></span>'))
                         
                         
                         
@@ -2284,6 +2312,8 @@ switch ($act){
         $client_addr    = $_REQUEST['client_addr'];
         $order_date     = $_REQUEST['order_date'];
 
+        $client_comment    = $_REQUEST['client_comment'];
+
         $all_date = explode(' - ', $order_date);
         $order_date = $all_date[0];
 
@@ -2311,7 +2341,8 @@ switch ($act){
                                                 client_pid='$client_pid',
                                                 total='$pay_total',
                                                 avansi='$avansi',
-                                                avans_plus='$avans_plus'");
+                                                avans_plus='$avans_plus',
+                                                comment='$client_comment'");
 
             $db->execQuery();
             
@@ -2327,7 +2358,8 @@ switch ($act){
                                                 client_phone='$client_phone',
                                                 total='$pay_total',
                                                 avansi='$avansi',
-                                                avans_plus='$avans_plus'
+                                                avans_plus='$avans_plus',
+                                                comment='$client_comment'
                             WHERE id='$id'");
             $db->execQuery();
             
@@ -3040,6 +3072,11 @@ switch ($act){
 						$g = array('field'=>$columns[$j],'hidden' => $hide_kronka, 'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 120);
 
 					}
+                    elseif($columns[$j] == "cut_datetime"){
+
+						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 90);
+
+					}
                     elseif($columns[$j] == "cut_id"){
 
 						$g = array('field'=>$columns[$j],'encoded'=>false,'title'=>$columnNames[0][$a],'filterable'=>array('multi'=>true,'search' => true, 'cell' => array('operator'=>'contains','suggestionOperator'=>'contains')), 'width' => 40);
@@ -3173,7 +3210,7 @@ switch ($act){
                                     orders.avans_plus,
                                     orders.total - (orders.avansi+orders.avans_plus) AS left_to_pay,
                                     CONCAT('<span class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR order_status.id IN (4),'','make_me_red '),'ostatus_',order_status.id,'\">',order_status.name,'</span>') AS status,
-                                    IF((SELECT COUNT(*) FROM given_glasses WHERE order_id = orders.id) > 0, CONCAT('<a  style=\"color:blue\" href=\"print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>'), '')
+                                    IF((SELECT COUNT(*) FROM given_glasses WHERE order_id = orders.id) > 0, CONCAT('<a class=\"make_me_green\"  style=\"color:blue\" href=\"print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>'), '')
 
                                     
                                         
@@ -3221,9 +3258,10 @@ switch ($act){
             }
 
             $db->setQuery("SELECT 		cut_glass.id,
+                                        cut_glass.create_datetime,
                                         CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', warehouse.pyramid) AS list,
                                         REPLACE(GROUP_CONCAT(CONCAT('ID: ', products_glasses.id,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'') ,' ზომები: <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ - ',glass_st.name,' - ', orders.client_name,' - პირ: <b>',IFNULL(products_glasses.last_pyramid,''),'</b> - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>'), 'დახარვეზებული', '<span style=\"color:red;\">დახარვეზებული</span>') AS glasses,
-                                        (SELECT GROUP_CONCAT(CONCAT('<b>',cut_atxod.width,'</b> X <b>', cut_atxod.height,'</b> მმ') SEPARATOR ',<br>') FROM cut_atxod WHERE cut_atxod.cut_id = cut_glass.id AND cut_atxod.actived = 1) AS atx,
+                                        (SELECT GROUP_CONCAT(CONCAT('<b>',cut_atxod.width,'</b> X <b>', cut_atxod.height,'</b> მმ <span data-id=\"',cut_atxod.id,'\" class=\"print_atxod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ',<br>') FROM cut_atxod WHERE cut_atxod.cut_id = cut_glass.id AND cut_atxod.actived = 1) AS atx,
                                         
                                         CONCAT('<span class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR glass_status.id IN (3),'','make_me_red '),'status_',glass_status.id,'\">',glass_status.name,'</span>') AS status,
                                         CASE
@@ -4216,6 +4254,10 @@ function getPage($id, $res = ''){
                     '.getClients(0).'
                 </select>
             </div>
+            <div class="col-sm-4">
+                <label>კომენტარი</label>
+                <input value="'.$res['comment'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_comment" class="idle" autocomplete="off">
+            </div>
         </div>
     </fieldset>
 
@@ -4428,8 +4470,8 @@ function getWriting($id){
                             orders.user_id,
                             orders.total,
                             orders.avansi,
-                            orders.avans_plus
-                        
+                            orders.avans_plus,
+                            orders.comment
                             
                     FROM 	orders
                     WHERE 	orders.actived = 1 AND orders.id = '$id'");
