@@ -318,6 +318,12 @@
 		.k-grid tbody tr:not(.k-detail-row).k-hover, .k-grid tbody tr:not(.k-detail-row).k-state-hover, .k-grid tbody tr:not(.k-detail-row):hover{
 			background-color:#96a2d6;
 		}
+
+		.small_text{
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
 	<script src="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/ionicons.z18qlu2u.js" data-resources-url="file:///C:/Users/giorgi/AppData/Local/Temp/Rar$EXa10780.17568/www.spruko.com/demo/dashlead/assets/plugins/ionicons/ionicons/" data-namespace="ionicons"></script>

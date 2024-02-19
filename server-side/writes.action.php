@@ -3201,7 +3201,7 @@ switch ($act){
             $db->setQuery("SELECT 	orders.id,
                                     orders.datetime,
                                     orders.client_name,
-                                    (SELECT GROUP_CONCAT(add_info) FROM orders_product WHERE orders_product.order_id = orders.id AND orders_product.actived = 1),
+                                    CONCAT('<span class=\"small_text\">',(SELECT GROUP_CONCAT(add_info) FROM orders_product WHERE orders_product.order_id = orders.id AND orders_product.actived = 1),'</span>'),
                                     orders.client_phone,
                                     orders.client_addr,
                                     (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_id = orders.id AND actived = 1 AND status_id IN (1,2,3)),
