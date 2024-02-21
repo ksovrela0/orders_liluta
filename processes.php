@@ -2323,6 +2323,37 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 
 				//
 			})
+
+			$(document).on('keyup','.kal_pyr_gr', function(e){
+				if(e.key==="Enter"){
+					let kalioni_gr = $(this).attr('data-id');
+					let cur_pyr = $(this).val();
+					
+					const myTimeout = setTimeout(function(){
+
+					}, 2);
+					$.ajax({
+						url: "server-side/writes.action.php",
+						type: "POST",
+						data: {
+							act: "kalioni_pyr_save",
+							type: 2,
+							kalioni_gr: kalioni_gr,
+							pyr: cur_pyr
+						},
+						dataType: "json",
+						success: function(data) {
+							
+							$("#main_div_kalioni").data("kendoGrid").dataSource.read();
+						}
+					});
+				}
+				
+
+
+				//
+			})
+
 			$(document).on('keyup','.kal_pyr', function(e){
 				if(e.key==="Enter"){
 					let glass_id = $(this).attr('data-id');
