@@ -1658,10 +1658,10 @@
 									act: "calc_price",
 									order_id: $("#writing_id").val()
 								},
-								dataType: "json",
-								success: function(data) {
-									$("#pay_total").val(data.total_price);
-								}
+								// dataType: "json",
+								// success: function(data) {
+								// 	$("#pay_total").val(data.total_price);
+								// }
 							});
 						}
 					});

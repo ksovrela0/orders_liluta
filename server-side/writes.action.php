@@ -3204,7 +3204,7 @@ switch ($act){
                                     CONCAT('<span class=\"small_text\">',(SELECT GROUP_CONCAT(add_info) FROM orders_product WHERE orders_product.order_id = orders.id AND orders_product.actived = 1),'</span>'),
                                     orders.client_phone,
                                     orders.client_addr,
-                                    (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_id = orders.id AND actived = 1 AND status_id IN (1,2,3)),
+                                    (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_id = orders.id AND actived = 1 AND status_id IN (1,2,3,6)),
                                     orders.total,
                                     orders.avansi,
                                     orders.avans_plus,
@@ -3259,7 +3259,7 @@ switch ($act){
 
             $db->setQuery("SELECT 		cut_glass.id,
                                         cut_glass.create_datetime,
-                                        CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ</b> პირამიდა: ', warehouse.pyramid) AS list,
+                                        CONCAT('ID: ', warehouse.id, ' ',glass_options.name,'(',glass_manuf.name,') ',glass_colors.name,' <b>',warehouse.glass_width,'</b> X <b>', warehouse.glass_height,'</b> მმ</b> პირამიდა: ', warehouse.pyramid) AS list,
                                         REPLACE(GROUP_CONCAT(CONCAT('ID: ', products_glasses.id,' ', IFNULL((SELECT CONCAT('(',products.name,')') FROM orders_product JOIN products ON products.id = orders_product.product_id AND products.id IN (2,3) WHERE orders_product.id = products_glasses.order_product_id),'') ,' ზომები: <b>',products_glasses.glass_width,'</b> X <b>', products_glasses.glass_height,'</b> მმ - ',glass_st.name,' - ', orders.client_name,' - პირ: <b>',IFNULL(products_glasses.last_pyramid,''),'</b> - <span data-id=\"',products_glasses.id,'\" class=\"print_shtrixkod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ', <br>'), 'დახარვეზებული', '<span style=\"color:red;\">დახარვეზებული</span>') AS glasses,
                                         (SELECT GROUP_CONCAT(CONCAT('<b>',cut_atxod.width,'</b> X <b>', cut_atxod.height,'</b> მმ <span data-id=\"',cut_atxod.id,'\" class=\"print_atxod\"><img style=\"width:20px\" src=\"assets/img/print.png\"></span>') SEPARATOR ',<br>') FROM cut_atxod WHERE cut_atxod.cut_id = cut_glass.id AND cut_atxod.actived = 1) AS atx,
                                         
@@ -3275,7 +3275,7 @@ switch ($act){
                                         END AS acc
                                         
                                         FROM 		cut_glass
-                                        JOIN		lists_to_cut ON lists_to_cut.cut_id = cut_glass.id
+                                        JOIN		lists_to_cut ON lists_to_cut.cut_id = cut_glass.id AND lists_to_cut.actived = 1
                                         JOIN		warehouse ON warehouse.id = lists_to_cut.list_id
                                         JOIN		products_glasses ON products_glasses.id = lists_to_cut.glass_id
                                         JOIN        orders ON orders.id = products_glasses.order_id
