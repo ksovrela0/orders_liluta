@@ -1651,18 +1651,18 @@
 							$("#path_div").data("kendoGrid").dataSource.read();
 							$('#get_path_page').dialog("close");
 
-							$.ajax({
-								url: "server-side/writes.action.php",
-								type: "POST",
-								data: {
-									act: "calc_price",
-									order_id: $("#writing_id").val()
-								},
-								// dataType: "json",
-								// success: function(data) {
-								// 	$("#pay_total").val(data.total_price);
-								// }
-							});
+							// $.ajax({
+							// 	url: "server-side/writes.action.php",
+							// 	type: "POST",
+							// 	data: {
+							// 		act: "calc_price",
+							// 		order_id: $("#writing_id").val()
+							// 	},
+							// 	dataType: "json",
+							// 	success: function(data) {
+							// 		$("#pay_total").val(data.total_price);
+							// 	}
+							// });
 						}
 					});
 
