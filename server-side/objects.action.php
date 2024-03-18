@@ -444,7 +444,7 @@ switch ($act){
                                 
 
                                 FROM    orders_product
-                                JOIN    orders ON orders.id = orders_product.order_id
+                                JOIN    orders ON orders.id = orders_product.order_id AND orders.active_order != 999
                                 JOIN    products ON products.id = orders_product.product_id
                                 
                                 LEFT JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
@@ -496,7 +496,7 @@ switch ($act){
                                 
 
                         FROM 		products_glasses
-                        JOIN 		orders ON orders.id = products_glasses.order_id AND orders.actived = 1
+                        JOIN 		orders ON orders.id = products_glasses.order_id AND orders.actived = 1 AND orders.active_order != 999
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
                         JOIN    products ON products.id = orders_product.product_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
@@ -551,7 +551,7 @@ switch ($act){
 
                         FROM 	products_glasses
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
-                        JOIN 	orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                        JOIN 	orders ON orders.id = orders_product.order_id AND orders.actived = 1 AND orders.active_order != 999
                         
                         JOIN    products ON products.id = orders_product.product_id
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id

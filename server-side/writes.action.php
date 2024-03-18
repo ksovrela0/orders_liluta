@@ -1619,6 +1619,7 @@ switch ($act){
     break;
     case 'get_glass_page':
         $id = $_REQUEST['id'];
+        $owner_id = $_REQUEST['owner_id'];
         if($id == '' OR !isset($_REQUEST['id'])){
             $db->setQuery("INSERT INTO products_glasses SET user_id = 1");
             $db->execQuery();
@@ -1629,7 +1630,7 @@ switch ($act){
             $db->execQuery();
         }
         
-        $data = array('page' => getGlassPage($id, getGlass($id)));
+        $data = array('page' => getGlassPage($id, getGlass($id), $owner_id));
     break;
     case 'get_product_page':
         $id = $_REQUEST['id'];
@@ -2312,6 +2313,16 @@ switch ($act){
         $client_addr    = $_REQUEST['client_addr'];
         $order_date     = $_REQUEST['order_date'];
 
+        $owner_id       = $_REQUEST['owner_id'];
+        $actived_order  = $_REQUEST['actived_order'];
+
+        if($actived_order == 'true'){
+            $actived_order = 1;
+        }
+        else{
+            $actived_order = 999;
+        }
+
         $client_comment    = $_REQUEST['client_comment'];
 
         $all_date = explode(' - ', $order_date);
@@ -2342,6 +2353,8 @@ switch ($act){
                                                 total='$pay_total',
                                                 avansi='$avansi',
                                                 avans_plus='$avans_plus',
+                                                owner_id='$owner_id',
+                                                active_order = '$actived_order',
                                                 comment='$client_comment'");
 
             $db->execQuery();
@@ -2359,6 +2372,8 @@ switch ($act){
                                                 total='$pay_total',
                                                 avansi='$avansi',
                                                 avans_plus='$avans_plus',
+                                                owner_id='$owner_id',
+                                                active_order = '$actived_order',
                                                 comment='$client_comment'
                             WHERE id='$id'");
             $db->execQuery();
@@ -3209,7 +3224,7 @@ switch ($act){
                                     orders.avansi,
                                     orders.avans_plus,
                                     orders.total - (orders.avansi+orders.avans_plus) AS left_to_pay,
-                                    CONCAT('<span class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR order_status.id IN (4),'','make_me_red '),'ostatus_',order_status.id,'\">',order_status.name,'</span>') AS status,
+                                    IF(orders.active_order = 999,'<span class=\"make_me_yellow ostatus_999\">არა აქტიური</span>',CONCAT('<span class=\"',IF(DATEDIFF(orders.datetime_finish,CURDATE()) > 3 OR order_status.id IN (4),'','make_me_red '),'ostatus_',order_status.id,'\">',order_status.name,'</span>')) AS status,
                                     IF((SELECT COUNT(*) FROM given_glasses WHERE order_id = orders.id) > 0, CONCAT('<a class=\"make_me_green\"  style=\"color:blue\" href=\"print_excel.php?act=all&order_id=',orders.id,'\">გაცემულები</a>'), '')
 
                                     
@@ -3278,7 +3293,7 @@ switch ($act){
                                         JOIN		lists_to_cut ON lists_to_cut.cut_id = cut_glass.id AND lists_to_cut.actived = 1
                                         JOIN		warehouse ON warehouse.id = lists_to_cut.list_id
                                         JOIN		products_glasses ON products_glasses.id = lists_to_cut.glass_id
-                                        JOIN        orders ON orders.id = products_glasses.order_id
+                                        JOIN        orders ON orders.id = products_glasses.order_id AND orders.active_order != 999
                                         JOIN		glass_status ON glass_status.id = cut_glass.status_id
                                         JOIN        glass_status AS glass_st ON glass_st.id = products_glasses.status_id
 
@@ -3323,7 +3338,7 @@ switch ($act){
                                     END AS acc2
 
                             FROM    orders_product
-                            JOIN    orders ON orders.id = orders_product.order_id
+                            JOIN    orders ON orders.id = orders_product.order_id AND orders.active_order != 999
                             JOIN    products ON products.id = orders_product.product_id
                             
                             LEFT JOIN	products_glasses ON products_glasses.order_product_id = orders_product.id
@@ -3390,7 +3405,7 @@ switch ($act){
                                     
                             FROM 		products_glasses
                             JOIN		orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
-                            JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                            JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1 AND orders.active_order != 999
                             JOIN		glass_options ON glass_options.id = products_glasses.glass_option_id		
                             JOIN 		glass_type ON glass_type.id = products_glasses.glass_type_id
                             JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
@@ -3456,7 +3471,7 @@ switch ($act){
                                     
                             FROM 		products_glasses
                             JOIN		orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
-                            JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                            JOIN		orders ON orders.id = orders_product.order_id AND orders.actived = 1 AND orders.active_order != 999
                             JOIN		glass_options ON glass_options.id = products_glasses.glass_option_id		
                             JOIN 		glass_type ON glass_type.id = products_glasses.glass_type_id
                             JOIN		glass_colors ON glass_colors.id = products_glasses.glass_color_id
@@ -3566,7 +3581,7 @@ switch ($act){
 
                         FROM    products_glasses
                         JOIN    orders_product ON orders_product.id = products_glasses.order_product_id AND orders_product.actived = 1
-                        JOIN	orders ON orders.id = orders_product.order_id AND orders.actived = 1
+                        JOIN	orders ON orders.id = orders_product.order_id AND orders.actived = 1 AND orders.active_order != 999
                         JOIN    glass_options ON glass_options.id = products_glasses.glass_option_id
                         JOIN    glass_type ON glass_type.id = products_glasses.glass_type_id
                         JOIN    glass_colors ON glass_colors.id = products_glasses.glass_color_id
@@ -3719,13 +3734,26 @@ function getGlass($id){
     return $result['result'][0];
     
 }
-function getGlassPage($id, $res = ''){
+function getGlassPage($id, $res = '', $owner_id = 0){
     GLOBAL $db;
-    $checked = 'checked';
+    
 
-    if($res['go_to_cut'] == '0'){
-        $checked = '';
+    if($owner_id == 0){
+        $checked = 'checked';
+
+        if($res['go_to_cut'] == '0'){
+            $checked = '';
+        }
     }
+    else{
+        if($res['go_to_cut'] == '1'){
+            $checked = 'checked';
+        }
+        else{
+            $checked = '';
+        }
+    }
+
     if($res['not_standard'] == '1'){
         $checked_stand = 'checked';
     }
@@ -4144,6 +4172,25 @@ function getPathOptions($id){
     }
     return $data;
 }
+function getClients2($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            client_name AS name
+                    FROM    clients 
+                    WHERE actived = 1");
+    $cats = $db->getResultArray();
+    $data .= '<option value="0">ლილუტა</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
+        }
+    }
+    return $data;
+}
 function getClients(){
     GLOBAL $db;
     $data = '';
@@ -4235,11 +4282,35 @@ function getPage($id, $res = ''){
     if($res['datetime_finish'] != ''){
         $order_date = $res['datetime'].' - '.$res['datetime_finish'];
     }
+
+
+    $checked_active = 'checked';
+
+    if($res['active_order'] == 999){
+        $checked_active = '';
+    }
+
     $data .= '
 
     
     <fieldset class="fieldset">
         <legend>პარამეტრები</legend>
+        <div class="row">
+            <div class="col-sm-4">
+                <label style="display: flex;
+                flex-direction: row;
+                grid-gap: 10px;
+                flex-wrap: nowrap;">აქტიური <input type="checkbox" id="actived_order" '.$checked_active.'></label>
+            </div>
+            <div class="col-sm-4">
+                <label>აირჩიეთ მინის მფლობელი</label>
+                <select id="owner_id" '.$disable.'>
+                    '.getClients2($res['owner_id']).'
+                </select>
+            </div>
+
+            
+        </div>
         <div class="row">
             <div class="col-sm-4">
                 <label>აირჩიეთ პასუხისმგებეელი პირი</label>
@@ -4471,7 +4542,9 @@ function getWriting($id){
                             orders.total,
                             orders.avansi,
                             orders.avans_plus,
-                            orders.comment
+                            orders.comment,
+                            orders.owner_id,
+                            orders.active_order
                             
                     FROM 	orders
                     WHERE 	orders.actived = 1 AND orders.id = '$id'");

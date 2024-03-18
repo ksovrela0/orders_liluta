@@ -58,6 +58,13 @@
 		padding: 8px;
 		cursor: pointer;
 	}
+	.ostatus_999 {
+		padding: 5px;
+		color: white;
+		background: radial-gradient(#ce1414 0.3%, #ee2828 90%);
+		border-radius: 5px;
+		font-size: 15px;
+	}
 	#ui-datepicker-div {
 			z-index: 99999999!important;
 		}
@@ -307,6 +314,14 @@
 
 		.k-master-row:has(.make_me_green) {
 			background-color: #81ff81;
+			color: #000;
+		}
+		.k-master-row:has(.make_me_yellow) {
+			background-color: yellow;
+			color: #000;
+		}
+		.k-master-row:has(.make_me_yellow):hover {
+			background-color: #f9f99e;
 			color: #000;
 		}
 		.k-master-row:has(.make_me_green):hover {
@@ -576,7 +591,7 @@
 							dataType: "json",
 							success: function(data) {
 								$("#get_edit_page").html(data.page);
-								$("#resp_user,#clients").chosen();
+								$("#resp_user,#clients,#owner_id").chosen();
 								$("#order_date").daterangepicker({
 									timePicker: true,
 									locale: {
@@ -845,7 +860,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user,#clients").chosen();
+						$("#resp_user,#clients,#owner_id").chosen();
 						$("#order_date").daterangepicker({
 							timePicker: true,
 							locale: {
@@ -944,7 +959,8 @@
 					url: "server-side/writes.action.php",
 					type: "POST",
 					data: {
-						act: "get_glass_page"
+						act: "get_glass_page",
+						owner_id: $('#owner_id').val()
 					},
 					dataType: "json",
 					success: function(data) {
@@ -1257,7 +1273,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user,#clients").chosen();
+						$("#resp_user,#clients,#owner_id").chosen();
 						$("#order_date").daterangepicker({
 							timePicker: true,
 							locale: {
@@ -1499,6 +1515,9 @@
 				params.pay_total = $("#pay_total").val();
 				params.avansi = $("#avansi").val();
 				params.avans_plus = $("#avans_plus").val();
+				params.owner_id = $("#owner_id").val();
+
+				params.actived_order = $("#actived_order").prop('checked');
 
 				params.resp_user = $("#resp_user").val();
 
@@ -2347,6 +2366,26 @@
 					}
 				});
 			});
+			$(document).on('change', '#owner_id', function(){
+				var client_id = $(this).val();
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: "act=get_client&id="+client_id,
+					dataType: "json",
+					success: function(data){
+						$("#clients").val(0);
+						$('#clients').trigger('chosen:updated');
+
+
+						$("#client_name").val(data.client_name);
+						$("#client_pid").val(data.client_pid);
+						$("#client_phone").val(data.client_phone);
+						$("#client_addr").val(data.client_addr);
+					}
+				})
+			})
 			$(document).on('change', '#clients', function(){
 				var client_id = $(this).val();
 

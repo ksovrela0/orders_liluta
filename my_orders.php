@@ -58,6 +58,13 @@
 		padding: 8px;
 		cursor: pointer;
 	}
+	.ostatus_999 {
+		padding: 5px;
+		color: white;
+		background: radial-gradient(#ce1414 0.3%, #ee2828 90%);
+		border-radius: 5px;
+		font-size: 15px;
+	}
 	#ui-datepicker-div {
 			z-index: 99999999!important;
 		}
@@ -303,8 +310,34 @@
 			background-color:#96a2d6;
 			color: black;
 		}
+
+
+		.k-master-row:has(.make_me_green) {
+			background-color: #81ff81;
+			color: #000;
+		}
+		.k-master-row:has(.make_me_yellow) {
+			background-color: yellow;
+			color: #000;
+		}
+		.k-master-row:has(.make_me_yellow):hover {
+			background-color: #f9f99e;
+			color: #000;
+		}
+		.k-master-row:has(.make_me_green):hover {
+			background-color:#96a2d6;
+			color: black;
+		}
+
+
 		.k-grid tbody tr:not(.k-detail-row).k-hover, .k-grid tbody tr:not(.k-detail-row).k-state-hover, .k-grid tbody tr:not(.k-detail-row):hover{
 			background-color:#96a2d6;
+		}
+
+		.small_text{
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
 		}
 	</style>
 	<!--[if gte IE 5]><frame></frame><![endif]-->
@@ -559,7 +592,7 @@
 							dataType: "json",
 							success: function(data) {
 								$("#get_edit_page").html(data.page);
-								$("#resp_user,#clients").chosen();
+								$("#resp_user,#clients,#owner_id").chosen();
 								$("#order_date").daterangepicker({
 									timePicker: true,
 									locale: {
@@ -828,7 +861,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user,#clients").chosen();
+						$("#resp_user,#clients,#owner_id").chosen();
 						$("#order_date").daterangepicker({
 							timePicker: true,
 							locale: {
@@ -927,7 +960,8 @@
 					url: "server-side/writes.action.php",
 					type: "POST",
 					data: {
-						act: "get_glass_page"
+						act: "get_glass_page",
+						owner_id: $('#owner_id').val()
 					},
 					dataType: "json",
 					success: function(data) {
@@ -1240,7 +1274,7 @@
 					dataType: "json",
 					success: function(data) {
 						$('#get_edit_page').html(data.page);
-						$("#resp_user,#clients").chosen();
+						$("#resp_user,#clients,#owner_id").chosen();
 						$("#order_date").daterangepicker({
 							timePicker: true,
 							locale: {
@@ -1475,12 +1509,16 @@
 				params.id = $("#writing_id").val();
 				params.client_name = $("#client_name").val();
 				params.client_pid = $("#client_pid").val();
+				params.client_comment = $("#client_comment").val();
 				params.client_phone = $("#client_phone").val();
 				params.client_addr = $("#client_addr").val();
 				params.order_date = $("#order_date").val();
 				params.pay_total = $("#pay_total").val();
 				params.avansi = $("#avansi").val();
 				params.avans_plus = $("#avans_plus").val();
+				params.owner_id = $("#owner_id").val();
+
+				params.actived_order = $("#actived_order").prop('checked');
 
 				params.resp_user = $("#resp_user").val();
 
@@ -1633,18 +1671,18 @@
 							$("#path_div").data("kendoGrid").dataSource.read();
 							$('#get_path_page').dialog("close");
 
-							$.ajax({
-								url: "server-side/writes.action.php",
-								type: "POST",
-								data: {
-									act: "calc_price",
-									order_id: $("#writing_id").val()
-								},
-								dataType: "json",
-								success: function(data) {
-									$("#pay_total").val(data.total_price);
-								}
-							});
+							// $.ajax({
+							// 	url: "server-side/writes.action.php",
+							// 	type: "POST",
+							// 	data: {
+							// 		act: "calc_price",
+							// 		order_id: $("#writing_id").val()
+							// 	},
+							// 	dataType: "json",
+							// 	success: function(data) {
+							// 		$("#pay_total").val(data.total_price);
+							// 	}
+							// });
 						}
 					});
 
@@ -2329,6 +2367,26 @@
 					}
 				});
 			});
+			$(document).on('change', '#owner_id', function(){
+				var client_id = $(this).val();
+
+				$.ajax({
+					url: "server-side/writes.action.php",
+					type: "POST",
+					data: "act=get_client&id="+client_id,
+					dataType: "json",
+					success: function(data){
+						$("#clients").val(0);
+						$('#clients').trigger('chosen:updated');
+
+
+						$("#client_name").val(data.client_name);
+						$("#client_pid").val(data.client_pid);
+						$("#client_phone").val(data.client_phone);
+						$("#client_addr").val(data.client_addr);
+					}
+				})
+			})
 			$(document).on('change', '#clients', function(){
 				var client_id = $(this).val();
 
