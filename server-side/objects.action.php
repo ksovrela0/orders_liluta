@@ -9,7 +9,7 @@ $user_gr = $_SESSION['GRPID'];
 switch ($act){
     case 'get_add_page':
         $id = $_REQUEST['id'];
-        $data = array('page' => getPage());
+        $data = array('page' => getPage(getObject($id)));
     break;
     case 'get_edit_page':
         $id = $_REQUEST['id'];
@@ -907,7 +907,7 @@ function getPage($res = ''){
             
         </div>
     </fieldset>
-    <input type="hidden" id="warehouse_id" value="'.$res[id].'">
+    <input type="hidden" id="warehouse_id" value="'.$res['id'].'">
     ';
 
     return $data;
@@ -939,11 +939,11 @@ function getGlassbringer($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -958,11 +958,11 @@ function getGlassBringOptions($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -977,11 +977,11 @@ function getGlassColorOptions($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -996,11 +996,11 @@ function getGlassTypeOptions($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -1015,11 +1015,11 @@ function getGlassOptions($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;
@@ -1033,11 +1033,11 @@ function get_cat_1($id){
                     WHERE   actived = 1");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
         
     }
@@ -1078,11 +1078,11 @@ function getGlassManuf($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     return $data;

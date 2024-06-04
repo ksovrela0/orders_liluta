@@ -2334,6 +2334,7 @@ switch ($act){
         $avans_plus     = $_REQUEST['avans_plus'] == '' ? 0 : $_REQUEST['avans_plus'];
 
         $resp_user     = $_REQUEST['resp_user'];
+        $waybill     = $_REQUEST['waybill'];
 
         $db->setQuery(" SELECT  COUNT(*) AS cc
                         FROM    orders
@@ -2355,7 +2356,8 @@ switch ($act){
                                                 avans_plus='$avans_plus',
                                                 owner_id='$owner_id',
                                                 active_order = '$actived_order',
-                                                comment='$client_comment'");
+                                                comment='$client_comment',
+                                                waybill='$waybill'");
 
             $db->execQuery();
             
@@ -2374,7 +2376,8 @@ switch ($act){
                                                 avans_plus='$avans_plus',
                                                 owner_id='$owner_id',
                                                 active_order = '$actived_order',
-                                                comment='$client_comment'
+                                                comment='$client_comment',
+                                                waybill='$waybill'
                             WHERE id='$id'");
             $db->execQuery();
             
@@ -3217,7 +3220,7 @@ switch ($act){
                                     orders.datetime,
                                     orders.client_name,
                                     CONCAT('<span class=\"small_text\">',(SELECT GROUP_CONCAT(add_info) FROM orders_product WHERE orders_product.order_id = orders.id AND orders_product.actived = 1),'</span>'),
-                                    orders.client_phone,
+                                    orders.waybill,
                                     orders.client_addr,
                                     (SELECT ROUND(SUM((glass_width*glass_height)/1000000),2) FROM products_glasses WHERE order_id = orders.id AND actived = 1 AND status_id IN (1,2,3,6)),
                                     orders.total,
@@ -4329,6 +4332,10 @@ function getPage($id, $res = ''){
                 <label>კომენტარი</label>
                 <input value="'.$res['comment'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="client_comment" class="idle" autocomplete="off">
             </div>
+            <div class="col-sm-4">
+                <label>ზედნადები</label>
+                <input value="'.$res['waybill'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="waybill" class="idle" autocomplete="off">
+            </div>
         </div>
     </fieldset>
 
@@ -4537,6 +4544,7 @@ function getWriting($id){
                             orders.client_name,
                             orders.client_pid,
                             orders.client_phone,
+                            orders.waybill,
                             orders.client_addr,
                             orders.user_id,
                             orders.total,

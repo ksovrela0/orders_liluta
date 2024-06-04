@@ -883,7 +883,7 @@
 									alert(data.error);
 								}
 
-								$("#filter").click();
+								//$("#filter").click();
 								
 							}
 						});

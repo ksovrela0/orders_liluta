@@ -423,7 +423,7 @@
 		//KendoUI CLASS CONFIGS BEGIN
 		var aJaxURL	        =   "server-side/objects.action.php";
 		var gridName        = 	'product_categories';
-		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a><a id="button_copy" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> კოპირება</a></div> <div> ჯამში მინა: <span id="total_glass">0</span></div>';
+		var actions         = 	'<div class="btn btn-list"><a id="button_add_atx" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> ათხოდის მიღება</a><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> მინის მიღება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a><a id="button_copy" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> კოპირება</a></div> <div> ჯამში მინა: <span id="total_glass">0</span></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
 		var columnsCount    =	12;

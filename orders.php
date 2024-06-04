@@ -652,7 +652,7 @@
 				var itemPerPage = 100;
 				var columnsCount = 13;
 				var columnsSQL = ["id:string", "datetime:string", "client:string", "client_id:string", "client_phone:string", "client_addr:string", "sum_sqrm:string", "total_to_pay:string", "avans:string", "add_money:string", "left_to_pay:string", "status:string", "gacmin:string"];
-				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დამკვეთი", "დამკვეთი", "ტელეფონი", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი", "გაც.მინები"];
+				var columnGeoNames = ["ID", "შეკვ.თარიღ", "დამკვეთი", "დამკვეთი", "ზედნადები", "მისამართი", "სულ კვ.მ", "სულ გადასახდელი", "ავანსი", "ზედმეტად დამატებული", "დარჩენილი", "სტატუსი", "გაც.მინები"];
 				var showOperatorsByColumns = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var selectors = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 				var locked = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1516,6 +1516,7 @@
 				params.avansi = $("#avansi").val();
 				params.avans_plus = $("#avans_plus").val();
 				params.owner_id = $("#owner_id").val();
+				params.waybill = $("#waybill").val();
 
 				params.actived_order = $("#actived_order").prop('checked');
 
