@@ -1023,6 +1023,7 @@
 								'დახურვა': function() {
 									if(confirm("ნამდვილად გსურთ დახურვა?")){
 										$(this).dialog("close");
+										$("#path_id").val(0)
 									}
 								}
 							}
@@ -1457,6 +1458,7 @@
 								'დახურვა': function() {
 									if(confirm("ნამდვილად გსურთ დახურვა?")){
 										$(this).dialog("close");
+										$("#path_id").val(0)
 									}
 								}
 							}
@@ -1670,7 +1672,7 @@
 						success: function(data) {
 							$("#path_div").data("kendoGrid").dataSource.read();
 							$('#get_path_page').dialog("close");
-
+							$("#path_id").val(0)
 							// $.ajax({
 							// 	url: "server-side/writes.action.php",
 							// 	type: "POST",
