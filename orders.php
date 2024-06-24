@@ -1813,6 +1813,7 @@
 							alert(data.error)
 						}
 						else{
+							$('#path_id').val(0);
 							if(proc_id == 3){
 								$('#get_price_page').html(data.page);
 								$("#get_price_page").dialog({
