@@ -767,7 +767,7 @@ function getStatusPage($res = ''){
     }
 
     if($res['atxoded'] == 1){
-        $dis_inp = 'disabled';
+        $dis_inp_atx = 'disabled';
     }
     $data .= '
     
@@ -776,14 +776,14 @@ function getStatusPage($res = ''){
         <div class="row">
             <div class="col-sm-12" style="margin-top:10px;">
                 <label>პირამიდა:</label>
-                <input type="number" min="1" id="pyramid_num" value="'.$res['last_pyramid'].'" '.$dis_inp.'>
+                <input type="number" min="1" id="pyramid_num" value="'.$res['last_pyramid'].'" '.$dis_inp.' '.$dis_inp_atx.'>
             </div>
             <div class="col-sm-12" style="text-align: center;">
                 <label>სტატუსის შეცვლა</label><br>
-                <button id="proc_again" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>პროცესის თავიდან გავლა</button>
-                <button id="proc_next" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>შემდეგ პროცესზე გადასვლა</button>
+                <button id="proc_again" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.' '.$dis_inp_atx.'>პროცესის თავიდან გავლა</button>
+                <button id="proc_next" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.' '.$dis_inp_atx.'>შემდეგ პროცესზე გადასვლა</button>
                 <button id="proc_start" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>ხელახლა მოჭრა</button>
-                <button id="proc_atxod" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>ატხოდში ჩამატება</button>
+                <button id="proc_atxod" class="ui-button ui-corner-all ui-widget" '.$dis_inp.' '.$dis_inp_atx.'>ატხოდში ჩამატება</button>
             </div>
             
             
