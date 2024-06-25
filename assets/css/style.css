@@ -50558,3 +50558,7 @@ input[type="search"]::-webkit-search-cancel-button {
   .k-filtercell .k-filtercell-wrapper>.k-button, .k-filtercell>span>.k-button{
 	display:none;
   }
+
+  .flexed{
+	display: flex;
+  }

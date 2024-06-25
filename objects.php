@@ -367,15 +367,19 @@
 			// selectedItem has EntityVersionId and the rest of your model
 			removeIDS.push(selectedItem.id);
 		});
-		$.ajax({
-			url: aJaxURL,
-			type: "POST",
-			data: "act=disable&id=" + removeIDS,
-			dataType: "json",
-			success: function (data) {
-				$("#product_categories").data("kendoGrid").dataSource.read();
-			}
-		});
+
+		if(confirm("ნამდვილად გსურთ საწყობიდან წაშლა?")){
+			$.ajax({
+				url: aJaxURL,
+				type: "POST",
+				data: "act=disable&id=" + removeIDS,
+				dataType: "json",
+				success: function (data) {
+					$("#product_categories").data("kendoGrid").dataSource.read();
+				}
+			});
+		}
+		
 	});
 	$( document ).ready(function() {
 		LoadKendoTable_incomming()
@@ -423,7 +427,7 @@
 		//KendoUI CLASS CONFIGS BEGIN
 		var aJaxURL	        =   "server-side/objects.action.php";
 		var gridName        = 	'product_categories';
-		var actions         = 	'<div class="btn btn-list"><a id="button_add_atx" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> ათხოდის მიღება</a><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> მინის მიღება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a><a id="button_copy" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> კოპირება</a></div> <div> ჯამში მინა: <span id="total_glass">0</span></div>';
+		var actions         = 	'<div class="btn btn-list"><a id="button_add_atx" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> ათხოდის მიღება</a><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> მინის მიღება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a></div> <div> ჯამში მინა: <span id="total_glass">0</span></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
 		var columnsCount    =	12;

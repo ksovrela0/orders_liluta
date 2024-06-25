@@ -507,7 +507,7 @@ $(document).on('click', '.main-header-notification', function(){
 })
 
 
-$(document).on('keyup', '.atxod_width,.atxod_height', function(e){
+$(document).on('keyup', '.atxod_width,.atxod_height,.err_atxod_width,.err_atxod_height,.gl_err_atxod_width,.gl_err_atxod_height', function(e){
 	var num = parseInt($(this).val());
 
 	if(typeof $(this).attr('max') != 'undefined'){

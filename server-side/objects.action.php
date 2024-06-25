@@ -779,6 +779,7 @@ function getStatusPage($res = ''){
                 <button id="proc_again" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>პროცესის თავიდან გავლა</button>
                 <button id="proc_next" style="margin-bottom:10px;" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>შემდეგ პროცესზე გადასვლა</button>
                 <button id="proc_start" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>ხელახლა მოჭრა</button>
+                <button id="proc_atxod" class="ui-button ui-corner-all ui-widget" '.$dis_inp.'>ატხოდში ჩამატება</button>
             </div>
             
             

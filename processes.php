@@ -504,6 +504,7 @@ $proc_data = $db->getResultArray()['result'][0];
 	<div title="პროცესის დახარვეზება" id="proc_error_page"></div>
 	<div title="რამდენიმე მინის დაწყება" id="start_few_page"></div>
 	<div title="დაჯგუფებული მინები" id="finish_few_page"></div>
+	<div title="გაატხოდება" id="atxod_glass_proc"></div>
 	<div title="რამდენიმე მინის დასრულება" id="finish_few_glasses_page"></div>
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
@@ -1019,6 +1020,7 @@ $proc_data = $db->getResultArray()['result'][0];
 									var url = new Object();
 									url.act = "error_glass_proc";
 									url['gpyr'] = [];
+									url['gpyr_atx'] = [];
 									url['apyr'] = [];
 									$(".glass_error").each(function(i, x){
 										if($(x).is(":checked")){
@@ -1028,6 +1030,9 @@ $proc_data = $db->getResultArray()['result'][0];
 											}
 											else{
 												url['gpyr'].push($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(x).attr('data-id'));
+												if($(".glass_error_atx[data-id='"+$(x).attr('data-id')+"']").is(":checked")){
+													url['gpyr_atx'].push($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(x).attr('data-id')+'-'+$(".err_atxod_width[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(".err_atxod_height[data-id='"+$(x).attr('data-id')+"']").val())
+												}
 											}
 											
 										}
@@ -1204,24 +1209,110 @@ $proc_data = $db->getResultArray()['result'][0];
 			}
 			else{
 				var ask = prompt("ნამდვილად გსურთ მინის დახარვეზება? მიუთითეთ პირამიდის ნომერი!")
-				if (ask != '') {
-					$.ajax({
-						url: "server-side/writes.action.php",
-						type: "POST",
-						data: {
-							act: "start_glass_proc",
-							glass_id: id,
-							proc_id: get_proc_id,
-							path_id: path_id,
-							glass_rate: 0,
-							pyramid: ask
-						},
-						dataType: "json",
-						success: function(data) {
-							$("#main_div").data("kendoGrid").dataSource.read();
-							$("#kalioni_group").data("kendoGrid").dataSource.read();
+				if (ask != '' && ask != null) {
+					if(get_proc_id != 5){
+						if(confirm("გსურთ მინის გაატხოდება?")){
+							$.ajax({
+								url: "server-side/writes.action.php",
+								type: "POST",
+								data: {
+									act: "atxod_glass_proc",
+									glass_id: id
+								},
+								dataType: "json",
+								success: function(data) {
+									$('#atxod_glass_proc').html(data.page);
+										
+									$("#atxod_glass_proc").dialog({
+										resizable: false,
+										height: "auto",
+										width: 500,
+										modal: true,
+										buttons: {
+											"გაატხოდება": function() {
+												$.ajax({
+													url: "server-side/writes.action.php",
+													type: "POST",
+													data: {
+														act: "make_atxod",
+														glass_id: $("#glass_id_for_atxod").val(),
+														width: $(".gl_err_atxod_width").val(),
+														height: $(".gl_err_atxod_height").val(),
+														pyramid: ask
+													},
+													dataType: "json",
+													success: function(data) {
+														
+														$("#atxod_glass_proc").dialog("close");
+														$.ajax({
+															url: "server-side/writes.action.php",
+															type: "POST",
+															data: {
+																act: "start_glass_proc",
+																glass_id: id,
+																proc_id: get_proc_id,
+																path_id: path_id,
+																glass_rate: 0,
+																pyramid: ask,
+																atxod: 0
+															},
+															dataType: "json",
+															success: function(data) {
+																$("#main_div").data("kendoGrid").dataSource.read();
+																$("#kalioni_group").data("kendoGrid").dataSource.read();
+															}
+														});
+													}
+												});
+											}
+										}
+									});
+								}
+							});
 						}
-					});
+						else{
+							$.ajax({
+								url: "server-side/writes.action.php",
+								type: "POST",
+								data: {
+									act: "start_glass_proc",
+									glass_id: id,
+									proc_id: get_proc_id,
+									path_id: path_id,
+									glass_rate: 0,
+									pyramid: ask,
+									atxod: 0
+								},
+								dataType: "json",
+								success: function(data) {
+									$("#main_div").data("kendoGrid").dataSource.read();
+									$("#kalioni_group").data("kendoGrid").dataSource.read();
+								}
+							});
+						}
+					}
+					else{
+						$.ajax({
+							url: "server-side/writes.action.php",
+							type: "POST",
+							data: {
+								act: "start_glass_proc",
+								glass_id: id,
+								proc_id: get_proc_id,
+								path_id: path_id,
+								glass_rate: 0,
+								pyramid: ask,
+								atxod: 0
+							},
+							dataType: "json",
+							success: function(data) {
+								$("#main_div").data("kendoGrid").dataSource.read();
+								$("#kalioni_group").data("kendoGrid").dataSource.read();
+							}
+						});
+					}
+
+					
 				}
 			}
 			
@@ -2382,6 +2473,28 @@ $("#selected_glass_cat_id,#selected_glass_type_id,#selected_glass_color_id,#sele
 
 
 				//
+			})
+
+			$(document).on('click', '.glass_error_atx', function(){
+				let gl_id = $(this).attr('data-id');
+
+				if($(this).is(":checked")){
+					$(".err_atx_"+gl_id).css('display', 'flex');
+				}
+				else{
+					$(".err_atx_"+gl_id).css('display', 'none');
+				}
+			})
+
+
+			$(document).on('click', '.glass_error', function(){
+				let gl_id = $(this).attr('data-id');
+				if($(this).is(":checked")){
+					$(".glass_error_atx[data-id='"+gl_id+"']").prop('disabled', false);
+				}
+				else{
+					$(".glass_error_atx[data-id='"+gl_id+"']").prop('disabled', true);
+				}
 			})
 	</script>
 </body>

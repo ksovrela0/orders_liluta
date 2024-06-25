@@ -146,7 +146,8 @@ function getProcError($proc_id){
         $cut_id = $_REQUEST['cut_id'];
 
         $db->setQuery(" SELECT  lists_to_cut.id,lists_to_cut.glass_id,
-                                CONCAT(products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ') AS si
+                                CONCAT(products_glasses.glass_width,'მმX', products_glasses.glass_height,'მმ') AS si,
+                                products_glasses.glass_width AS width, products_glasses.glass_height AS height
                         FROM    lists_to_cut
                         JOIN    products_glasses ON products_glasses.id = lists_to_cut.glass_id AND products_glasses.actived = 1
                         WHERE   lists_to_cut.cut_id IN ($cut_id) AND lists_to_cut.actived = 1 AND lists_to_cut.status_id  NOT IN (4,3)");
@@ -167,6 +168,12 @@ function getProcError($proc_id){
                                 foreach($glass_ids AS $glass){
                                     $data .= '  <div class="col-sm-4" style="text-align: center;">
                                                     <label>მინა #'.$glass['glass_id'].' <b>'.$glass['si'].'</b> <input type="checkbox" class="glass_error" data-id="'.$glass['id'].'"></label>
+                                                    <label class="flexed">მინის გაატხოდება <input type="checkbox" class="glass_error_atx" data-id="'.$glass['id'].'" disabled></label>
+                                                    <div class="row err_atx_'.$glass['id'].'" style="display:none;">
+                                                        <div class="col-sm-6"><input style="width:99%;" type="number" class="err_atxod_width" data-id="'.$glass['id'].'" min="1" max="'.$glass['width'].'" value="'.$glass['width'].'"></div>
+                                                        <div class="col-sm-6"><input style="width:99%;" type="number" class="err_atxod_height" data-id="'.$glass['id'].'" min="1" max="'.$glass['height'].'" value="'.$glass['height'].'"></div>
+                                                    </div>
+                                                    <br>
                                                     <input type="number" min="1" class="glass_pyramids" placeholder="პირამიდის #" data-id="'.$glass['id'].'">
                                                     
                                                 </div>';
@@ -243,6 +250,121 @@ switch ($act){
 
         $data = array('page' => change_damk(getProduct($prod_id), $prod_id));
     break;
+    case 'atxod_glass_proc':
+        $glass_id = $_REQUEST['glass_id'];
+        $data = array('page' => atxod_glass_proc(getGlass($glass_id)));
+        break;
+    case 'make_atxod_obj':
+        $glass_id   = $_REQUEST['glass_id'];
+        $width      = $_REQUEST['width'];
+        $height     = $_REQUEST['height'];
+        $pyramid    = $_REQUEST['pyramid'];
+
+
+        $db->setQuery(" SELECT  count(*) AS cc
+                        FROM    lists_to_cut
+                        WHERE   actived = 1 AND glass_id = '$glass_id' AND status_id IN (1,2)");
+
+        $check_cut = $db->getResultArray();
+
+        if($check_cut['result'][0]['cc'] > 0){
+            $data['error'] = "მინა ჭრის პროცესზეა, თქვენ ვერ გააატხოდებთ";
+        }
+        else{
+            $db->setQuery("UPDATE products_glasses SET status_id = 4, display = 0 WHERE id = '$glass_id' AND status_id != 3");
+            $db->execQuery();
+
+            $db->setQuery(" SELECT  cut_id, status_id
+                            FROM    lists_to_cut
+                            WHERE   actived = 1 AND glass_id = '$glass_id' AND status_id NOT IN (3)");
+            
+            $cut_data = $db->getResultArray()['result'][0];
+            $cut_id = $cut_data['cut_id'];
+            $status_id = $cut_data['status_id'];
+            if($cut_id != ''){
+                $db->setQuery("UPDATE lists_to_cut SET status_id = 4 WHERE glass_id = '$glass_id'");
+                $db->execQuery();
+            }
+            else{
+                $db->setQuery(" SELECT      id, path_group_id, status_id
+                                FROM        glasses_paths
+                                WHERE       actived = 1 AND glass_id = '$glass_id' AND status_id IN (1,2,4)
+                                ORDER BY    sort_n
+                                LIMIT 2");
+
+                $glass_data = $db->getResultArray()['result'];
+
+                $path_id = $glass_data[0]['id'];
+                $path_group_id = $glass_data[0]['path_group_id'];
+                $path_status_id = $glass_data[0]['status_id'];
+
+                $db->setQuery("UPDATE glasses_paths SET status_id = 4 WHERE id = '$path_id'");
+                $db->execQuery();
+            }
+
+            $db->setQuery("SELECT cut_id FROM lists_to_cut WHERE glass_id = '$glass_id'");
+            $cut_id = $db->getResultArray()['result'][0]['cut_id'];
+            $db->setQuery(" SELECT  warehouse.* 
+                            FROM    cut_glass
+                            JOIN    warehouse ON warehouse.id = cut_glass.list_id
+                            WHERE   cut_glass.actived = 1 AND cut_glass.id = '$cut_id'");
+            $warehouse = $db->getResultArray()['result'][0];
+
+
+
+            $db->setQuery(" INSERT INTO warehouse
+                            SET glass_option_id = '$warehouse[glass_option_id]',
+                                glass_type_id = '$warehouse[glass_type_id]',
+                                glass_color_id = '$warehouse[glass_color_id]',
+                                glass_manuf_id = '$warehouse[glass_manuf_id]',
+                                qty = 1,
+                                glass_width = '$width',
+                                glass_height = $height,
+                                sqr_price = '$warehouse[sqr_price]',
+                                marja = '$warehouse[marja]',
+                                gtype = 2,
+                                owner = '$warehouse[owner]',
+                                bringer = '$warehouse[bringer]',
+                                pyramid = '$pyramid'");
+            $db->execQuery();
+        }
+        break;
+    case 'make_atxod':
+        $glass_id   = $_REQUEST['glass_id'];
+        $width      = $_REQUEST['width'];
+        $height     = $_REQUEST['height'];
+        $pyramid    = $_REQUEST['pyramid'];
+
+
+        $db->setQuery("SELECT cut_id FROM lists_to_cut WHERE glass_id = '$glass_id'");
+        $cut_id = $db->getResultArray()['result'][0]['cut_id'];
+        $db->setQuery(" SELECT  warehouse.* 
+                        FROM    cut_glass
+                        JOIN    warehouse ON warehouse.id = cut_glass.list_id
+                        WHERE   cut_glass.actived = 1 AND cut_glass.id = '$cut_id'");
+        $warehouse = $db->getResultArray()['result'][0];
+
+
+
+            $db->setQuery(" INSERT INTO warehouse
+                            SET glass_option_id = '$warehouse[glass_option_id]',
+                                glass_type_id = '$warehouse[glass_type_id]',
+                                glass_color_id = '$warehouse[glass_color_id]',
+                                glass_manuf_id = '$warehouse[glass_manuf_id]',
+                                qty = 1,
+                                glass_width = '$width',
+                                glass_height = $height,
+                                sqr_price = '$warehouse[sqr_price]',
+                                marja = '$warehouse[marja]',
+                                gtype = 2,
+                                owner = '$warehouse[owner]',
+                                bringer = '$warehouse[bringer]',
+                                pyramid = '$pyramid'");
+            $db->execQuery();
+        
+
+        
+        break;
     case 'change_damk_save':
         $prod_id = $_REQUEST['prod_id'];
 
@@ -647,11 +769,13 @@ switch ($act){
         }
     break;
     case 'error_glass_proc':
+        die();
         $cut_id = $_REQUEST['cut_id'];
         $proc_id = $_REQUEST['proc_id'];
 
-        $gpyr = $_REQUEST['gpyr'];
-        $apyr = $_REQUEST['apyr'];
+        $gpyr       = $_REQUEST['gpyr'];
+        $gpyr_atx   = $_REQUEST['gpyr_atx'];
+        $apyr       = $_REQUEST['apyr'];
 
 
         if($proc_id == 2){
@@ -672,6 +796,26 @@ switch ($act){
                 $db->execQuery();
                 /* $db->setQuery("UPDATE cut_glass SET status_id = 4 WHERE id = '$cut_id'");
                 $db->execQuery(); */
+            }
+
+
+            foreach($gpyr_atx AS $gl_atx){
+                $gl_data = explode('-', $gl_atx);
+
+                $pyramid    = $gl_data[0];
+                $glass_id   = $gl_data[1];
+                $width      = $gl_data[2];
+                $height     = $gl_data[3];
+
+                $db->setQuery("SELECT glass_option_id, glass_type_id, glass_color_id, glass_manuf_id FROM products_glasses WHERE id = '$glass_id'");
+                $glass = $db->getResultArray()['result'][0];
+                $db->setQuery(" INSERT INTO cut_atxod
+                                SET cut_id = '$cut_id',
+                                    width = '$width',
+                                    height = '$height',
+                                    pyramid = '$pyramid'");
+                $db->execQuery();
+
             }
 
             if(count($gpyr) > 0){
@@ -1232,10 +1376,11 @@ switch ($act){
         break;
     case 'start_glass_proc':
         $glass_rate = $_REQUEST['glass_rate'];
-        $proc_id = $_REQUEST['proc_id'];
-        $path_id = $_REQUEST['path_id'];
-        $glass_id = $_REQUEST['glass_id'];
-        $pyramid = $_REQUEST['pyramid'];
+        $proc_id    = $_REQUEST['proc_id'];
+        $path_id    = $_REQUEST['path_id'];
+        $glass_id   = $_REQUEST['glass_id'];
+        $pyramid    = $_REQUEST['pyramid'];
+        $atxod      = $_REQUEST['atxod'];
 
         if($proc_id == 2){
             $cut_id = $_REQUEST['cut_id'];
@@ -4733,7 +4878,7 @@ function getCutOptions($option_id, $type_id, $color_id, $manuf_id){
                             CONCAT(glass_manuf.name,' ზომები: ', warehouse.glass_width, 'მმ X ',warehouse.glass_height, 'მმ, პირამიდა: ', warehouse.pyramid, ' დარჩა: ',warehouse.qty ) AS name
                     FROM    warehouse
                     JOIN    glass_manuf ON glass_manuf.id = warehouse.glass_manuf_id
-                    WHERE   warehouse.actived = 1 AND warehouse.glass_option_id = '$option_id' AND warehouse.glass_type_id = '$type_id' AND warehouse.glass_color_id = '$color_id'");
+                    WHERE   warehouse.actived = 1 AND warehouse.glass_option_id = '$option_id' AND warehouse.glass_type_id = '$type_id' AND warehouse.glass_color_id = '$color_id' AND IF(warehouse.gtype = 2 AND warehouse.qty <= 0,1=0,1=1)");
     $cats = $db->getResultArray();
     foreach($cats['result'] AS $cat){
         if($cat['id'] == $id){
@@ -4778,6 +4923,25 @@ function change_damk($res = '', $prod_id){
                 </fieldset>
 
                 <input type="hidden" id="prod_id_new" value="'.$prod_id.'">
+                
+                
+                ';
+
+    return $data;
+}
+
+
+function atxod_glass_proc($res = ''){
+    $data = '   <fieldset class="fieldset">
+                    <legend>მინის გააატხოდება</legend>
+                        <div class="row">
+                            <div class="col-sm-6"><input style="width:99%;" type="number" class="gl_err_atxod_width" data-id="'.$res['id'].'" min="1" max="'.$res['glass_width'].'" value="'.$res['glass_width'].'"></div>
+                            <div class="col-sm-6"><input style="width:99%;" type="number" class="gl_err_atxod_height" data-id="'.$res['id'].'" min="1" max="'.$res['glass_height'].'" value="'.$res['glass_height'].'"></div>
+                        </div>
+                    </legend>
+                </fieldset>
+
+                <input type="hidden" id="glass_id_for_atxod" value="'.$res['id'].'">
                 
                 
                 ';

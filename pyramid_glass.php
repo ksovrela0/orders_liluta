@@ -305,6 +305,7 @@
 	<!-- Back-to-top --><a href="#top" id="back-to-top" style="display: none;"><i class="fe fe-arrow-up"></i></a>
 	<!-- Jquery js-->
 	<div title="სტატუსის ცვლილება" id="get_status_page"></div>
+	<div title="გაატხოდება" id="atxod_glass_proc"></div>
 	<div class="main-navbar-backdrop"></div>
 	<div title="ბეჭვდვა" id="get_excel">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
@@ -860,6 +861,79 @@
 							$("#pyramid_glass").data("kendoGrid").dataSource.read();
 							$('#get_status_page').dialog("close");
 						}
+						
+					}
+				});
+			}
+		}
+		
+	});
+
+
+	$(document).on('click', '#proc_atxod', function(){
+		var pyramid = $("#pyramid_num").val();
+		var ask = confirm("ნამდვილად გსურთ მინის გაატხოდება?");
+		if(ask){
+			if(pyramid == '' || pyramid == 0){
+				alert("გთხოვთ მიუთითოთ სწორი პირამიდის ნომერი");
+			}
+			else{
+				let params 			= new Object;
+				params.act 			= 'atxod_glass_proc';
+				params.glass_id 	= $("#glass_id").val();
+				
+				$.ajax({
+					url: 'server-side/writes.action.php',
+					type: "POST",
+					data: params,
+					dataType: "json",
+					success: function(data){
+						$('#atxod_glass_proc').html(data.page);
+										
+						$("#atxod_glass_proc").dialog({
+							resizable: false,
+							height: "auto",
+							width: 500,
+							modal: true,
+							buttons: {
+								"გაატხოდება": function() {
+									$.ajax({
+										url: "server-side/writes.action.php",
+										type: "POST",
+										data: {
+											act: "make_atxod_obj",
+											glass_id: $("#glass_id_for_atxod").val(),
+											width: $(".gl_err_atxod_width").val(),
+											height: $(".gl_err_atxod_height").val(),
+											pyramid: pyramid
+										},
+										dataType: "json",
+										success: function(data) {
+											
+											$("#atxod_glass_proc,#get_status_page").dialog("close");
+											$("#pyramid_glass").data("kendoGrid").dataSource.read();
+											/* $.ajax({
+												url: "server-side/writes.action.php",
+												type: "POST",
+												data: {
+													act: "start_glass_proc",
+													glass_id: id,
+													proc_id: get_proc_id,
+													path_id: path_id,
+													glass_rate: 0,
+													pyramid: ask,
+													atxod: 0
+												},
+												dataType: "json",
+												success: function(data) {
+													$("#pyramid_glass").data("kendoGrid").dataSource.read();
+												}
+											}); */
+										}
+									});
+								}
+							}
+						});
 						
 					}
 				});
