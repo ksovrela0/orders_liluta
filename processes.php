@@ -1031,7 +1031,7 @@ $proc_data = $db->getResultArray()['result'][0];
 											else{
 												url['gpyr'].push($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(x).attr('data-id'));
 												if($(".glass_error_atx[data-id='"+$(x).attr('data-id')+"']").is(":checked")){
-													url['gpyr_atx'].push($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(x).attr('data-id')+'-'+$(".err_atxod_width[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(".err_atxod_height[data-id='"+$(x).attr('data-id')+"']").val())
+													url['gpyr_atx'].push($(".glass_pyramids[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(".glass_error_atx[data-id='"+$(x).attr('data-id')+"']").attr('glass-id')+'-'+$(".err_atxod_width[data-id='"+$(x).attr('data-id')+"']").val()+'-'+$(".err_atxod_height[data-id='"+$(x).attr('data-id')+"']").val())
 												}
 											}
 											

@@ -168,7 +168,7 @@ function getProcError($proc_id){
                                 foreach($glass_ids AS $glass){
                                     $data .= '  <div class="col-sm-4" style="text-align: center;">
                                                     <label>მინა #'.$glass['glass_id'].' <b>'.$glass['si'].'</b> <input type="checkbox" class="glass_error" data-id="'.$glass['id'].'"></label>
-                                                    <label class="flexed">მინის გაატხოდება <input type="checkbox" class="glass_error_atx" data-id="'.$glass['id'].'" disabled></label>
+                                                    <label class="flexed">მინის გაატხოდება <input type="checkbox" class="glass_error_atx" data-id="'.$glass['id'].'" glass-id="'.$glass['glass_id'].'" disabled></label>
                                                     <div class="row err_atx_'.$glass['id'].'" style="display:none;">
                                                         <div class="col-sm-6"><input style="width:99%;" type="number" class="err_atxod_width" data-id="'.$glass['id'].'" min="1" max="'.$glass['width'].'" value="'.$glass['width'].'"></div>
                                                         <div class="col-sm-6"><input style="width:99%;" type="number" class="err_atxod_height" data-id="'.$glass['id'].'" min="1" max="'.$glass['height'].'" value="'.$glass['height'].'"></div>
@@ -311,6 +311,8 @@ switch ($act){
             $warehouse = $db->getResultArray()['result'][0];
 
 
+            $db->setQuery("UPDATE products_glasses SET atxoded = 1 WHERE id = '$glass_id'");
+            $db->execQuery();
 
             $db->setQuery(" INSERT INTO warehouse
                             SET glass_option_id = '$warehouse[glass_option_id]',
@@ -344,6 +346,9 @@ switch ($act){
                         WHERE   cut_glass.actived = 1 AND cut_glass.id = '$cut_id'");
         $warehouse = $db->getResultArray()['result'][0];
 
+
+        $db->setQuery("UPDATE products_glasses SET atxoded = 1 WHERE id = '$glass_id'");
+        $db->execQuery();
 
 
             $db->setQuery(" INSERT INTO warehouse
@@ -769,7 +774,6 @@ switch ($act){
         }
     break;
     case 'error_glass_proc':
-        die();
         $cut_id = $_REQUEST['cut_id'];
         $proc_id = $_REQUEST['proc_id'];
 
@@ -816,7 +820,14 @@ switch ($act){
                                     pyramid = '$pyramid'");
                 $db->execQuery();
 
+
+                $db->setQuery("UPDATE products_glasses SET atxoded = 1 WHERE id = '$glass_id'");
+                $db->execQuery();
+                
+
             }
+
+            
 
             if(count($gpyr) > 0){
                 $db->setQuery("UPDATE lists_to_cut SET status_id = 4, pyramid = '$pyramid' WHERE id = '$cut_list_id'");
