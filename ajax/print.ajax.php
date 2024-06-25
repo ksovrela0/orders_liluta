@@ -128,7 +128,7 @@ switch ($act){
                                 CONCAT(cut_atxod.width,' X ',cut_atxod.height) AS size,
                                 glass_options.g_size,
                                 glass_manuf.name AS manuf,
-                                lists_to_cut.list_id
+                                lists_to_cut.cut_id
                         FROM    cut_atxod
                         JOIN    lists_to_cut ON lists_to_cut.cut_id = cut_atxod.cut_id AND lists_to_cut.actived = 1
                         JOIN    products_glasses ON products_glasses.id = lists_to_cut.glass_id AND products_glasses.actived = 1
@@ -192,7 +192,7 @@ switch ($act){
                                 <li class="zoma" style="font-size: 13px;">
                                     <b style="font-size: 13px;">'.$glass['size'].'|ათხოდი</b>
                                     <br>
-                                    ID: '.$glass['id'].' ლისტი: '.$glass['list_id'].'
+                                    ID: '.$glass['id'].' ლისტი: '.$glass['cut_id'].'
                                 </li>
                                 <li class="barcode">
                                     <img src="includes/barcode/index.php?title='.$glass['id'].'">
